@@ -37,7 +37,7 @@ jobs:
     timeout-minutes: 20
     environment:
       name: pypi
-      url: https://pypi.org/project/basaltic-sh-sdk-python/
+      url: https://pypi.org/project/basaltic-sdk-python/
     concurrency:
       group: pypi-publication
       cancel-in-progress: false

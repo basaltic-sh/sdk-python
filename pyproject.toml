@@ -3,8 +3,8 @@ requires = ["hatchling==1.32.4"]
 build-backend = "hatchling.build"
 
 [project]
-name = "basaltic-sh-sdk-python"
-version = "0.1.0"
+name = "basaltic-sdk-python"
+version = "0.1.1"
 description = "Official typed synchronous and asynchronous Python SDK for Basaltic"
 readme = "README.md"
 requires-python = ">=3.11"

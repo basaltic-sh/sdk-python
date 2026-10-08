@@ -20,7 +20,7 @@ def run(*args, cwd=ROOT, env=None):
 def payload(wheel):
     with zipfile.ZipFile(wheel) as z:
         names = z.namelist()
-        assert all(n.startswith(("basaltic/", "basaltic_sh_sdk_python-")) for n in names)
+        assert all(n.startswith(("basaltic/", "basaltic_sdk_python-")) for n in names)
         assert all(
             not any(s in n for s in ["__pycache__", "AGENTS", "internal/", ".pyc"]) for n in names
         )
@@ -30,7 +30,7 @@ def payload(wheel):
 
 def main():
     meta = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
-    assert meta["name"] == "basaltic-sh-sdk-python"
+    assert meta["name"] == "basaltic-sdk-python"
     version = meta["version"]
     assert (
         (ROOT / "src/basaltic/_version.py")

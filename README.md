@@ -6,7 +6,7 @@ response dictionaries, access-key authentication, pagination, resource reference
 and streamed uploads/downloads.
 
 ```sh
-pip install basaltic-sh-sdk-python
+pip install basaltic-sdk-python
 ```
 
 ```python
