@@ -74,6 +74,8 @@ Snapshot = TypedDict(
         "description": "NotRequired[str]",
         "tags": "NotRequired[Tags]",
         "size_gb": "NotRequired[int]",
+        "logical_size_bytes": "NotRequired[int]",
+        "snapshot_usage": "NotRequired[SnapshotUsage]",
         "status": "NotRequired[SnapshotStatus]",
         "faults": "Required[list[Fault]]",
         "created_at": "NotRequired[str]",
@@ -82,6 +84,17 @@ Snapshot = TypedDict(
     total=False,
 )
 Tags: TypeAlias = "dict[str, str]"
+SnapshotUsage = TypedDict(
+    "SnapshotUsage",
+    {
+        "state": "Required[Literal['unknown', 'stale', 'measured']]",
+        "scope": "Required[Literal['volume_lineage']]",
+        "billable": "Required[Literal[False]]",
+        "measured_at": "Required[str | None]",
+        "lineage_retained_bytes": "Required[int | None]",
+    },
+    total=False,
+)
 SnapshotStatus: TypeAlias = "Literal['creating', 'available', 'deleting', 'error']"
 Fault = TypedDict(
     "Fault",
