@@ -82,6 +82,10 @@ CreateListenerResponse: TypeAlias = "ListenerResponse"
 CreateLoadBalancerRequestInput = TypedDict(
     "CreateLoadBalancerRequestInput",
     {
+        "desired_count": "NotRequired[int]",
+        "min_count": "NotRequired[int]",
+        "max_count": "NotRequired[int]",
+        "autoscaling": "NotRequired[AutoscalingPolicyInput]",
         "name": "Required[str]",
         "type": "Required[Literal['application', 'network']]",
         "vpc": "Required[str]",
@@ -95,6 +99,36 @@ CreateLoadBalancerRequestInput = TypedDict(
     },
     total=False,
 )
+AutoscalingPolicyInput = TypedDict(
+    "AutoscalingPolicyInput",
+    {
+        "enabled": "Required[bool]",
+        "metrics": "Required[list[ScalingMetricInput]]",
+        "warmup_seconds": "NotRequired[int]",
+        "cooldown_seconds": "NotRequired[int]",
+        "scale_down_stabilization_seconds": "NotRequired[int]",
+        "max_scale_out_step": "NotRequired[int]",
+        "max_scale_in_step": "NotRequired[int]",
+        "drain_seconds": "NotRequired[int]",
+    },
+    total=False,
+)
+ScalingMetricInput = TypedDict(
+    "ScalingMetricInput",
+    {
+        "source": "Required[Literal['cpu', 'telemetry']]",
+        "target_type": "Required[Literal['utilization', 'average_value']]",
+        "target_value": "Required[float]",
+        "name": "NotRequired[str]",
+        "labels": "NotRequired[dict[str, str]]",
+        "sample_aggregation": "NotRequired[Literal['last', 'avg', 'max', 'rate']]",
+        "series_aggregation": "NotRequired[Literal['sum', 'avg', 'max']]",
+        "expected_series": "NotRequired[int]",
+        "window_seconds": "NotRequired[int]",
+        "max_age_seconds": "NotRequired[int]",
+    },
+    total=False,
+)
 CreateLoadBalancerBody: TypeAlias = "CreateLoadBalancerRequestInput"
 LoadBalancerResponse = TypedDict(
     "LoadBalancerResponse", {"load_balancer": "NotRequired[LoadBalancer]"}, total=False
@@ -102,6 +136,12 @@ LoadBalancerResponse = TypedDict(
 LoadBalancer = TypedDict(
     "LoadBalancer",
     {
+        "rollout_surge": "NotRequired[bool]",
+        "desired_count": "Required[int]",
+        "min_count": "Required[int]",
+        "max_count": "Required[int]",
+        "autoscaling": "NotRequired[AutoscalingPolicy]",
+        "autoscaling_status": "NotRequired[AutoscalingStatus]",
         "id": "Required[str]",
         "crn": "Required[str]",
         "account_id": "Required[str]",
@@ -121,6 +161,57 @@ LoadBalancer = TypedDict(
         "tags": "Required[Tags]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
+    },
+    total=False,
+)
+AutoscalingPolicy = TypedDict(
+    "AutoscalingPolicy",
+    {
+        "enabled": "Required[bool]",
+        "metrics": "Required[list[ScalingMetric]]",
+        "warmup_seconds": "NotRequired[int]",
+        "cooldown_seconds": "NotRequired[int]",
+        "scale_down_stabilization_seconds": "NotRequired[int]",
+        "max_scale_out_step": "NotRequired[int]",
+        "max_scale_in_step": "NotRequired[int]",
+        "drain_seconds": "NotRequired[int]",
+    },
+    total=False,
+)
+ScalingMetric = TypedDict(
+    "ScalingMetric",
+    {
+        "source": "Required[Literal['cpu', 'telemetry']]",
+        "target_type": "Required[Literal['utilization', 'average_value']]",
+        "target_value": "Required[float]",
+        "name": "NotRequired[str]",
+        "labels": "NotRequired[dict[str, str]]",
+        "sample_aggregation": "NotRequired[Literal['last', 'avg', 'max', 'rate']]",
+        "series_aggregation": "NotRequired[Literal['sum', 'avg', 'max']]",
+        "expected_series": "NotRequired[int]",
+        "window_seconds": "NotRequired[int]",
+        "max_age_seconds": "NotRequired[int]",
+    },
+    total=False,
+)
+AutoscalingStatus = TypedDict(
+    "AutoscalingStatus",
+    {
+        "status": "Required[Literal['pending', 'disabled', 'stable', 'scaling', 'waiting', 'warming_up', 'metrics_unavailable', 'stabilizing', 'cooldown', 'draining']]",
+        "reason": "Required[str]",
+        "evaluated_at": "NotRequired[str]",
+        "last_scaled_at": "NotRequired[str]",
+        "history": "Required[list[AutoscalingStatusHistoryItem]]",
+    },
+    total=False,
+)
+AutoscalingStatusHistoryItem = TypedDict(
+    "AutoscalingStatusHistoryItem",
+    {
+        "at": "Required[str]",
+        "from": "Required[int]",
+        "to": "Required[int]",
+        "reason": "Required[str]",
     },
     total=False,
 )
@@ -426,14 +517,25 @@ LoadBalancerReplicasResponse = TypedDict(
 LoadBalancerReplica = TypedDict(
     "LoadBalancerReplica",
     {
+        "retirement": "NotRequired[Retirement]",
         "instance_id": "Required[str]",
         "replica_index": "Required[int]",
         "created_at": "Required[str]",
         "flavor_id": "Required[str]",
-        "status": "Required[Literal['initializing', 'healthy', 'unhealthy']]",
+        "status": "Required[Literal['initializing', 'healthy', 'unhealthy', 'draining']]",
         "proxy_ok": "Required[bool]",
         "agent_version": "NotRequired[str]",
         "last_seen": "NotRequired[str]",
+    },
+    total=False,
+)
+Retirement = TypedDict(
+    "Retirement",
+    {
+        "requested_at": "Required[str]",
+        "drain_seconds": "Required[int]",
+        "agent_acknowledged_at": "NotRequired[str]",
+        "drain_until": "NotRequired[str]",
     },
     total=False,
 )
@@ -519,6 +621,10 @@ UpdateListenerResponse: TypeAlias = "ListenerResponse"
 UpdateLoadBalancerRequestInput = TypedDict(
     "UpdateLoadBalancerRequestInput",
     {
+        "desired_count": "NotRequired[int]",
+        "min_count": "NotRequired[int]",
+        "max_count": "NotRequired[int]",
+        "autoscaling": "NotRequired[AutoscalingPolicyInput]",
         "replica_count": "NotRequired[int]",
         "flavor": "NotRequired[str]",
         "tags": "NotRequired[TagsInput]",

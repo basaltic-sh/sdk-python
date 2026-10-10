@@ -342,6 +342,9 @@ Flavor = TypedDict(
         "ram_mb": "NotRequired[int]",
         "class": "NotRequired[Literal['shared', 'dedicated']]",
         "family": "NotRequired[Literal['general', 'loadbalancer', 'database']]",
+        "net_mbps": "NotRequired[int]",
+        "cpu_baseline_pct": "NotRequired[int]",
+        "cpu_burst_pct": "NotRequired[int]",
         "status": "NotRequired[Literal['active', 'disabled']]",
         "created_at": "NotRequired[str]",
         "updated_at": "NotRequired[str]",
@@ -359,6 +362,7 @@ CreateInstanceResponse: TypeAlias = "CreateInstanceResult"
 InstancePoolCreateRequestInput = TypedDict(
     "InstancePoolCreateRequestInput",
     {
+        "autoscaling": "NotRequired[AutoscalingPolicyInput]",
         "name": "Required[str]",
         "description": "NotRequired[str]",
         "tags": "NotRequired[TagsInput]",
@@ -366,6 +370,36 @@ InstancePoolCreateRequestInput = TypedDict(
         "desired_count": "NotRequired[int]",
         "min_count": "NotRequired[int]",
         "max_count": "NotRequired[int]",
+    },
+    total=False,
+)
+AutoscalingPolicyInput = TypedDict(
+    "AutoscalingPolicyInput",
+    {
+        "enabled": "Required[bool]",
+        "metrics": "Required[list[ScalingMetricInput]]",
+        "warmup_seconds": "NotRequired[int]",
+        "cooldown_seconds": "NotRequired[int]",
+        "scale_down_stabilization_seconds": "NotRequired[int]",
+        "max_scale_out_step": "NotRequired[int]",
+        "max_scale_in_step": "NotRequired[int]",
+        "drain_seconds": "NotRequired[int]",
+    },
+    total=False,
+)
+ScalingMetricInput = TypedDict(
+    "ScalingMetricInput",
+    {
+        "source": "Required[Literal['cpu', 'telemetry']]",
+        "target_type": "Required[Literal['utilization', 'average_value']]",
+        "target_value": "Required[float]",
+        "name": "NotRequired[str]",
+        "labels": "NotRequired[dict[str, str]]",
+        "sample_aggregation": "NotRequired[Literal['last', 'avg', 'max', 'rate']]",
+        "series_aggregation": "NotRequired[Literal['sum', 'avg', 'max']]",
+        "expected_series": "NotRequired[int]",
+        "window_seconds": "NotRequired[int]",
+        "max_age_seconds": "NotRequired[int]",
     },
     total=False,
 )
@@ -390,6 +424,7 @@ InstanceVolumeInput = TypedDict(
         "boot": "NotRequired[bool]",
         "size_gb": "Required[int]",
         "volume_type": "NotRequired[str]",
+        "performance": "NotRequired[VolumePerformanceRequestInput]",
         "mount_path": "NotRequired[str]",
         "fstype": "NotRequired[str]",
         "delete_on_termination": "NotRequired[bool]",
@@ -403,6 +438,10 @@ InstancePoolResponse = TypedDict(
 InstancePool = TypedDict(
     "InstancePool",
     {
+        "autoscaling": "NotRequired[AutoscalingPolicy]",
+        "autoscaling_status": "NotRequired[AutoscalingStatus]",
+        "rollout_surge": "NotRequired[bool]",
+        "retiring_instances": "NotRequired[list[RetiringPoolMember]]",
         "id": "NotRequired[str]",
         "crn": "NotRequired[str]",
         "name": "NotRequired[str]",
@@ -419,6 +458,68 @@ InstancePool = TypedDict(
         "managed_by": "NotRequired[str]",
         "tags": "NotRequired[Tags]",
         "template": "NotRequired[InstancePoolTemplate]",
+    },
+    total=False,
+)
+AutoscalingPolicy = TypedDict(
+    "AutoscalingPolicy",
+    {
+        "enabled": "Required[bool]",
+        "metrics": "Required[list[ScalingMetric]]",
+        "warmup_seconds": "NotRequired[int]",
+        "cooldown_seconds": "NotRequired[int]",
+        "scale_down_stabilization_seconds": "NotRequired[int]",
+        "max_scale_out_step": "NotRequired[int]",
+        "max_scale_in_step": "NotRequired[int]",
+        "drain_seconds": "NotRequired[int]",
+    },
+    total=False,
+)
+ScalingMetric = TypedDict(
+    "ScalingMetric",
+    {
+        "source": "Required[Literal['cpu', 'telemetry']]",
+        "target_type": "Required[Literal['utilization', 'average_value']]",
+        "target_value": "Required[float]",
+        "name": "NotRequired[str]",
+        "labels": "NotRequired[dict[str, str]]",
+        "sample_aggregation": "NotRequired[Literal['last', 'avg', 'max', 'rate']]",
+        "series_aggregation": "NotRequired[Literal['sum', 'avg', 'max']]",
+        "expected_series": "NotRequired[int]",
+        "window_seconds": "NotRequired[int]",
+        "max_age_seconds": "NotRequired[int]",
+    },
+    total=False,
+)
+AutoscalingStatus = TypedDict(
+    "AutoscalingStatus",
+    {
+        "status": "Required[Literal['pending', 'disabled', 'stable', 'scaling', 'waiting', 'warming_up', 'metrics_unavailable', 'stabilizing', 'cooldown', 'draining']]",
+        "reason": "Required[str]",
+        "evaluated_at": "NotRequired[str]",
+        "last_scaled_at": "NotRequired[str]",
+        "history": "Required[list[AutoscalingStatusHistoryItem]]",
+    },
+    total=False,
+)
+AutoscalingStatusHistoryItem = TypedDict(
+    "AutoscalingStatusHistoryItem",
+    {
+        "at": "Required[str]",
+        "from": "Required[int]",
+        "to": "Required[int]",
+        "reason": "Required[str]",
+    },
+    total=False,
+)
+RetiringPoolMember = TypedDict(
+    "RetiringPoolMember",
+    {
+        "requested_at": "Required[str]",
+        "drain_seconds": "Required[int]",
+        "agent_acknowledged_at": "NotRequired[str]",
+        "drain_until": "NotRequired[str]",
+        "instance_id": "Required[str]",
     },
     total=False,
 )
@@ -498,10 +599,16 @@ InstanceVolume = TypedDict(
         "boot": "NotRequired[bool]",
         "size_gb": "Required[int]",
         "volume_type": "NotRequired[str]",
+        "performance": "NotRequired[VolumePerformanceRequest]",
         "mount_path": "NotRequired[str]",
         "fstype": "NotRequired[str]",
         "delete_on_termination": "NotRequired[bool]",
     },
+    total=False,
+)
+VolumePerformanceRequest = TypedDict(
+    "VolumePerformanceRequest",
+    {"iops": "NotRequired[int]", "throughput_mib_s": "NotRequired[float]"},
     total=False,
 )
 CreateInstancePoolResponse: TypeAlias = "InstancePoolResponse"
@@ -886,6 +993,7 @@ UpdateInstanceResponse: TypeAlias = "UpdateInstanceResult"
 InstancePoolUpdateRequestInput = TypedDict(
     "InstancePoolUpdateRequestInput",
     {
+        "autoscaling": "NotRequired[AutoscalingPolicyInput]",
         "description": "NotRequired[str]",
         "tags": "NotRequired[TagsInput]",
         "desired_count": "NotRequired[int]",

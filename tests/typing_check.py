@@ -6,7 +6,7 @@ from typing import assert_type
 import httpx
 
 from basaltic import ApiResponse, AsyncClient, Client, Page, RequestOptions
-from basaltic.models import compute
+from basaltic.models import compute, loadbalancer
 
 
 def synchronous(client: Client) -> None:
@@ -33,3 +33,27 @@ async def asynchronous(client: AsyncClient) -> None:
         assert_type(item, compute.ListInstancesItem)
     async with AsyncClient(access_token="token") as owned:
         assert_type(owned, AsyncClient)
+
+
+def autoscaling(client: Client) -> None:
+    bounds: loadbalancer.UpdateLoadBalancerBody = {
+        "min_count": 0,
+        "max_count": 3,
+        "autoscaling": {
+            "enabled": False,
+            "drain_seconds": 0,
+            "metrics": [
+                {"source": "cpu", "target_type": "utilization", "target_value": 60},
+                {
+                    "source": "telemetry",
+                    "target_type": "average_value",
+                    "target_value": 100,
+                    "name": "requests",
+                    "labels": {"service": "web"},
+                    "sample_aggregation": "rate",
+                },
+            ],
+        },
+    }
+    client.loadbalancer.update_load_balancer("lb", bounds)
+    client.compute.update_instance_pool("pool", {"desired_count": 0})

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "basaltic-sdk-python"
-version = "0.1.1"
+version = "0.2.0"
 description = "Official typed synchronous and asynchronous Python SDK for Basaltic"
 readme = "README.md"
 requires-python = ">=3.11"
