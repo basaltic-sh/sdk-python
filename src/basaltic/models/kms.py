@@ -82,6 +82,79 @@ GetKeyScope = TypedDict(
     "GetKeyScope", {"limit": "NotRequired[int]", "state": "NotRequired[KeyStateInput]"}, total=False
 )
 KeyStateInput: TypeAlias = "Literal['enabled', 'disabled', 'pending_deletion']"
+KeyRotationResponse = TypedDict(
+    "KeyRotationResponse", {"rotation": "Required[KeyRotation]"}, total=False
+)
+KeyRotation = TypedDict(
+    "KeyRotation",
+    {
+        "id": "Required[str]",
+        "key_id": "Required[str]",
+        "trigger": "Required[Literal['on_demand', 'automatic']]",
+        "status": "Required[Literal['pending', 'in_progress', 'reconciliation_required', 'succeeded', 'failed']]",
+        "previous_version": "Required[int | None]",
+        "key_version": "Required[int | None]",
+        "requested_at": "Required[str]",
+        "started_at": "Required[str | None]",
+        "completed_at": "Required[str | None]",
+        "error_code": "Required[str | None]",
+    },
+    total=False,
+)
+GetKeyRotationResponse: TypeAlias = "KeyRotationResponse"
+KeyRotationStatusResponse = TypedDict(
+    "KeyRotationStatusResponse", {"rotation": "Required[KeyRotationStatus]"}, total=False
+)
+KeyRotationStatus = TypedDict(
+    "KeyRotationStatus",
+    {
+        "enabled": "Required[bool]",
+        "rotation_period_days": "Required[int]",
+        "next_rotation_at": "Required[str | None]",
+        "current_version": "Required[int]",
+    },
+    total=False,
+)
+GetKeyRotationStatusResponse: TypeAlias = "KeyRotationStatusResponse"
+GetPublicKeyParameters = TypedDict(
+    "GetPublicKeyParameters", {"key_version": "NotRequired[int]"}, total=False
+)
+GetPublicKeyQuery: TypeAlias = "GetPublicKeyParameters"
+PublicKeyResponse = TypedDict(
+    "PublicKeyResponse",
+    {
+        "key_crn": "Required[str]",
+        "key_version": "Required[int]",
+        "key_spec": "Required[KeySpec]",
+        "key_usage": "Required[KeyUsage]",
+        "public_key": "Required[str]",
+    },
+    total=False,
+)
+GetPublicKeyResponse: TypeAlias = "PublicKeyResponse"
+ListKeyRotationsParameters = TypedDict(
+    "ListKeyRotationsParameters",
+    {"limit": "NotRequired[int]", "marker": "NotRequired[str]"},
+    total=False,
+)
+ListKeyRotationsQuery: TypeAlias = "ListKeyRotationsParameters"
+KeyRotationListResponse = TypedDict(
+    "KeyRotationListResponse",
+    {"rotations": "Required[list[KeyRotation]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+PaginationMeta = TypedDict(
+    "PaginationMeta",
+    {
+        "total": "NotRequired[int]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+        "has_more": "NotRequired[bool]",
+    },
+    total=False,
+)
+ListKeyRotationsResponse: TypeAlias = "KeyRotationListResponse"
+ListKeyRotationsItem: TypeAlias = "KeyRotation"
 ListKeysParameters = TypedDict(
     "ListKeysParameters",
     {
@@ -99,23 +172,36 @@ KeyListResponse = TypedDict(
     {"keys": "NotRequired[list[Key]]", "meta": "NotRequired[PaginationMeta]"},
     total=False,
 )
-PaginationMeta = TypedDict(
-    "PaginationMeta",
-    {
-        "total": "NotRequired[int]",
-        "limit": "NotRequired[int]",
-        "marker": "NotRequired[str]",
-        "has_more": "NotRequired[bool]",
-    },
-    total=False,
-)
 ListKeysResponse: TypeAlias = "KeyListResponse"
 ListKeysItem: TypeAlias = "Key"
+RewrapRequestInput = TypedDict("RewrapRequestInput", {"ciphertext": "Required[str]"}, total=False)
+RewrapBody: TypeAlias = "RewrapRequestInput"
+RewrapResponse: TypeAlias = "EncryptResponse2"
+RotateKeyOnDemandResponse: TypeAlias = "KeyRotationResponse"
 ScheduleKeyDeletionRequestInput = TypedDict(
     "ScheduleKeyDeletionRequestInput", {"recovery_window_days": "NotRequired[int]"}, total=False
 )
 ScheduleKeyDeletionBody: TypeAlias = "ScheduleKeyDeletionRequestInput"
 ScheduleKeyDeletionResponse: TypeAlias = "KeyResponse"
+SetKeyRotationRequestInput = TypedDict(
+    "SetKeyRotationRequestInput",
+    {"enabled": "Required[bool]", "rotation_period_days": "NotRequired[int]"},
+    total=False,
+)
+SetKeyRotationBody: TypeAlias = "SetKeyRotationRequestInput"
+KeyRotationPolicyResponse = TypedDict(
+    "KeyRotationPolicyResponse", {"rotation": "Required[KeyRotationPolicy]"}, total=False
+)
+KeyRotationPolicy = TypedDict(
+    "KeyRotationPolicy",
+    {
+        "enabled": "Required[bool]",
+        "rotation_period_days": "Required[int]",
+        "next_rotation_at": "Required[str | None]",
+    },
+    total=False,
+)
+SetKeyRotationResponse: TypeAlias = "KeyRotationPolicyResponse"
 SignRequestInput = TypedDict(
     "SignRequestInput",
     {"message": "Required[str]", "signing_algorithm": "NotRequired[SigningAlgorithmInput]"},
@@ -127,7 +213,11 @@ SigningAlgorithmInput: TypeAlias = (
 SignBody: TypeAlias = "SignRequestInput"
 SignResponse2 = TypedDict(
     "SignResponse2",
-    {"signature": "NotRequired[str]", "signing_algorithm": "NotRequired[SigningAlgorithm]"},
+    {
+        "key_version": "NotRequired[int]",
+        "signature": "NotRequired[str]",
+        "signing_algorithm": "NotRequired[SigningAlgorithm]",
+    },
     total=False,
 )
 SigningAlgorithm: TypeAlias = (
@@ -144,6 +234,7 @@ UpdateKeyResponse: TypeAlias = "KeyResponse"
 VerifyRequestInput = TypedDict(
     "VerifyRequestInput",
     {
+        "key_version": "NotRequired[int]",
         "message": "Required[str]",
         "signature": "Required[str]",
         "signing_algorithm": "NotRequired[SigningAlgorithmInput]",

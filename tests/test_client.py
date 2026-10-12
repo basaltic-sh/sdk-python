@@ -196,6 +196,30 @@ class ConfigurationTests(unittest.TestCase):
 
 
 class SyncTests(unittest.TestCase):
+    def test_kms_rotation_wire_contract(self):
+        requests = []
+
+        def handler(request):
+            requests.append(request)
+            return httpx.Response(
+                202, json={"rotation": {"id": "rotation", "status": "pending", "key_version": None}}
+            )
+
+        c = self.client(handler)
+        c.kms.set_key_rotation("key", {"enabled": False, "rotation_period_days": 90})
+        self.assertEqual(requests[0].method, "PUT")
+        self.assertEqual(
+            json.loads(requests[0].content), {"enabled": False, "rotation_period_days": 90}
+        )
+        result = c.kms.rotate_key_on_demand(
+            "key", options=RequestOptions(idempotency_key="rotation-request")
+        )
+        self.assertEqual(result.status_code, 202)
+        self.assertIsNone(result.data["rotation"]["key_version"])
+        self.assertEqual(requests[1].headers["Idempotency-Key"], "rotation-request")
+        c.kms.verify("key", {"message": "bXNn", "signature": "c2ln", "key_version": 1})
+        self.assertEqual(json.loads(requests[2].content)["key_version"], 1)
+
     def client(self, handler, **options):
         http = httpx.Client(
             transport=httpx.MockTransport(handler),
@@ -465,6 +489,30 @@ class SyncTests(unittest.TestCase):
 
 
 class AsyncTests(unittest.IsolatedAsyncioTestCase):
+    async def test_kms_rotation_wire_contract(self):
+        requests = []
+
+        def handler(request):
+            requests.append(request)
+            return httpx.Response(
+                202, json={"rotation": {"id": "rotation", "status": "pending", "key_version": None}}
+            )
+
+        c = self.client(handler)
+        await c.kms.set_key_rotation("key", {"enabled": False, "rotation_period_days": 90})
+        self.assertEqual(requests[0].method, "PUT")
+        self.assertEqual(
+            json.loads(requests[0].content), {"enabled": False, "rotation_period_days": 90}
+        )
+        result = await c.kms.rotate_key_on_demand(
+            "key", options=RequestOptions(idempotency_key="rotation-request")
+        )
+        self.assertEqual(result.status_code, 202)
+        self.assertIsNone(result.data["rotation"]["key_version"])
+        self.assertEqual(requests[1].headers["Idempotency-Key"], "rotation-request")
+        await c.kms.verify("key", {"message": "bXNn", "signature": "c2ln", "key_version": 1})
+        self.assertEqual(json.loads(requests[2].content)["key_version"], 1)
+
     def client(self, handler, **options):
         http = httpx.AsyncClient(
             transport=httpx.MockTransport(handler),

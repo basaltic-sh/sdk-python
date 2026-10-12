@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Literal, NotRequired, TypeAlias, TypedDict
+from typing import Literal, NotRequired, Required, TypeAlias, TypedDict
 
 AuditLogResponse = TypedDict(
     "AuditLogResponse", {"audit_log": "NotRequired[AuditLog]"}, total=False
@@ -23,9 +23,30 @@ AuditLog = TypedDict(
         "ip_address": "NotRequired[str | None]",
         "user_agent": "NotRequired[str | None]",
         "request_id": "NotRequired[str | None]",
-        "details": "NotRequired[dict[str, object]]",
+        "details": "NotRequired[AuditLogDetails]",
         "error_code": "NotRequired[str | None]",
         "error_message": "NotRequired[str | None]",
+    },
+    total=False,
+)
+AuditLogDetails = TypedDict(
+    "AuditLogDetails", {"auth_chain": "NotRequired[list[AuditAuthenticationStep]]"}, total=False
+)
+AuditAuthenticationStep = TypedDict(
+    "AuditAuthenticationStep",
+    {
+        "principal_id": "Required[str]",
+        "principal_type": "Required[str]",
+        "principal_crn": "NotRequired[str]",
+        "name": "NotRequired[str]",
+        "issuer": "NotRequired[str]",
+        "subject": "NotRequired[str]",
+        "email": "NotRequired[str]",
+        "session_id": "NotRequired[str]",
+        "session_crn": "NotRequired[str]",
+        "session_name": "NotRequired[str]",
+        "grant_type": "NotRequired[str]",
+        "issued_at": "NotRequired[str]",
     },
     total=False,
 )

@@ -7,24 +7,37 @@ from typing import Literal, NotRequired, Required, TypeAlias, TypedDict
 BillingProfile = TypedDict(
     "BillingProfile",
     {
-        "customer_type": "NotRequired[Literal['', 'individual', 'company']]",
-        "company_name": "NotRequired[str]",
-        "country": "NotRequired[str]",
-        "tax_id": "NotRequired[str]",
-        "foreign_tax_id": "NotRequired[str]",
-        "no_tax_id_reason": "NotRequired[str]",
-        "email": "NotRequired[str]",
-        "phone": "NotRequired[str]",
+        "customer_type": "Required[Literal['', 'individual', 'company']]",
+        "company_name": "Required[str]",
+        "tax_id": "Required[str]",
+        "tax_id_kind": "Required[str]",
+        "no_tax_id_reason": "Required[str]",
+        "email": "Required[str]",
+        "phone": "Required[str]",
+        "country": "Required[ResourceRef]",
+        "state": "Required[ResourceRef | Literal[None] | None]",
+        "city": "Required[ResourceRef | Literal[None] | None]",
+        "address": "Required[BillingAddress]",
+        "ready": "Required[bool]",
+        "missing_fields": "Required[list[str]]",
+    },
+    total=False,
+)
+ResourceRef = TypedDict(
+    "ResourceRef",
+    {"id": "Required[str]", "crn": "Required[str]", "name": "NotRequired[str]"},
+    total=False,
+)
+BillingAddress = TypedDict(
+    "BillingAddress",
+    {
         "street_name": "NotRequired[str]",
         "street_number": "NotRequired[str]",
         "complement": "NotRequired[str]",
         "neighborhood": "NotRequired[str]",
         "city": "NotRequired[str]",
-        "municipality_code": "NotRequired[str]",
         "state": "NotRequired[str]",
         "postal_code": "NotRequired[str]",
-        "ready": "NotRequired[bool]",
-        "missing_fields": "NotRequired[list[str]]",
     },
     total=False,
 )
@@ -258,27 +271,35 @@ Transaction = TypedDict(
 )
 ListTransactionsResponse: TypeAlias = "TransactionListResponse"
 ListTransactionsItem: TypeAlias = "Transaction"
-BillingProfileInput = TypedDict(
-    "BillingProfileInput",
+BillingProfileUpdateInput = TypedDict(
+    "BillingProfileUpdateInput",
     {
         "customer_type": "NotRequired[Literal['', 'individual', 'company']]",
         "company_name": "NotRequired[str]",
-        "country": "NotRequired[str]",
         "tax_id": "NotRequired[str]",
-        "foreign_tax_id": "NotRequired[str]",
+        "tax_id_kind": "NotRequired[str]",
         "no_tax_id_reason": "NotRequired[str]",
         "email": "NotRequired[str]",
         "phone": "NotRequired[str]",
+        "country": "NotRequired[str]",
+        "state": "NotRequired[str]",
+        "city": "NotRequired[str]",
+        "address": "NotRequired[BillingAddressInput]",
+    },
+    total=False,
+)
+BillingAddressInput = TypedDict(
+    "BillingAddressInput",
+    {
         "street_name": "NotRequired[str]",
         "street_number": "NotRequired[str]",
         "complement": "NotRequired[str]",
         "neighborhood": "NotRequired[str]",
         "city": "NotRequired[str]",
-        "municipality_code": "NotRequired[str]",
         "state": "NotRequired[str]",
         "postal_code": "NotRequired[str]",
     },
     total=False,
 )
-UpdateBillingProfileBody: TypeAlias = "BillingProfileInput"
+UpdateBillingProfileBody: TypeAlias = "BillingProfileUpdateInput"
 UpdateBillingProfileResponse: TypeAlias = "BillingProfile"

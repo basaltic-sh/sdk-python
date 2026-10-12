@@ -116,6 +116,58 @@ _OPS = {
         contentType="",
         accept="application/json",
     ),
+    "getKeyRotation": Operation(
+        id="getKeyRotation",
+        method="GET",
+        path="/v1/keys/{key_id}/rotations/{rotation_id}",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+    ),
+    "getKeyRotationStatus": Operation(
+        id="getKeyRotationStatus",
+        method="GET",
+        path="/v1/keys/{key_id}/rotation",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+    ),
+    "getPublicKey": Operation(
+        id="getPublicKey",
+        method="GET",
+        path="/v1/keys/{key_id}/public-key",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={"key_version": {"style": "form", "explode": True}},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+    ),
+    "listKeyRotations": Operation(
+        id="listKeyRotations",
+        method="GET",
+        path="/v1/keys/{key_id}/rotations",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={
+            "limit": {"style": "form", "explode": True},
+            "marker": {"style": "form", "explode": True},
+        },
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+        itemsKey="rotations",
+    ),
     "listKeys": Operation(
         id="listKeys",
         method="GET",
@@ -135,6 +187,30 @@ _OPS = {
         accept="application/json",
         itemsKey="keys",
     ),
+    "rewrap": Operation(
+        id="rewrap",
+        method="POST",
+        path="/v1/keys/{key_id}/rewrap",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=True,
+        contentType="application/json",
+        accept="application/json",
+    ),
+    "rotateKeyOnDemand": Operation(
+        id="rotateKeyOnDemand",
+        method="POST",
+        path="/v1/keys/{key_id}/rotate",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+    ),
     "scheduleKeyDeletion": Operation(
         id="scheduleKeyDeletion",
         method="POST",
@@ -144,6 +220,18 @@ _OPS = {
         requiredHeaders=[],
         queryEncoding={},
         bodyRequired=False,
+        contentType="application/json",
+        accept="application/json",
+    ),
+    "setKeyRotation": Operation(
+        id="setKeyRotation",
+        method="PUT",
+        path="/v1/keys/{key_id}/rotation",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=True,
         contentType="application/json",
         accept="application/json",
     ),
@@ -359,6 +447,102 @@ class KmsService:
             ),
         )
 
+    def get_key_rotation(
+        self, key_id: str, rotation_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.GetKeyRotationResponse]:
+        "Get a key rotation"
+        return cast(
+            ApiResponse[m.GetKeyRotationResponse],
+            self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["getKeyRotation"],
+                "json",
+                {"key_id": key_id, "rotation_id": rotation_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    def get_key_rotation_status(
+        self, key_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.GetKeyRotationStatusResponse]:
+        "Get key rotation status"
+        return cast(
+            ApiResponse[m.GetKeyRotationStatusResponse],
+            self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["getKeyRotationStatus"],
+                "json",
+                {"key_id": key_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    def get_public_key(
+        self,
+        key_id: str,
+        *,
+        query: m.GetPublicKeyQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.GetPublicKeyResponse]:
+        "Get a versioned public key"
+        return cast(
+            ApiResponse[m.GetPublicKeyResponse],
+            self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["getPublicKey"],
+                "json",
+                {"key_id": key_id},
+                UNSET,
+                query,
+                options,
+            ),
+        )
+
+    def list_key_rotations(
+        self,
+        key_id: str,
+        *,
+        query: m.ListKeyRotationsQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Page[m.ListKeyRotationsResponse, m.ListKeyRotationsItem]:
+        "List key rotation history"
+        return cast(
+            Page[m.ListKeyRotationsResponse, m.ListKeyRotationsItem],
+            self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["listKeyRotations"],
+                "page",
+                {"key_id": key_id},
+                UNSET,
+                query,
+                options,
+            ),
+        )
+
+    def list_key_rotations_all(
+        self,
+        key_id: str,
+        *,
+        query: m.ListKeyRotationsQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Iterator[m.ListKeyRotationsItem]:
+        return iterate_pages(
+            lambda marker: self.list_key_rotations(
+                key_id,
+                query=cast(m.ListKeyRotationsQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
+        )
+
     def list_keys(
         self, *, query: m.ListKeysQuery | None = None, options: RequestOptions | None = None
     ) -> Page[m.ListKeysResponse, m.ListKeysItem]:
@@ -387,6 +571,42 @@ class KmsService:
             (query or {}).get("marker", ""),
         )
 
+    def rewrap(
+        self, key_id: str, body: m.RewrapBody, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.RewrapResponse]:
+        "Rewrap ciphertext with current key material"
+        return cast(
+            ApiResponse[m.RewrapResponse],
+            self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["rewrap"],
+                "json",
+                {"key_id": key_id},
+                body,
+                None,
+                options,
+            ),
+        )
+
+    def rotate_key_on_demand(
+        self, key_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.RotateKeyOnDemandResponse]:
+        "Rotate key material now"
+        return cast(
+            ApiResponse[m.RotateKeyOnDemandResponse],
+            self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["rotateKeyOnDemand"],
+                "json",
+                {"key_id": key_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
     def schedule_key_deletion(
         self,
         key_id: str,
@@ -401,6 +621,24 @@ class KmsService:
                 "kms",
                 "https://kms.{region}.basaltic.sh",
                 _OPS["scheduleKeyDeletion"],
+                "json",
+                {"key_id": key_id},
+                body,
+                None,
+                options,
+            ),
+        )
+
+    def set_key_rotation(
+        self, key_id: str, body: m.SetKeyRotationBody, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.SetKeyRotationResponse]:
+        "Configure automatic key rotation"
+        return cast(
+            ApiResponse[m.SetKeyRotationResponse],
+            self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["setKeyRotation"],
                 "json",
                 {"key_id": key_id},
                 body,
@@ -637,6 +875,102 @@ class AsyncKmsService:
             ),
         )
 
+    async def get_key_rotation(
+        self, key_id: str, rotation_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.GetKeyRotationResponse]:
+        "Get a key rotation"
+        return cast(
+            ApiResponse[m.GetKeyRotationResponse],
+            await self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["getKeyRotation"],
+                "json",
+                {"key_id": key_id, "rotation_id": rotation_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    async def get_key_rotation_status(
+        self, key_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.GetKeyRotationStatusResponse]:
+        "Get key rotation status"
+        return cast(
+            ApiResponse[m.GetKeyRotationStatusResponse],
+            await self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["getKeyRotationStatus"],
+                "json",
+                {"key_id": key_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    async def get_public_key(
+        self,
+        key_id: str,
+        *,
+        query: m.GetPublicKeyQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.GetPublicKeyResponse]:
+        "Get a versioned public key"
+        return cast(
+            ApiResponse[m.GetPublicKeyResponse],
+            await self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["getPublicKey"],
+                "json",
+                {"key_id": key_id},
+                UNSET,
+                query,
+                options,
+            ),
+        )
+
+    async def list_key_rotations(
+        self,
+        key_id: str,
+        *,
+        query: m.ListKeyRotationsQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Page[m.ListKeyRotationsResponse, m.ListKeyRotationsItem]:
+        "List key rotation history"
+        return cast(
+            Page[m.ListKeyRotationsResponse, m.ListKeyRotationsItem],
+            await self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["listKeyRotations"],
+                "page",
+                {"key_id": key_id},
+                UNSET,
+                query,
+                options,
+            ),
+        )
+
+    def list_key_rotations_all(
+        self,
+        key_id: str,
+        *,
+        query: m.ListKeyRotationsQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> AsyncIterator[m.ListKeyRotationsItem]:
+        return aiterate_pages(
+            lambda marker: self.list_key_rotations(
+                key_id,
+                query=cast(m.ListKeyRotationsQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
+        )
+
     async def list_keys(
         self, *, query: m.ListKeysQuery | None = None, options: RequestOptions | None = None
     ) -> Page[m.ListKeysResponse, m.ListKeysItem]:
@@ -665,6 +999,42 @@ class AsyncKmsService:
             (query or {}).get("marker", ""),
         )
 
+    async def rewrap(
+        self, key_id: str, body: m.RewrapBody, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.RewrapResponse]:
+        "Rewrap ciphertext with current key material"
+        return cast(
+            ApiResponse[m.RewrapResponse],
+            await self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["rewrap"],
+                "json",
+                {"key_id": key_id},
+                body,
+                None,
+                options,
+            ),
+        )
+
+    async def rotate_key_on_demand(
+        self, key_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.RotateKeyOnDemandResponse]:
+        "Rotate key material now"
+        return cast(
+            ApiResponse[m.RotateKeyOnDemandResponse],
+            await self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["rotateKeyOnDemand"],
+                "json",
+                {"key_id": key_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
     async def schedule_key_deletion(
         self,
         key_id: str,
@@ -679,6 +1049,24 @@ class AsyncKmsService:
                 "kms",
                 "https://kms.{region}.basaltic.sh",
                 _OPS["scheduleKeyDeletion"],
+                "json",
+                {"key_id": key_id},
+                body,
+                None,
+                options,
+            ),
+        )
+
+    async def set_key_rotation(
+        self, key_id: str, body: m.SetKeyRotationBody, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.SetKeyRotationResponse]:
+        "Configure automatic key rotation"
+        return cast(
+            ApiResponse[m.SetKeyRotationResponse],
+            await self._transport.request(
+                "kms",
+                "https://kms.{region}.basaltic.sh",
+                _OPS["setKeyRotation"],
                 "json",
                 {"key_id": key_id},
                 body,

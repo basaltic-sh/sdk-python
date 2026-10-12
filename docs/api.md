@@ -145,6 +145,16 @@ Save organization billing details
 def update_billing_profile(self, body: m.UpdateBillingProfileBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateBillingProfileResponse]:
 ```
 
+## `catalog.get_country`
+
+Get a country and its address rules
+
+`GET /v1/countries/{country}`
+
+```python
+def get_country(self, country: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetCountryResponse]:
+```
+
 ## `catalog.get_region`
 
 Get a region
@@ -155,6 +165,26 @@ Get a region
 def get_region(self, code: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetRegionResponse]:
 ```
 
+## `catalog.list_cities`
+
+List cities
+
+`GET /v1/cities`
+
+```python
+def list_cities(self, *, query: m.ListCitiesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListCitiesResponse, m.ListCitiesItem]:
+```
+
+## `catalog.list_countries`
+
+List countries
+
+`GET /v1/countries`
+
+```python
+def list_countries(self, *, options: RequestOptions | None = None) -> Page[m.ListCountriesResponse, m.ListCountriesItem]:
+```
+
 ## `catalog.list_regions`
 
 List regions
@@ -163,6 +193,26 @@ List regions
 
 ```python
 def list_regions(self, *, query: m.ListRegionsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListRegionsResponse, m.ListRegionsItem]:
+```
+
+## `catalog.list_states`
+
+List a country's states
+
+`GET /v1/states`
+
+```python
+def list_states(self, *, query: m.ListStatesQuery, options: RequestOptions | None = None) -> Page[m.ListStatesResponse, m.ListStatesItem]:
+```
+
+## `catalog.lookup_postal_code`
+
+Look up a postal code
+
+`GET /v1/postal-codes/{code}`
+
+```python
+def lookup_postal_code(self, code: str, *, query: m.LookupPostalCodeQuery, options: RequestOptions | None = None) -> ApiResponse[m.LookupPostalCodeResponse]:
 ```
 
 ## `certificate.create_certificate`
@@ -1445,6 +1495,46 @@ Get a KMS key
 def get_key(self, key_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetKeyResponse]:
 ```
 
+## `kms.get_key_rotation`
+
+Get a key rotation
+
+`GET /v1/keys/{key_id}/rotations/{rotation_id}`
+
+```python
+def get_key_rotation(self, key_id: str, rotation_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetKeyRotationResponse]:
+```
+
+## `kms.get_key_rotation_status`
+
+Get key rotation status
+
+`GET /v1/keys/{key_id}/rotation`
+
+```python
+def get_key_rotation_status(self, key_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetKeyRotationStatusResponse]:
+```
+
+## `kms.get_public_key`
+
+Get a versioned public key
+
+`GET /v1/keys/{key_id}/public-key`
+
+```python
+def get_public_key(self, key_id: str, *, query: m.GetPublicKeyQuery | None = None, options: RequestOptions | None = None) -> ApiResponse[m.GetPublicKeyResponse]:
+```
+
+## `kms.list_key_rotations`
+
+List key rotation history
+
+`GET /v1/keys/{key_id}/rotations`
+
+```python
+def list_key_rotations(self, key_id: str, *, query: m.ListKeyRotationsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListKeyRotationsResponse, m.ListKeyRotationsItem]:
+```
+
 ## `kms.list_keys`
 
 List KMS keys
@@ -1455,6 +1545,26 @@ List KMS keys
 def list_keys(self, *, query: m.ListKeysQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListKeysResponse, m.ListKeysItem]:
 ```
 
+## `kms.rewrap`
+
+Rewrap ciphertext with current key material
+
+`POST /v1/keys/{key_id}/rewrap`
+
+```python
+def rewrap(self, key_id: str, body: m.RewrapBody, *, options: RequestOptions | None = None) -> ApiResponse[m.RewrapResponse]:
+```
+
+## `kms.rotate_key_on_demand`
+
+Rotate key material now
+
+`POST /v1/keys/{key_id}/rotate`
+
+```python
+def rotate_key_on_demand(self, key_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.RotateKeyOnDemandResponse]:
+```
+
 ## `kms.schedule_key_deletion`
 
 Schedule key for deletion
@@ -1463,6 +1573,16 @@ Schedule key for deletion
 
 ```python
 def schedule_key_deletion(self, key_id: str, body: m.ScheduleKeyDeletionBody | Unset = UNSET, *, options: RequestOptions | None = None) -> ApiResponse[m.ScheduleKeyDeletionResponse]:
+```
+
+## `kms.set_key_rotation`
+
+Configure automatic key rotation
+
+`PUT /v1/keys/{key_id}/rotation`
+
+```python
+def set_key_rotation(self, key_id: str, body: m.SetKeyRotationBody, *, options: RequestOptions | None = None) -> ApiResponse[m.SetKeyRotationResponse]:
 ```
 
 ## `kms.sign`
