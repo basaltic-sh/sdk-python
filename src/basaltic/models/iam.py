@@ -56,14 +56,12 @@ AssumeRoleWithWebIdentityRequestInput = TypedDict(
     "AssumeRoleWithWebIdentityRequestInput",
     {
         "web_identity_token": "Required[str]",
-        "role": "Required[RoleReferenceInput]",
-        "account": "Required[AccountReferenceInput]",
+        "role": "Required[str]",
         "session_name": "NotRequired[str]",
         "duration_seconds": "NotRequired[int]",
     },
     total=False,
 )
-AccountReferenceInput: TypeAlias = "str"
 AssumeRoleWithWebIdentityBody: TypeAlias = "AssumeRoleWithWebIdentityRequestInput"
 AssumeRoleWithWebIdentityResponse: TypeAlias = "AssumeRoleResponse2"
 RolePolicyAttachRequestInput = TypedDict(
@@ -95,6 +93,38 @@ OAuthAuthorizeResponse = TypedDict(
     total=False,
 )
 AuthorizeOAuthClientResponse: TypeAlias = "OAuthAuthorizeResponse"
+OIDCProviderCreateRequestInput = TypedDict(
+    "OIDCProviderCreateRequestInput",
+    {
+        "name": "Required[str]",
+        "description": "NotRequired[str]",
+        "issuer": "Required[str]",
+        "audiences": "Required[list[str]]",
+        "tags": "NotRequired[dict[str, str]]",
+    },
+    total=False,
+)
+CreateOIDCProviderBody: TypeAlias = "OIDCProviderCreateRequestInput"
+OIDCProviderResponse = TypedDict(
+    "OIDCProviderResponse", {"oidc_provider": "Required[OIDCProvider]"}, total=False
+)
+OIDCProvider = TypedDict(
+    "OIDCProvider",
+    {
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
+        "description": "NotRequired[str]",
+        "issuer": "Required[str]",
+        "audiences": "Required[list[str]]",
+        "is_system": "Required[bool]",
+        "tags": "Required[dict[str, str]]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+    },
+    total=False,
+)
+CreateOIDCProviderResponse: TypeAlias = "OIDCProviderResponse"
 SSHKeyCreateRequestInput = TypedDict(
     "SSHKeyCreateRequestInput",
     {"name": "Required[str]", "public_key": "Required[str]", "expires_at": "NotRequired[str]"},
@@ -175,8 +205,6 @@ Policy = TypedDict(
         "document": "NotRequired[PolicyDocument]",
         "created_at": "NotRequired[str]",
         "updated_at": "NotRequired[str]",
-        "account_id": "NotRequired[str]",
-        "account_handle": "NotRequired[str]",
     },
     total=False,
 )
@@ -241,10 +269,7 @@ Role = TypedDict(
         "trust_policy": "NotRequired[TrustPolicy]",
         "created_at": "NotRequired[str]",
         "updated_at": "NotRequired[str]",
-        "account_id": "NotRequired[str]",
-        "account_handle": "NotRequired[str]",
         "is_system": "NotRequired[bool]",
-        "builtin_kind": "NotRequired[Literal['administrator', 'readonly']]",
     },
     total=False,
 )
@@ -269,14 +294,12 @@ ServiceAccount = TypedDict(
         "linux_identity": "NotRequired[LinuxIdentity]",
         "id": "NotRequired[str]",
         "crn": "NotRequired[str]",
-        "account_id": "NotRequired[str]",
         "name": "NotRequired[str]",
         "description": "NotRequired[str]",
         "tags": "NotRequired[Tags]",
         "enabled": "NotRequired[bool]",
         "created_at": "NotRequired[str]",
         "updated_at": "NotRequired[str]",
-        "account_handle": "NotRequired[str]",
     },
     total=False,
 )
@@ -347,6 +370,9 @@ OAuthTokenResponse = TypedDict(
     total=False,
 )
 GetOAuthTokenResponse: TypeAlias = "OAuthTokenResponse"
+GetOIDCProviderResponse: TypeAlias = "OIDCProviderResponse"
+GetOIDCProviderResource: TypeAlias = "OIDCProvider"
+GetOIDCProviderScope = TypedDict("GetOIDCProviderScope", {"limit": "NotRequired[int]"}, total=False)
 GetPersonalLinuxIdentityResult = TypedDict(
     "GetPersonalLinuxIdentityResult", {"linux_identity": "Required[LinuxIdentity]"}, total=False
 )
@@ -367,8 +393,6 @@ InlinePolicy = TypedDict(
     {
         "crn": "Required[str]",
         "id": "NotRequired[str]",
-        "principal_id": "NotRequired[str]",
-        "principal_type": "NotRequired[Literal['service_account', 'role']]",
         "name": "NotRequired[str]",
         "document": "NotRequired[PolicyDocument]",
         "created_at": "NotRequired[str]",
@@ -380,50 +404,39 @@ GetRoleInlinePolicyResponse: TypeAlias = "InlinePolicyResponse"
 GetRoleInlinePolicyResource: TypeAlias = "InlinePolicy"
 GetRoleInlinePolicyScope = TypedDict("GetRoleInlinePolicyScope", {}, total=False)
 PermissionBoundaryResponse = TypedDict(
-    "PermissionBoundaryResponse",
-    {"permission_boundary": "NotRequired[PermissionBoundary]"},
-    total=False,
-)
-PermissionBoundary = TypedDict(
-    "PermissionBoundary",
-    {
-        "principal_id": "NotRequired[str]",
-        "principal_type": "NotRequired[Literal['service_account', 'role']]",
-        "policy_id": "NotRequired[str]",
-        "policy_name": "NotRequired[str]",
-        "created_at": "NotRequired[str]",
-    },
-    total=False,
+    "PermissionBoundaryResponse", {"policy": "Required[Policy]"}, total=False
 )
 GetRolePermissionBoundaryResponse: TypeAlias = "PermissionBoundaryResponse"
 STSSessionResponse = TypedDict(
-    "STSSessionResponse", {"sts_session": "NotRequired[STSSession]"}, total=False
+    "STSSessionResponse", {"sts_session": "Required[STSSession]"}, total=False
 )
 STSSession = TypedDict(
     "STSSession",
     {
-        "id": "NotRequired[str]",
-        "role_id": "NotRequired[str]",
-        "principal_id": "NotRequired[str]",
-        "principal_type": "NotRequired[Literal['user', 'service_account', 'assumed_role']]",
+        "id": "Required[str]",
         "session_name": "NotRequired[str | None]",
-        "created_at": "NotRequired[str]",
-        "expires_at": "NotRequired[str]",
+        "created_at": "Required[str]",
+        "expires_at": "Required[str]",
         "last_used_at": "NotRequired[str | None]",
-        "revoked": "NotRequired[bool]",
+        "revoked": "Required[bool]",
         "revoked_at": "NotRequired[str | None]",
         "revoked_reason": "NotRequired[str | None]",
         "source_ip": "NotRequired[str | None]",
         "user_agent": "NotRequired[str | None]",
-        "account_id": "NotRequired[str]",
-        "account_handle": "NotRequired[str]",
-        "source_account_id": "NotRequired[str | None]",
-        "source_principal_type": "NotRequired[str | None]",
-        "source_principal_crn": "NotRequired[str | None]",
-        "parent_session_id": "NotRequired[str | None]",
         "grant_type": "NotRequired[str]",
-        "crn": "NotRequired[str]",
+        "crn": "Required[str]",
+        "role": "NotRequired[ResourceRef]",
+        "source_principal": "NotRequired[ResourceRef]",
+        "source_account": "NotRequired[ResourceRef]",
+        "parent_session": "NotRequired[ResourceRef]",
+        "identity_provider": "NotRequired[ResourceRef]",
+        "subject": "NotRequired[str]",
     },
+    total=False,
+)
+ResourceRef = TypedDict(
+    "ResourceRef",
+    {"id": "Required[str]", "crn": "Required[str]", "name": "NotRequired[str]"},
     total=False,
 )
 GetSTSSessionResponse: TypeAlias = "STSSessionResponse"
@@ -459,6 +472,34 @@ GetServiceAccountLinuxIdentityResult = TypedDict(
 )
 GetServiceAccountLinuxIdentityResponse: TypeAlias = "GetServiceAccountLinuxIdentityResult"
 GetServiceAccountPermissionBoundaryResponse: TypeAlias = "PermissionBoundaryResponse"
+ListOIDCProvidersParameters = TypedDict(
+    "ListOIDCProvidersParameters",
+    {
+        "name": "NotRequired[str]",
+        "crn": "NotRequired[str]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+    },
+    total=False,
+)
+ListOIDCProvidersQuery: TypeAlias = "ListOIDCProvidersParameters"
+OIDCProviderListResponse = TypedDict(
+    "OIDCProviderListResponse",
+    {"oidc_providers": "Required[list[OIDCProvider]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+PaginationMeta = TypedDict(
+    "PaginationMeta",
+    {
+        "total": "NotRequired[int]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+        "has_more": "NotRequired[bool]",
+    },
+    total=False,
+)
+ListOIDCProvidersResponse: TypeAlias = "OIDCProviderListResponse"
+ListOIDCProvidersItem: TypeAlias = "OIDCProvider"
 ListPersonalSSHKeysResult = TypedDict(
     "ListPersonalSSHKeysResult", {"ssh_keys": "Required[list[SSHKey]]"}, total=False
 )
@@ -480,16 +521,6 @@ PolicyListResponse = TypedDict(
     {"policies": "NotRequired[list[Policy]]", "meta": "NotRequired[PaginationMeta]"},
     total=False,
 )
-PaginationMeta = TypedDict(
-    "PaginationMeta",
-    {
-        "total": "NotRequired[int]",
-        "limit": "NotRequired[int]",
-        "marker": "NotRequired[str]",
-        "has_more": "NotRequired[bool]",
-    },
-    total=False,
-)
 ListPoliciesResponse: TypeAlias = "PolicyListResponse"
 ListPoliciesItem: TypeAlias = "Policy"
 ListPolicyRolesParameters = TypedDict(
@@ -505,7 +536,7 @@ ListPolicyRolesParameters = TypedDict(
 ListPolicyRolesQuery: TypeAlias = "ListPolicyRolesParameters"
 PolicyRolesListResponse = TypedDict(
     "PolicyRolesListResponse",
-    {"roles": "NotRequired[list[Role]]", "meta": "NotRequired[PaginationMeta]"},
+    {"roles": "Required[list[Role]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListPolicyRolesResponse: TypeAlias = "PolicyRolesListResponse"
@@ -523,38 +554,11 @@ ListPolicyServiceAccountsParameters = TypedDict(
 ListPolicyServiceAccountsQuery: TypeAlias = "ListPolicyServiceAccountsParameters"
 PolicyServiceAccountsListResponse = TypedDict(
     "PolicyServiceAccountsListResponse",
-    {
-        "service_accounts": "NotRequired[list[ServiceAccount]]",
-        "meta": "NotRequired[PaginationMeta]",
-    },
+    {"service_accounts": "Required[list[ServiceAccount]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListPolicyServiceAccountsResponse: TypeAlias = "PolicyServiceAccountsListResponse"
 ListPolicyServiceAccountsItem: TypeAlias = "ServiceAccount"
-ListRegionsParameters = TypedDict(
-    "ListRegionsParameters", {"name": "NotRequired[str]", "crn": "NotRequired[str]"}, total=False
-)
-ListRegionsQuery: TypeAlias = "ListRegionsParameters"
-ListRegionsResult = TypedDict(
-    "ListRegionsResult",
-    {"regions": "Required[list[Region]]", "default": "Required[str]"},
-    total=False,
-)
-Region = TypedDict(
-    "Region",
-    {
-        "crn": "Required[str]",
-        "code": "Required[str]",
-        "name": "Required[str]",
-        "location": "Required[str]",
-        "country_code": "Required[str]",
-        "available": "Required[bool]",
-        "coming_soon": "Required[bool]",
-    },
-    total=False,
-)
-ListRegionsResponse: TypeAlias = "ListRegionsResult"
-ListRegionsItem: TypeAlias = "Region"
 ListRoleInlinePoliciesParameters = TypedDict(
     "ListRoleInlinePoliciesParameters",
     {"name": "NotRequired[str]", "crn": "NotRequired[str]"},
@@ -612,7 +616,7 @@ ListSTSSessionsParameters = TypedDict(
 ListSTSSessionsQuery: TypeAlias = "ListSTSSessionsParameters"
 STSSessionListResponse = TypedDict(
     "STSSessionListResponse",
-    {"sts_sessions": "NotRequired[list[STSSession]]", "meta": "NotRequired[PaginationMeta]"},
+    {"sts_sessions": "Required[list[STSSession]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListSTSSessionsResponse: TypeAlias = "STSSessionListResponse"
@@ -696,6 +700,17 @@ SetBoundaryRequestInput = TypedDict(
 )
 SetRolePermissionBoundaryBody: TypeAlias = "SetBoundaryRequestInput"
 SetServiceAccountPermissionBoundaryBody: TypeAlias = "SetBoundaryRequestInput"
+OIDCProviderUpdateRequestInput = TypedDict(
+    "OIDCProviderUpdateRequestInput",
+    {
+        "description": "NotRequired[str]",
+        "audiences": "NotRequired[list[str]]",
+        "tags": "NotRequired[dict[str, str]]",
+    },
+    total=False,
+)
+UpdateOIDCProviderBody: TypeAlias = "OIDCProviderUpdateRequestInput"
+UpdateOIDCProviderResponse: TypeAlias = "OIDCProviderResponse"
 PolicyUpdateRequestInput = TypedDict(
     "PolicyUpdateRequestInput",
     {

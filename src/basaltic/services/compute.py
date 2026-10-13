@@ -22,10 +22,10 @@ from ..response import (
 )
 
 _OPS = {
-    "attachInstanceNIC": Operation(
-        id="attachInstanceNIC",
+    "attachInstanceInterface": Operation(
+        id="attachInstanceInterface",
         method="POST",
-        path="/v1/instances/{instance_id}/nics",
+        path="/v1/instances/{instance_id}/interfaces",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -142,10 +142,10 @@ _OPS = {
         contentType="",
         accept="application/json",
     ),
-    "detachInstanceNIC": Operation(
-        id="detachInstanceNIC",
+    "detachInstanceInterface": Operation(
+        id="detachInstanceInterface",
         method="DELETE",
-        path="/v1/instances/{instance_id}/nics/{interface_id}",
+        path="/v1/instances/{instance_id}/interfaces/{interface_id}",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -308,10 +308,10 @@ _OPS = {
         accept="application/json",
         itemsKey="images",
     ),
-    "listInstanceNICs": Operation(
-        id="listInstanceNICs",
+    "listInstanceInterfaces": Operation(
+        id="listInstanceInterfaces",
         method="GET",
-        path="/v1/instances/{instance_id}/nics",
+        path="/v1/instances/{instance_id}/interfaces",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -322,7 +322,7 @@ _OPS = {
         bodyRequired=False,
         contentType="",
         accept="application/json",
-        itemsKey="nics",
+        itemsKey="interfaces",
     ),
     "listInstancePoolFloatingIps": Operation(
         id="listInstancePoolFloatingIps",
@@ -374,7 +374,7 @@ _OPS = {
         bodyRequired=False,
         contentType="",
         accept="application/json",
-        itemsKey="attachments",
+        itemsKey="volumes",
     ),
     "listInstances": Operation(
         id="listInstances",
@@ -557,20 +557,20 @@ class ComputeService:
     def __init__(self, transport: SyncTransport) -> None:
         self._transport = transport
 
-    def attach_instance_nic(
+    def attach_instance_interface(
         self,
         instance_id: str,
-        body: m.AttachInstanceNICBody,
+        body: m.AttachInstanceInterfaceBody,
         *,
         options: RequestOptions | None = None,
-    ) -> ApiResponse[m.AttachInstanceNICResponse]:
+    ) -> ApiResponse[m.AttachInstanceInterfaceResponse]:
         "Attach an existing NIC to an instance"
         return cast(
-            ApiResponse[m.AttachInstanceNICResponse],
+            ApiResponse[m.AttachInstanceInterfaceResponse],
             self._transport.request(
                 "compute",
                 "https://compute.{region}.basaltic.sh",
-                _OPS["attachInstanceNIC"],
+                _OPS["attachInstanceInterface"],
                 "json",
                 {"instance_id": instance_id},
                 body,
@@ -745,16 +745,16 @@ class ComputeService:
             ),
         )
 
-    def detach_instance_nic(
+    def detach_instance_interface(
         self, instance_id: str, interface_id: str, *, options: RequestOptions | None = None
     ) -> None:
-        "Detach a NIC from a running instance"
+        "Detach an interface from a running instance"
         return cast(
             None,
             self._transport.request(
                 "compute",
                 "https://compute.{region}.basaltic.sh",
-                _OPS["detachInstanceNIC"],
+                _OPS["detachInstanceInterface"],
                 "discard",
                 {"instance_id": instance_id, "interface_id": interface_id},
                 UNSET,
@@ -1074,20 +1074,20 @@ class ComputeService:
             (query or {}).get("marker", ""),
         )
 
-    def list_instance_ni_cs(
+    def list_instance_interfaces(
         self,
         instance_id: str,
         *,
-        query: m.ListInstanceNICsQuery | None = None,
+        query: m.ListInstanceInterfacesQuery | None = None,
         options: RequestOptions | None = None,
-    ) -> Page[m.ListInstanceNICsResponse, m.ListInstanceNICsItem]:
+    ) -> Page[m.ListInstanceInterfacesResponse, m.ListInstanceInterfacesItem]:
         "List the instance's network interfaces"
         return cast(
-            Page[m.ListInstanceNICsResponse, m.ListInstanceNICsItem],
+            Page[m.ListInstanceInterfacesResponse, m.ListInstanceInterfacesItem],
             self._transport.request(
                 "compute",
                 "https://compute.{region}.basaltic.sh",
-                _OPS["listInstanceNICs"],
+                _OPS["listInstanceInterfaces"],
                 "page",
                 {"instance_id": instance_id},
                 UNSET,
@@ -1474,20 +1474,20 @@ class AsyncComputeService:
     def __init__(self, transport: AsyncTransport) -> None:
         self._transport = transport
 
-    async def attach_instance_nic(
+    async def attach_instance_interface(
         self,
         instance_id: str,
-        body: m.AttachInstanceNICBody,
+        body: m.AttachInstanceInterfaceBody,
         *,
         options: RequestOptions | None = None,
-    ) -> ApiResponse[m.AttachInstanceNICResponse]:
+    ) -> ApiResponse[m.AttachInstanceInterfaceResponse]:
         "Attach an existing NIC to an instance"
         return cast(
-            ApiResponse[m.AttachInstanceNICResponse],
+            ApiResponse[m.AttachInstanceInterfaceResponse],
             await self._transport.request(
                 "compute",
                 "https://compute.{region}.basaltic.sh",
-                _OPS["attachInstanceNIC"],
+                _OPS["attachInstanceInterface"],
                 "json",
                 {"instance_id": instance_id},
                 body,
@@ -1666,16 +1666,16 @@ class AsyncComputeService:
             ),
         )
 
-    async def detach_instance_nic(
+    async def detach_instance_interface(
         self, instance_id: str, interface_id: str, *, options: RequestOptions | None = None
     ) -> None:
-        "Detach a NIC from a running instance"
+        "Detach an interface from a running instance"
         return cast(
             None,
             await self._transport.request(
                 "compute",
                 "https://compute.{region}.basaltic.sh",
-                _OPS["detachInstanceNIC"],
+                _OPS["detachInstanceInterface"],
                 "discard",
                 {"instance_id": instance_id, "interface_id": interface_id},
                 UNSET,
@@ -1995,20 +1995,20 @@ class AsyncComputeService:
             (query or {}).get("marker", ""),
         )
 
-    async def list_instance_ni_cs(
+    async def list_instance_interfaces(
         self,
         instance_id: str,
         *,
-        query: m.ListInstanceNICsQuery | None = None,
+        query: m.ListInstanceInterfacesQuery | None = None,
         options: RequestOptions | None = None,
-    ) -> Page[m.ListInstanceNICsResponse, m.ListInstanceNICsItem]:
+    ) -> Page[m.ListInstanceInterfacesResponse, m.ListInstanceInterfacesItem]:
         "List the instance's network interfaces"
         return cast(
-            Page[m.ListInstanceNICsResponse, m.ListInstanceNICsItem],
+            Page[m.ListInstanceInterfacesResponse, m.ListInstanceInterfacesItem],
             await self._transport.request(
                 "compute",
                 "https://compute.{region}.basaltic.sh",
-                _OPS["listInstanceNICs"],
+                _OPS["listInstanceInterfaces"],
                 "page",
                 {"instance_id": instance_id},
                 UNSET,

@@ -27,8 +27,7 @@ Secret = TypedDict(
         "description": "NotRequired[str]",
         "tags": "NotRequired[Tags]",
         "crn": "Required[str]",
-        "kms_key_unavailable": "NotRequired[bool]",
-        "kms_key_crn": "NotRequired[str | None]",
+        "kms_key": "NotRequired[ResourceRef]",
         "managed": "Required[bool]",
         "deleted_at": "NotRequired[str | None]",
         "scheduled_purge_at": "NotRequired[str | None]",
@@ -40,6 +39,11 @@ Secret = TypedDict(
     total=False,
 )
 Tags: TypeAlias = "dict[str, str]"
+ResourceRef = TypedDict(
+    "ResourceRef",
+    {"id": "Required[str]", "crn": "Required[str]", "name": "NotRequired[str]"},
+    total=False,
+)
 CreateSecretResponse: TypeAlias = "SecretResponse"
 DeleteSecretRequestInput = TypedDict(
     "DeleteSecretRequestInput", {"recovery_window_days": "NotRequired[int]"}, total=False
@@ -57,7 +61,6 @@ SecretValueResponse = TypedDict(
 SecretValue = TypedDict(
     "SecretValue",
     {
-        "secret_id": "Required[str]",
         "name": "Required[str]",
         "version": "Required[int]",
         "value": "Required[str]",
@@ -113,7 +116,6 @@ SecretVersion = TypedDict(
         "id": "Required[str]",
         "version": "Required[int]",
         "is_current": "Required[bool]",
-        "created_by": "NotRequired[str]",
         "created_at": "Required[str]",
     },
     total=False,

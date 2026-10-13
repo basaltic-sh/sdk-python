@@ -106,11 +106,15 @@ _OPS = {
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
-        queryEncoding={"invoice": {"style": "form", "explode": True}},
+        queryEncoding={
+            "invoice": {"style": "form", "explode": True},
+            "limit": {"style": "form", "explode": True},
+            "marker": {"style": "form", "explode": True},
+        },
         bodyRequired=False,
         contentType="",
         accept="application/json",
-        itemsKey="fiscal_documents",
+        itemsKey="fiscal_invoices",
     ),
     "listInvoices": Operation(
         id="listInvoices",
@@ -292,7 +296,7 @@ class BillingService:
                     options=options,
                 ),
                 False,
-                None,
+                "invoice",
             ),
         )
 
@@ -348,7 +352,7 @@ class BillingService:
         query: m.ListFiscalInvoicesQuery | None = None,
         options: RequestOptions | None = None,
     ) -> Page[m.ListFiscalInvoicesResponse, m.ListFiscalInvoicesItem]:
-        "List fiscal invoice issuance and delivery status"
+        "List issued fiscal invoices"
         return cast(
             Page[m.ListFiscalInvoicesResponse, m.ListFiscalInvoicesItem],
             self._transport.request(
@@ -361,6 +365,20 @@ class BillingService:
                 query,
                 options,
             ),
+        )
+
+    def list_fiscal_invoices_all(
+        self,
+        *,
+        query: m.ListFiscalInvoicesQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Iterator[m.ListFiscalInvoicesItem]:
+        return iterate_pages(
+            lambda marker: self.list_fiscal_invoices(
+                query=cast(m.ListFiscalInvoicesQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
         )
 
     def list_invoices(
@@ -582,7 +600,7 @@ class AsyncBillingService:
                     options=options,
                 ),
                 False,
-                None,
+                "invoice",
             ),
         )
 
@@ -638,7 +656,7 @@ class AsyncBillingService:
         query: m.ListFiscalInvoicesQuery | None = None,
         options: RequestOptions | None = None,
     ) -> Page[m.ListFiscalInvoicesResponse, m.ListFiscalInvoicesItem]:
-        "List fiscal invoice issuance and delivery status"
+        "List issued fiscal invoices"
         return cast(
             Page[m.ListFiscalInvoicesResponse, m.ListFiscalInvoicesItem],
             await self._transport.request(
@@ -651,6 +669,20 @@ class AsyncBillingService:
                 query,
                 options,
             ),
+        )
+
+    def list_fiscal_invoices_all(
+        self,
+        *,
+        query: m.ListFiscalInvoicesQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> AsyncIterator[m.ListFiscalInvoicesItem]:
+        return aiterate_pages(
+            lambda marker: self.list_fiscal_invoices(
+                query=cast(m.ListFiscalInvoicesQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
         )
 
     async def list_invoices(

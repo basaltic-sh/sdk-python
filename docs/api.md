@@ -87,7 +87,7 @@ def list_credits(self, *, query: m.ListCreditsQuery | None = None, options: Requ
 
 ## `billing.list_fiscal_invoices`
 
-List fiscal invoice issuance and delivery status
+List issued fiscal invoices
 
 `GET /v1/fiscal-invoices`
 
@@ -145,16 +145,6 @@ Save organization billing details
 def update_billing_profile(self, body: m.UpdateBillingProfileBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateBillingProfileResponse]:
 ```
 
-## `catalog.get_country`
-
-Get a country and its address rules
-
-`GET /v1/countries/{country}`
-
-```python
-def get_country(self, country: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetCountryResponse]:
-```
-
 ## `catalog.get_region`
 
 Get a region
@@ -165,26 +155,6 @@ Get a region
 def get_region(self, code: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetRegionResponse]:
 ```
 
-## `catalog.list_cities`
-
-List cities
-
-`GET /v1/cities`
-
-```python
-def list_cities(self, *, query: m.ListCitiesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListCitiesResponse, m.ListCitiesItem]:
-```
-
-## `catalog.list_countries`
-
-List countries
-
-`GET /v1/countries`
-
-```python
-def list_countries(self, *, options: RequestOptions | None = None) -> Page[m.ListCountriesResponse, m.ListCountriesItem]:
-```
-
 ## `catalog.list_regions`
 
 List regions
@@ -193,26 +163,6 @@ List regions
 
 ```python
 def list_regions(self, *, query: m.ListRegionsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListRegionsResponse, m.ListRegionsItem]:
-```
-
-## `catalog.list_states`
-
-List a country's states
-
-`GET /v1/states`
-
-```python
-def list_states(self, *, query: m.ListStatesQuery, options: RequestOptions | None = None) -> Page[m.ListStatesResponse, m.ListStatesItem]:
-```
-
-## `catalog.lookup_postal_code`
-
-Look up a postal code
-
-`GET /v1/postal-codes/{code}`
-
-```python
-def lookup_postal_code(self, code: str, *, query: m.LookupPostalCodeQuery, options: RequestOptions | None = None) -> ApiResponse[m.LookupPostalCodeResponse]:
 ```
 
 ## `certificate.create_certificate`
@@ -275,14 +225,14 @@ Revoke certificate
 def revoke_certificate(self, certificate_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.RevokeCertificateResponse]:
 ```
 
-## `compute.attach_instance_nic`
+## `compute.attach_instance_interface`
 
 Attach an existing NIC to an instance
 
-`POST /v1/instances/{instance_id}/nics`
+`POST /v1/instances/{instance_id}/interfaces`
 
 ```python
-def attach_instance_nic(self, instance_id: str, body: m.AttachInstanceNICBody, *, options: RequestOptions | None = None) -> ApiResponse[m.AttachInstanceNICResponse]:
+def attach_instance_interface(self, instance_id: str, body: m.AttachInstanceInterfaceBody, *, options: RequestOptions | None = None) -> ApiResponse[m.AttachInstanceInterfaceResponse]:
 ```
 
 ## `compute.attach_instance_pool_floating_ip`
@@ -375,14 +325,14 @@ Delete an instance pool
 def delete_instance_pool(self, pool_id: str, *, options: RequestOptions | None = None) -> None:
 ```
 
-## `compute.detach_instance_nic`
+## `compute.detach_instance_interface`
 
-Detach a NIC from a running instance
+Detach an interface from a running instance
 
-`DELETE /v1/instances/{instance_id}/nics/{interface_id}`
+`DELETE /v1/instances/{instance_id}/interfaces/{interface_id}`
 
 ```python
-def detach_instance_nic(self, instance_id: str, interface_id: str, *, options: RequestOptions | None = None) -> None:
+def detach_instance_interface(self, instance_id: str, interface_id: str, *, options: RequestOptions | None = None) -> None:
 ```
 
 ## `compute.detach_instance_pool_floating_ip`
@@ -495,14 +445,14 @@ List images
 def list_images(self, *, query: m.ListImagesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListImagesResponse, m.ListImagesItem]:
 ```
 
-## `compute.list_instance_ni_cs`
+## `compute.list_instance_interfaces`
 
 List the instance's network interfaces
 
-`GET /v1/instances/{instance_id}/nics`
+`GET /v1/instances/{instance_id}/interfaces`
 
 ```python
-def list_instance_ni_cs(self, instance_id: str, *, query: m.ListInstanceNICsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListInstanceNICsResponse, m.ListInstanceNICsItem]:
+def list_instance_interfaces(self, instance_id: str, *, query: m.ListInstanceInterfacesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListInstanceInterfacesResponse, m.ListInstanceInterfacesItem]:
 ```
 
 ## `compute.list_instance_pool_floating_ips`
@@ -895,6 +845,16 @@ Approve a CLI login and issue an authorization code
 def authorize_oauth_client(self, body: m.AuthorizeOAuthClientBody, *, options: RequestOptions | None = None) -> ApiResponse[m.AuthorizeOAuthClientResponse]:
 ```
 
+## `iam.create_oidc_provider`
+
+Create an OIDC provider
+
+`POST /v1/oidc-providers`
+
+```python
+def create_oidc_provider(self, body: m.CreateOIDCProviderBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateOIDCProviderResponse]:
+```
+
 ## `iam.create_personal_ssh_key`
 
 Add personal SSH key
@@ -953,6 +913,16 @@ Add service-account SSH key
 
 ```python
 def create_service_account_ssh_key(self, service_account_id: str, body: m.CreateServiceAccountSSHKeyBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateServiceAccountSSHKeyResponse]:
+```
+
+## `iam.delete_oidc_provider`
+
+Delete an OIDC provider
+
+`DELETE /v1/oidc-providers/{provider_id}`
+
+```python
+def delete_oidc_provider(self, provider_id: str, *, options: RequestOptions | None = None) -> None:
 ```
 
 ## `iam.delete_personal_ssh_key`
@@ -1065,6 +1035,16 @@ Exchange an access key for a bearer token
 def get_oauth_token(self, body: m.GetOAuthTokenBody, *, options: RequestOptions | None = None) -> ApiResponse[m.GetOAuthTokenResponse]:
 ```
 
+## `iam.get_oidc_provider`
+
+Get an OIDC provider
+
+`GET /v1/oidc-providers/{provider_id}`
+
+```python
+def get_oidc_provider(self, provider_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetOIDCProviderResponse]:
+```
+
 ## `iam.get_personal_linux_identity`
 
 Get personal Linux identity
@@ -1165,6 +1145,16 @@ Get a service account's permission boundary
 def get_service_account_permission_boundary(self, service_account_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetServiceAccountPermissionBoundaryResponse]:
 ```
 
+## `iam.list_oidc_providers`
+
+List OIDC providers
+
+`GET /v1/oidc-providers`
+
+```python
+def list_oidc_providers(self, *, query: m.ListOIDCProvidersQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListOIDCProvidersResponse, m.ListOIDCProvidersItem]:
+```
+
 ## `iam.list_personal_ssh_keys`
 
 List personal SSH keys
@@ -1203,16 +1193,6 @@ List service accounts with policy
 
 ```python
 def list_policy_service_accounts(self, policy_id: str, *, query: m.ListPolicyServiceAccountsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListPolicyServiceAccountsResponse, m.ListPolicyServiceAccountsItem]:
-```
-
-## `iam.list_regions`
-
-List regions (legacy IAM)
-
-`GET /v1/regions`
-
-```python
-def list_regions(self, *, query: m.ListRegionsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListRegionsResponse, m.ListRegionsItem]:
 ```
 
 ## `iam.list_role_inline_policies`
@@ -1383,6 +1363,16 @@ Set a service account's permission boundary
 
 ```python
 def set_service_account_permission_boundary(self, service_account_id: str, body: m.SetServiceAccountPermissionBoundaryBody, *, options: RequestOptions | None = None) -> None:
+```
+
+## `iam.update_oidc_provider`
+
+Update an OIDC provider
+
+`PATCH /v1/oidc-providers/{provider_id}`
+
+```python
+def update_oidc_provider(self, provider_id: str, body: m.UpdateOIDCProviderBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateOIDCProviderResponse]:
 ```
 
 ## `iam.update_policy`
@@ -1785,6 +1775,16 @@ Get a target group
 def get_target_group(self, id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetTargetGroupResponse]:
 ```
 
+## `loadbalancer.list_listener_certificates`
+
+List listener certificates
+
+`GET /v1/load-balancers/{id}/listeners/{listener_id}/certificates`
+
+```python
+def list_listener_certificates(self, id: str, listener_id: str, *, options: RequestOptions | None = None) -> Page[m.ListListenerCertificatesResponse, m.ListListenerCertificatesItem]:
+```
+
 ## `loadbalancer.list_listeners`
 
 List this load balancer's listeners
@@ -1795,14 +1795,14 @@ List this load balancer's listeners
 def list_listeners(self, id: str, *, query: m.ListListenersQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListListenersResponse, m.ListListenersItem]:
 ```
 
-## `loadbalancer.list_load_balancer_replicas`
+## `loadbalancer.list_load_balancer_instances`
 
-List the LB's instance replicas with live health
+List a load balancer's instances
 
-`GET /v1/load-balancers/{id}/replicas`
+`GET /v1/load-balancers/{id}/instances`
 
 ```python
-def list_load_balancer_replicas(self, id: str, *, query: m.ListLoadBalancerReplicasQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListLoadBalancerReplicasResponse, m.ListLoadBalancerReplicasItem]:
+def list_load_balancer_instances(self, id: str, *, query: m.ListLoadBalancerInstancesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListLoadBalancerInstancesResponse, m.ListLoadBalancerInstancesItem]:
 ```
 
 ## `loadbalancer.list_load_balancers`
@@ -1847,7 +1847,7 @@ def list_targets(self, id: str, *, query: m.ListTargetsQuery | None = None, opti
 
 ## `loadbalancer.update_listener`
 
-Patch a listener (rotate cert, change default target group)
+Update a listener
 
 `PATCH /v1/load-balancers/{id}/listeners/{listener_id}`
 
@@ -1887,22 +1887,22 @@ def update_target_group(self, id: str, body: m.UpdateTargetGroupBody, *, options
 
 ## `network.attach_floating_ip`
 
-Attach a floating IP to an interface
+Attach an interface to a floating IP
 
-`POST /v1/floating-ips/{floating_ip_id}/attach`
+`POST /v1/floating-ips/{floating_ip_id}/interfaces`
 
 ```python
 def attach_floating_ip(self, floating_ip_id: str, body: m.AttachFloatingIpBody, *, options: RequestOptions | None = None) -> ApiResponse[m.AttachFloatingIpResponse]:
 ```
 
-## `network.attach_internet_gateway`
+## `network.attach_interface_security_group`
 
-Attach internet gateway to a VPC
+Attach a security group to an interface
 
-`POST /v1/internet-gateways/{internet_gateway_id}/attach`
+`POST /v1/interfaces/{interface_id}/security-groups`
 
 ```python
-def attach_internet_gateway(self, internet_gateway_id: str, body: m.AttachInternetGatewayBody, *, options: RequestOptions | None = None) -> ApiResponse[m.AttachInternetGatewayResponse]:
+def attach_interface_security_group(self, interface_id: str, body: m.AttachInterfaceSecurityGroupBody, *, options: RequestOptions | None = None) -> ApiResponse[m.AttachInterfaceSecurityGroupResponse]:
 ```
 
 ## `network.create_egress_only_gateway`
@@ -2187,22 +2187,52 @@ def delete_vpc(self, vpc_id: str, *, options: RequestOptions | None = None) -> N
 
 ## `network.detach_floating_ip`
 
-Detach a floating IP
+Detach all direct interfaces from a floating IP
 
-`POST /v1/floating-ips/{floating_ip_id}/detach`
+`DELETE /v1/floating-ips/{floating_ip_id}/interfaces`
 
 ```python
-def detach_floating_ip(self, floating_ip_id: str, body: m.DetachFloatingIpBody | Unset = UNSET, *, options: RequestOptions | None = None) -> ApiResponse[m.DetachFloatingIpResponse]:
+def detach_floating_ip(self, floating_ip_id: str, *, options: RequestOptions | None = None) -> None:
 ```
 
-## `network.detach_internet_gateway`
+## `network.detach_floating_ip_interface`
 
-Detach internet gateway from its VPC
+Detach an interface from a floating IP
 
-`POST /v1/internet-gateways/{internet_gateway_id}/detach`
+`DELETE /v1/floating-ips/{floating_ip_id}/interfaces/{interface_id}`
 
 ```python
-def detach_internet_gateway(self, internet_gateway_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DetachInternetGatewayResponse]:
+def detach_floating_ip_interface(self, floating_ip_id: str, interface_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `network.detach_interface_security_group`
+
+Detach a security group from an interface
+
+`DELETE /v1/interfaces/{interface_id}/security-groups/{security_group_id}`
+
+```python
+def detach_interface_security_group(self, interface_id: str, security_group_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `network.enable_subnet_i_pv6`
+
+Enable IPv6 on a subnet
+
+`POST /v1/subnets/{subnet_id}/ipv6`
+
+```python
+def enable_subnet_i_pv6(self, subnet_id: str, body: m.EnableSubnetIPv6Body, *, options: RequestOptions | None = None) -> ApiResponse[m.EnableSubnetIPv6Response]:
+```
+
+## `network.enable_vpci_pv6`
+
+Enable IPv6 on a vpc
+
+`POST /v1/vpcs/{vpc_id}/ipv6`
+
+```python
+def enable_vpci_pv6(self, vpc_id: str, body: m.EnableVPCIPv6Body, *, options: RequestOptions | None = None) -> ApiResponse[m.EnableVPCIPv6Response]:
 ```
 
 ## `network.get_egress_only_gateway`
@@ -2345,6 +2375,16 @@ List egress-only gateways
 def list_egress_only_gateways(self, *, query: m.ListEgressOnlyGatewaysQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListEgressOnlyGatewaysResponse, m.ListEgressOnlyGatewaysItem]:
 ```
 
+## `network.list_floating_ip_interfaces`
+
+List a floating IP’s interfaces
+
+`GET /v1/floating-ips/{floating_ip_id}/interfaces`
+
+```python
+def list_floating_ip_interfaces(self, floating_ip_id: str, *, query: m.ListFloatingIpInterfacesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListFloatingIpInterfacesResponse, m.ListFloatingIpInterfacesItem]:
+```
+
 ## `network.list_floating_ips`
 
 List floating IPs
@@ -2377,7 +2417,7 @@ def list_interface_prefixes(self, interface_id: str, *, options: RequestOptions 
 
 ## `network.list_interface_security_groups`
 
-List interface security-group membership
+List an interface’s security groups
 
 `GET /v1/interfaces/{interface_id}/security-groups`
 
@@ -2503,16 +2543,6 @@ List VPCs
 
 ```python
 def list_vpcs(self, *, query: m.ListVpcsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListVpcsResponse, m.ListVpcsItem]:
-```
-
-## `network.set_interface_security_groups`
-
-Set interface security-group membership
-
-`PUT /v1/interfaces/{interface_id}/security-groups`
-
-```python
-def set_interface_security_groups(self, interface_id: str, body: m.SetInterfaceSecurityGroupsBody, *, options: RequestOptions | None = None) -> ApiResponse[m.SetInterfaceSecurityGroupsResponse]:
 ```
 
 ## `network.update_egress_only_gateway`
@@ -2759,10 +2789,10 @@ def create_snapshot(self, body: m.CreateSnapshotBody, *, options: RequestOptions
 
 Create snapshot policy
 
-`POST /v1/snapshot-policies`
+`POST /v1/volumes/{volume_id}/snapshot-policies`
 
 ```python
-def create_snapshot_policy(self, body: m.CreateSnapshotPolicyBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateSnapshotPolicyResponse]:
+def create_snapshot_policy(self, volume_id: str, body: m.CreateSnapshotPolicyBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateSnapshotPolicyResponse]:
 ```
 
 ## `storage.create_volume`
@@ -2869,10 +2899,10 @@ def delete_snapshot(self, snapshot_id: str, *, options: RequestOptions | None = 
 
 Delete snapshot policy
 
-`DELETE /v1/snapshot-policies/{policy_id}`
+`DELETE /v1/volumes/{volume_id}/snapshot-policies/{policy_id}`
 
 ```python
-def delete_snapshot_policy(self, policy_id: str, *, options: RequestOptions | None = None) -> None:
+def delete_snapshot_policy(self, volume_id: str, policy_id: str, *, options: RequestOptions | None = None) -> None:
 ```
 
 ## `storage.delete_volume`
@@ -2989,10 +3019,10 @@ def get_snapshot(self, snapshot_id: str, *, options: RequestOptions | None = Non
 
 Get snapshot policy
 
-`GET /v1/snapshot-policies/{policy_id}`
+`GET /v1/volumes/{volume_id}/snapshot-policies/{policy_id}`
 
 ```python
-def get_snapshot_policy(self, policy_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetSnapshotPolicyResponse]:
+def get_snapshot_policy(self, volume_id: str, policy_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetSnapshotPolicyResponse]:
 ```
 
 ## `storage.get_volume`
@@ -3089,10 +3119,10 @@ def list_parts(self, bucket: str, upload_id: str, *, options: RequestOptions | N
 
 List snapshot policies
 
-`GET /v1/snapshot-policies`
+`GET /v1/volumes/{volume_id}/snapshot-policies`
 
 ```python
-def list_snapshot_policies(self, *, query: m.ListSnapshotPoliciesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListSnapshotPoliciesResponse, m.ListSnapshotPoliciesItem]:
+def list_snapshot_policies(self, volume_id: str, *, query: m.ListSnapshotPoliciesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListSnapshotPoliciesResponse, m.ListSnapshotPoliciesItem]:
 ```
 
 ## `storage.list_snapshots`
@@ -3239,10 +3269,10 @@ def update_snapshot(self, snapshot_id: str, body: m.UpdateSnapshotBody, *, optio
 
 Update snapshot policy
 
-`PATCH /v1/snapshot-policies/{policy_id}`
+`PATCH /v1/volumes/{volume_id}/snapshot-policies/{policy_id}`
 
 ```python
-def update_snapshot_policy(self, policy_id: str, body: m.UpdateSnapshotPolicyBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateSnapshotPolicyResponse]:
+def update_snapshot_policy(self, volume_id: str, policy_id: str, body: m.UpdateSnapshotPolicyBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateSnapshotPolicyResponse]:
 ```
 
 ## `storage.update_volume`
@@ -3329,7 +3359,7 @@ def get_log_group(self, id: str, *, options: RequestOptions | None = None) -> Ap
 
 Check retained telemetry presence
 
-`GET /v1/trace-settings/retained-data`
+`GET /v1/retained-data`
 
 ```python
 def get_retained_telemetry_presence(self, *, options: RequestOptions | None = None) -> ApiResponse[m.GetRetainedTelemetryPresenceResponse]:
@@ -3337,7 +3367,7 @@ def get_retained_telemetry_presence(self, *, options: RequestOptions | None = No
 
 ## `telemetry.get_trace`
 
-Get all spans for a trace
+Get a trace
 
 `GET /v1/traces/{trace_id}`
 
@@ -3387,7 +3417,7 @@ def list_log_groups(self, *, query: m.ListLogGroupsQuery | None = None, options:
 
 ## `telemetry.list_metric_names`
 
-List the distinct metric names emitted in a time window
+List metric names
 
 `GET /v1/metrics/names`
 
@@ -3397,47 +3427,47 @@ def list_metric_names(self, *, query: m.ListMetricNamesQuery, options: RequestOp
 
 ## `telemetry.list_metric_names_post`
 
-List the distinct metric names emitted in a time window (form body)
+List metric names (JSON)
 
 `POST /v1/metrics/names`
 
 ```python
-def list_metric_names_post(self, body: m.ListMetricNamesPostBody | Unset = UNSET, *, options: RequestOptions | None = None) -> ApiResponse[m.ListMetricNamesPostResponse]:
+def list_metric_names_post(self, body: m.ListMetricNamesPostBody, *, options: RequestOptions | None = None) -> ApiResponse[m.ListMetricNamesPostResponse]:
 ```
 
 ## `telemetry.list_metric_series`
 
-List distinct label sets for a metric
+List metric series
 
 `GET /v1/metrics/series`
 
 ```python
-def list_metric_series(self, *, query: m.ListMetricSeriesQuery, options: RequestOptions | None = None) -> ApiResponse[m.ListMetricSeriesResponse]:
+def list_metric_series(self, *, query: m.ListMetricSeriesQuery, options: RequestOptions | None = None) -> Page[m.ListMetricSeriesResponse, m.ListMetricSeriesItem]:
 ```
 
 ## `telemetry.list_metric_series_post`
 
-List distinct label sets for a metric (form body)
+List metric series (JSON)
 
 `POST /v1/metrics/series`
 
 ```python
-def list_metric_series_post(self, body: m.ListMetricSeriesPostBody | Unset = UNSET, *, options: RequestOptions | None = None) -> ApiResponse[m.ListMetricSeriesPostResponse]:
+def list_metric_series_post(self, body: m.ListMetricSeriesPostBody, *, options: RequestOptions | None = None) -> ApiResponse[m.ListMetricSeriesPostResponse]:
 ```
 
-## `telemetry.put_trace_settings`
+## `telemetry.list_trace_spans`
 
-Update the caller account's trace settings
+List spans in a trace
 
-`PUT /v1/trace-settings`
+`GET /v1/traces/{trace_id}/spans`
 
 ```python
-def put_trace_settings(self, body: m.PutTraceSettingsBody, *, options: RequestOptions | None = None) -> ApiResponse[m.PutTraceSettingsResponse]:
+def list_trace_spans(self, trace_id: str, *, query: m.ListTraceSpansQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListTraceSpansResponse, m.ListTraceSpansItem]:
 ```
 
 ## `telemetry.query_metrics_instant`
 
-Instant structured metric query
+Run an instant metric query
 
 `GET /v1/metrics/query`
 
@@ -3447,19 +3477,19 @@ def query_metrics_instant(self, *, query: m.QueryMetricsInstantQuery, options: R
 
 ## `telemetry.query_metrics_instant_post`
 
-Instant structured metric query (form body)
+Run an instant metric query (JSON)
 
 `POST /v1/metrics/query`
 
 ```python
-def query_metrics_instant_post(self, body: m.QueryMetricsInstantPostBody | Unset = UNSET, *, options: RequestOptions | None = None) -> ApiResponse[m.QueryMetricsInstantPostResponse]:
+def query_metrics_instant_post(self, body: m.QueryMetricsInstantPostBody, *, options: RequestOptions | None = None) -> ApiResponse[m.QueryMetricsInstantPostResponse]:
 ```
 
 ## `telemetry.query_metrics_range`
 
-Range structured metric query
+Run a range metric query
 
-`GET /v1/metrics/query_range`
+`GET /v1/metrics/query-range`
 
 ```python
 def query_metrics_range(self, *, query: m.QueryMetricsRangeQuery, options: RequestOptions | None = None) -> ApiResponse[m.QueryMetricsRangeResponse]:
@@ -3467,12 +3497,12 @@ def query_metrics_range(self, *, query: m.QueryMetricsRangeQuery, options: Reque
 
 ## `telemetry.query_metrics_range_post`
 
-Range structured metric query (form body)
+Run a range metric query (JSON)
 
-`POST /v1/metrics/query_range`
+`POST /v1/metrics/query-range`
 
 ```python
-def query_metrics_range_post(self, body: m.QueryMetricsRangePostBody | Unset = UNSET, *, options: RequestOptions | None = None) -> ApiResponse[m.QueryMetricsRangePostResponse]:
+def query_metrics_range_post(self, body: m.QueryMetricsRangePostBody, *, options: RequestOptions | None = None) -> ApiResponse[m.QueryMetricsRangePostResponse]:
 ```
 
 ## `telemetry.search_logs`
@@ -3503,6 +3533,16 @@ Update a log group
 
 ```python
 def update_log_group(self, id: str, body: m.UpdateLogGroupBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateLogGroupResponse]:
+```
+
+## `telemetry.update_trace_settings`
+
+Update the caller account's trace settings
+
+`PATCH /v1/trace-settings`
+
+```python
+def update_trace_settings(self, body: m.UpdateTraceSettingsBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateTraceSettingsResponse]:
 ```
 
 ## `telemetry.write_metrics`

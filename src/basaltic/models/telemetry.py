@@ -9,48 +9,46 @@ CreateLogGroupRequestInput = TypedDict(
     {
         "name": "Required[str]",
         "description": "NotRequired[str]",
-        "retention_days": "NotRequired[int | None]",
+        "retention_days": "NotRequired[Literal[1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, None] | None]",
         "kms_key": "NotRequired[str]",
         "tags": "NotRequired[dict[str, str]]",
     },
     total=False,
 )
 CreateLogGroupBody: TypeAlias = "CreateLogGroupRequestInput"
-LogGroupResponse = TypedDict(
-    "LogGroupResponse", {"log_group": "NotRequired[LogGroup]"}, total=False
-)
+LogGroupResponse = TypedDict("LogGroupResponse", {"log_group": "Required[LogGroup]"}, total=False)
 LogGroup = TypedDict(
     "LogGroup",
     {
-        "id": "NotRequired[str]",
-        "crn": "NotRequired[str]",
-        "account_id": "NotRequired[str]",
-        "name": "NotRequired[str]",
+        "kms_key": "NotRequired[ResourceRef]",
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
         "description": "NotRequired[str]",
-        "retention_days": "NotRequired[int | None]",
-        "kms_key_unavailable": "NotRequired[bool]",
-        "kms_key_crn": "NotRequired[str]",
-        "tags": "NotRequired[dict[str, str]]",
-        "created_at": "NotRequired[str]",
-        "updated_at": "NotRequired[str]",
+        "retention_days": "Required[Literal[1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, None] | None]",
+        "tags": "Required[dict[str, str]]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
     },
     total=False,
 )
+ResourceRef = TypedDict(
+    "ResourceRef",
+    {"id": "Required[str]", "crn": "Required[str]", "name": "NotRequired[str]"},
+    total=False,
+)
 CreateLogGroupResponse: TypeAlias = "LogGroupResponse"
-LogResponse = TypedDict("LogResponse", {"log": "NotRequired[LogRecord]"}, total=False)
+LogResponse = TypedDict("LogResponse", {"log": "Required[LogRecord]"}, total=False)
 LogRecord = TypedDict(
     "LogRecord",
     {
-        "id": "NotRequired[str]",
-        "timestamp": "NotRequired[str]",
-        "organization_id": "NotRequired[str]",
-        "account_id": "NotRequired[str]",
-        "log_group_id": "NotRequired[str]",
-        "log_group": "NotRequired[str]",
-        "log_stream": "NotRequired[str]",
-        "severity": "NotRequired[Literal['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL']]",
-        "severity_number": "NotRequired[int]",
-        "body": "NotRequired[str]",
+        "id": "Required[str]",
+        "timestamp": "Required[str]",
+        "log_group": "Required[ResourceRef]",
+        "log_stream": "Required[str]",
+        "severity": "Required[Literal['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL']]",
+        "severity_number": "Required[int]",
+        "body": "Required[str]",
         "attributes": "NotRequired[dict[str, str]]",
         "resource": "NotRequired[dict[str, str]]",
         "trace_id": "NotRequired[str]",
@@ -62,61 +60,42 @@ GetLogResponse: TypeAlias = "LogResponse"
 GetLogGroupResponse: TypeAlias = "LogGroupResponse"
 GetLogGroupResource: TypeAlias = "LogGroup"
 GetLogGroupScope = TypedDict("GetLogGroupScope", {"limit": "NotRequired[int]"}, total=False)
-GetRetainedTelemetryPresenceResult = TypedDict(
-    "GetRetainedTelemetryPresenceResult", {"has_resources": "Required[bool]"}, total=False
-)
-GetRetainedTelemetryPresenceResponse: TypeAlias = "GetRetainedTelemetryPresenceResult"
-TraceResponse = TypedDict(
-    "TraceResponse",
-    {"trace_id": "NotRequired[str]", "spans": "NotRequired[list[Span]]"},
+RetainedDataResponse = TypedDict(
+    "RetainedDataResponse",
+    {"retained_data": "Required[RetainedDataResponseRetainedData]"},
     total=False,
 )
-Span = TypedDict(
-    "Span",
+RetainedDataResponseRetainedData = TypedDict(
+    "RetainedDataResponseRetainedData", {"has_data": "Required[bool]"}, total=False
+)
+GetRetainedTelemetryPresenceResponse: TypeAlias = "RetainedDataResponse"
+TraceResponse = TypedDict("TraceResponse", {"trace": "Required[TraceSummary]"}, total=False)
+TraceSummary = TypedDict(
+    "TraceSummary",
     {
-        "trace_id": "NotRequired[str]",
-        "span_id": "NotRequired[str]",
-        "parent_span_id": "NotRequired[str]",
-        "name": "NotRequired[str]",
-        "kind": "NotRequired[Literal['INTERNAL', 'SERVER', 'CLIENT', 'PRODUCER', 'CONSUMER']]",
-        "service_name": "NotRequired[str]",
-        "start_time": "NotRequired[str]",
-        "end_time": "NotRequired[str]",
-        "duration_ms": "NotRequired[float]",
-        "status_code": "NotRequired[Literal['UNSET', 'OK', 'ERROR']]",
-        "status_message": "NotRequired[str]",
-        "attributes": "NotRequired[dict[str, str]]",
-        "resource": "NotRequired[dict[str, str]]",
-        "events": "NotRequired[list[SpanEvent]]",
-        "links": "NotRequired[list[SpanLink]]",
+        "trace_id": "Required[str]",
+        "root_span_id": "Required[str]",
+        "root_name": "Required[str]",
+        "root_service": "Required[str]",
+        "start_time": "Required[str]",
+        "duration_ms": "Required[float]",
+        "span_count": "Required[int]",
+        "error_count": "Required[int]",
+        "service_count": "Required[int]",
     },
     total=False,
-)
-SpanEvent = TypedDict(
-    "SpanEvent",
-    {
-        "timestamp": "NotRequired[str]",
-        "name": "Required[str]",
-        "attributes": "NotRequired[dict[str, str]]",
-    },
-    total=False,
-)
-SpanLink = TypedDict(
-    "SpanLink", {"trace_id": "Required[str]", "span_id": "Required[str]"}, total=False
 )
 GetTraceResponse: TypeAlias = "TraceResponse"
 TraceSettingsResponse = TypedDict(
-    "TraceSettingsResponse", {"trace_settings": "NotRequired[TraceSettings]"}, total=False
+    "TraceSettingsResponse", {"trace_settings": "Required[TraceSettings]"}, total=False
 )
 TraceSettings = TypedDict(
     "TraceSettings",
     {
-        "account_id": "NotRequired[str]",
-        "retention_days": "NotRequired[int | None]",
-        "kms_key_unavailable": "NotRequired[bool]",
-        "kms_key_crn": "NotRequired[str]",
+        "retention_days": "Required[Literal[1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653]]",
         "created_at": "NotRequired[str]",
         "updated_at": "NotRequired[str]",
+        "kms_key": "NotRequired[ResourceRef]",
     },
     total=False,
 )
@@ -140,16 +119,22 @@ IngestRecordInput = TypedDict(
     total=False,
 )
 IngestLogsBody: TypeAlias = "IngestRequestInput"
+IngestResponse = TypedDict("IngestResponse", {"ingestion": "Required[IngestResult]"}, total=False)
 IngestResult = TypedDict(
     "IngestResult",
     {
-        "accepted": "NotRequired[int]",
-        "rejected": "NotRequired[int]",
-        "errors": "NotRequired[list[str]]",
+        "accepted": "Required[int]",
+        "rejected": "Required[int]",
+        "errors": "NotRequired[list[IngestError]]",
     },
     total=False,
 )
-IngestLogsResponse: TypeAlias = "IngestResult"
+IngestError = TypedDict(
+    "IngestError",
+    {"index": "Required[int]", "code": "Required[str]", "message": "Required[str]"},
+    total=False,
+)
+IngestLogsResponse: TypeAlias = "IngestResponse"
 IngestSpansRequestInput = TypedDict(
     "IngestSpansRequestInput", {"spans": "Required[list[SpanIngestRecordInput]]"}, total=False
 )
@@ -186,7 +171,7 @@ SpanLinkInput = TypedDict(
     "SpanLinkInput", {"trace_id": "Required[str]", "span_id": "Required[str]"}, total=False
 )
 IngestSpansBody: TypeAlias = "IngestSpansRequestInput"
-IngestSpansResponse: TypeAlias = "IngestResult"
+IngestSpansResponse: TypeAlias = "IngestResponse"
 ListLogGroupsParameters = TypedDict(
     "ListLogGroupsParameters",
     {
@@ -200,7 +185,7 @@ ListLogGroupsParameters = TypedDict(
 ListLogGroupsQuery: TypeAlias = "ListLogGroupsParameters"
 LogGroupListResponse = TypedDict(
     "LogGroupListResponse",
-    {"log_groups": "NotRequired[list[LogGroup]]", "meta": "NotRequired[PaginationMeta]"},
+    {"log_groups": "Required[list[LogGroup]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 PaginationMeta = TypedDict(
@@ -216,56 +201,118 @@ PaginationMeta = TypedDict(
 ListLogGroupsResponse: TypeAlias = "LogGroupListResponse"
 ListLogGroupsItem: TypeAlias = "LogGroup"
 ListMetricNamesParameters = TypedDict(
-    "ListMetricNamesParameters", {"start": "Required[str]", "end": "Required[str]"}, total=False
-)
-ListMetricNamesQuery: TypeAlias = "ListMetricNamesParameters"
-ListMetricNamesResult = TypedDict(
-    "ListMetricNamesResult",
-    {"status": "NotRequired[str]", "data": "NotRequired[list[str]]"},
-    total=False,
-)
-ListMetricNamesResponse: TypeAlias = "ListMetricNamesResult"
-ListMetricNamesItem: TypeAlias = "str"
-ListMetricNamesPostRequest = TypedDict(
-    "ListMetricNamesPostRequest", {"start": "Required[str]", "end": "Required[str]"}, total=False
-)
-ListMetricNamesPostBody: TypeAlias = "ListMetricNamesPostRequest"
-ListMetricNamesPostResult = TypedDict(
-    "ListMetricNamesPostResult",
-    {"status": "NotRequired[str]", "data": "NotRequired[list[str]]"},
-    total=False,
-)
-ListMetricNamesPostResponse: TypeAlias = "ListMetricNamesPostResult"
-ListMetricSeriesParameters = TypedDict(
-    "ListMetricSeriesParameters",
-    {"metric": "Required[str]", "start": "Required[str]", "end": "Required[str]"},
-    total=False,
-)
-ListMetricSeriesQuery: TypeAlias = "ListMetricSeriesParameters"
-ListMetricSeriesResponse: TypeAlias = "dict[str, object]"
-ListMetricSeriesPostRequest = TypedDict(
-    "ListMetricSeriesPostRequest",
-    {"metric": "Required[str]", "start": "Required[str]", "end": "Required[str]"},
-    total=False,
-)
-ListMetricSeriesPostBody: TypeAlias = "ListMetricSeriesPostRequest"
-ListMetricSeriesPostResponse: TypeAlias = "dict[str, object]"
-UpdateTraceSettingsRequestInput = TypedDict(
-    "UpdateTraceSettingsRequestInput",
+    "ListMetricNamesParameters",
     {
-        "retention_days": "NotRequired[int | None]",
-        "clear_retention": "NotRequired[bool]",
-        "kms_key": "NotRequired[str | None]",
+        "start": "Required[str]",
+        "end": "Required[str]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
     },
     total=False,
 )
-PutTraceSettingsBody: TypeAlias = "UpdateTraceSettingsRequestInput"
-PutTraceSettingsResponse: TypeAlias = "TraceSettingsResponse"
+ListMetricNamesQuery: TypeAlias = "ListMetricNamesParameters"
+MetricNamesResponse = TypedDict(
+    "MetricNamesResponse",
+    {"metric_names": "Required[list[str]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+ListMetricNamesResponse: TypeAlias = "MetricNamesResponse"
+ListMetricNamesItem: TypeAlias = "str"
+ListMetricNamesPostRequest = TypedDict(
+    "ListMetricNamesPostRequest",
+    {
+        "start": "Required[str]",
+        "end": "Required[str]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+    },
+    total=False,
+)
+ListMetricNamesPostBody: TypeAlias = "ListMetricNamesPostRequest"
+ListMetricNamesPostResponse: TypeAlias = "MetricNamesResponse"
+ListMetricSeriesParameters = TypedDict(
+    "ListMetricSeriesParameters",
+    {
+        "metric": "Required[str]",
+        "start": "Required[str]",
+        "end": "Required[str]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+    },
+    total=False,
+)
+ListMetricSeriesQuery: TypeAlias = "ListMetricSeriesParameters"
+MetricSeriesResponse = TypedDict(
+    "MetricSeriesResponse",
+    {"series": "Required[list[dict[str, str]]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+ListMetricSeriesResponse: TypeAlias = "MetricSeriesResponse"
+ListMetricSeriesItem: TypeAlias = "dict[str, str]"
+ListMetricSeriesPostRequest = TypedDict(
+    "ListMetricSeriesPostRequest",
+    {
+        "metric": "Required[str]",
+        "start": "Required[str]",
+        "end": "Required[str]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+    },
+    total=False,
+)
+ListMetricSeriesPostBody: TypeAlias = "ListMetricSeriesPostRequest"
+ListMetricSeriesPostResponse: TypeAlias = "MetricSeriesResponse"
+ListTraceSpansParameters = TypedDict(
+    "ListTraceSpansParameters",
+    {"limit": "NotRequired[int]", "marker": "NotRequired[str]"},
+    total=False,
+)
+ListTraceSpansQuery: TypeAlias = "ListTraceSpansParameters"
+SpanListResponse = TypedDict(
+    "SpanListResponse",
+    {"spans": "Required[list[Span]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+Span = TypedDict(
+    "Span",
+    {
+        "trace_id": "Required[str]",
+        "span_id": "Required[str]",
+        "parent_span_id": "NotRequired[str]",
+        "name": "Required[str]",
+        "kind": "Required[Literal['INTERNAL', 'SERVER', 'CLIENT', 'PRODUCER', 'CONSUMER']]",
+        "service_name": "Required[str]",
+        "start_time": "Required[str]",
+        "end_time": "Required[str]",
+        "duration_ms": "Required[float]",
+        "status_code": "Required[Literal['UNSET', 'OK', 'ERROR']]",
+        "status_message": "NotRequired[str]",
+        "attributes": "NotRequired[dict[str, str]]",
+        "resource": "NotRequired[dict[str, str]]",
+        "events": "NotRequired[list[SpanEvent]]",
+        "links": "NotRequired[list[SpanLink]]",
+    },
+    total=False,
+)
+SpanEvent = TypedDict(
+    "SpanEvent",
+    {
+        "timestamp": "NotRequired[str]",
+        "name": "Required[str]",
+        "attributes": "NotRequired[dict[str, str]]",
+    },
+    total=False,
+)
+SpanLink = TypedDict(
+    "SpanLink", {"trace_id": "Required[str]", "span_id": "Required[str]"}, total=False
+)
+ListTraceSpansResponse: TypeAlias = "SpanListResponse"
+ListTraceSpansItem: TypeAlias = "Span"
 QueryMetricsInstantParameters = TypedDict(
     "QueryMetricsInstantParameters",
     {
         "metric": "Required[str]",
-        "agg": "Required[Literal['avg', 'sum', 'min', 'max', 'count', 'last', 'rate', 'increase']]",
+        "agg": "NotRequired[Literal['avg', 'sum', 'min', 'max', 'count', 'last', 'rate', 'increase']]",
         "match[]": "NotRequired[list[str]]",
         "by[]": "NotRequired[list[str]]",
         "step": "NotRequired[str]",
@@ -274,26 +321,42 @@ QueryMetricsInstantParameters = TypedDict(
     total=False,
 )
 QueryMetricsInstantQuery: TypeAlias = "QueryMetricsInstantParameters"
-QueryMetricsInstantResponse: TypeAlias = "dict[str, object]"
+MetricQueryResponse = TypedDict(
+    "MetricQueryResponse", {"query_result": "Required[MetricQueryResult]"}, total=False
+)
+MetricQueryResult = TypedDict(
+    "MetricQueryResult",
+    {"metric": "Required[str]", "series": "Required[list[MetricQuerySeries]]"},
+    total=False,
+)
+MetricQuerySeries = TypedDict(
+    "MetricQuerySeries",
+    {"labels": "Required[dict[str, str]]", "points": "Required[list[MetricPoint]]"},
+    total=False,
+)
+MetricPoint = TypedDict(
+    "MetricPoint", {"timestamp": "Required[float]", "value": "Required[str]"}, total=False
+)
+QueryMetricsInstantResponse: TypeAlias = "MetricQueryResponse"
 QueryMetricsInstantPostRequest = TypedDict(
     "QueryMetricsInstantPostRequest",
     {
         "metric": "Required[str]",
-        "agg": "Required[Literal['avg', 'sum', 'min', 'max', 'count', 'last', 'rate', 'increase']]",
-        "match[]": "NotRequired[list[str]]",
-        "by[]": "NotRequired[list[str]]",
+        "agg": "NotRequired[Literal['avg', 'sum', 'min', 'max', 'count', 'last', 'rate', 'increase']]",
         "step": "NotRequired[str]",
         "time": "NotRequired[str]",
+        "match": "NotRequired[list[str]]",
+        "by": "NotRequired[list[str]]",
     },
     total=False,
 )
 QueryMetricsInstantPostBody: TypeAlias = "QueryMetricsInstantPostRequest"
-QueryMetricsInstantPostResponse: TypeAlias = "dict[str, object]"
+QueryMetricsInstantPostResponse: TypeAlias = "MetricQueryResponse"
 QueryMetricsRangeParameters = TypedDict(
     "QueryMetricsRangeParameters",
     {
         "metric": "Required[str]",
-        "agg": "Required[Literal['avg', 'sum', 'min', 'max', 'count', 'last', 'rate', 'increase']]",
+        "agg": "NotRequired[Literal['avg', 'sum', 'min', 'max', 'count', 'last', 'rate', 'increase']]",
         "match[]": "NotRequired[list[str]]",
         "by[]": "NotRequired[list[str]]",
         "start": "Required[str]",
@@ -303,22 +366,22 @@ QueryMetricsRangeParameters = TypedDict(
     total=False,
 )
 QueryMetricsRangeQuery: TypeAlias = "QueryMetricsRangeParameters"
-QueryMetricsRangeResponse: TypeAlias = "dict[str, object]"
+QueryMetricsRangeResponse: TypeAlias = "MetricQueryResponse"
 QueryMetricsRangePostRequest = TypedDict(
     "QueryMetricsRangePostRequest",
     {
         "metric": "Required[str]",
-        "agg": "Required[Literal['avg', 'sum', 'min', 'max', 'count', 'last', 'rate', 'increase']]",
-        "match[]": "NotRequired[list[str]]",
-        "by[]": "NotRequired[list[str]]",
+        "agg": "NotRequired[Literal['avg', 'sum', 'min', 'max', 'count', 'last', 'rate', 'increase']]",
         "start": "Required[str]",
         "end": "Required[str]",
         "step": "NotRequired[str]",
+        "match": "NotRequired[list[str]]",
+        "by": "NotRequired[list[str]]",
     },
     total=False,
 )
 QueryMetricsRangePostBody: TypeAlias = "QueryMetricsRangePostRequest"
-QueryMetricsRangePostResponse: TypeAlias = "dict[str, object]"
+QueryMetricsRangePostResponse: TypeAlias = "MetricQueryResponse"
 SearchLogsParameters = TypedDict(
     "SearchLogsParameters",
     {
@@ -338,7 +401,7 @@ SearchLogsParameters = TypedDict(
 SearchLogsQuery: TypeAlias = "SearchLogsParameters"
 LogListResponse = TypedDict(
     "LogListResponse",
-    {"logs": "NotRequired[list[LogRecord]]", "meta": "NotRequired[PaginationMeta]"},
+    {"logs": "Required[list[LogRecord]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 SearchLogsResponse: TypeAlias = "LogListResponse"
@@ -359,22 +422,7 @@ SearchTracesParameters = TypedDict(
 SearchTracesQuery: TypeAlias = "SearchTracesParameters"
 TraceListResponse = TypedDict(
     "TraceListResponse",
-    {"traces": "NotRequired[list[TraceSummary]]", "meta": "NotRequired[PaginationMeta]"},
-    total=False,
-)
-TraceSummary = TypedDict(
-    "TraceSummary",
-    {
-        "trace_id": "NotRequired[str]",
-        "root_span_id": "NotRequired[str]",
-        "root_name": "NotRequired[str]",
-        "root_service": "NotRequired[str]",
-        "start_time": "NotRequired[str]",
-        "duration_ms": "NotRequired[float]",
-        "span_count": "NotRequired[int]",
-        "error_count": "NotRequired[int]",
-        "service_count": "NotRequired[int]",
-    },
+    {"traces": "Required[list[TraceSummary]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 SearchTracesResponse: TypeAlias = "TraceListResponse"
@@ -382,8 +430,7 @@ UpdateLogGroupRequestInput = TypedDict(
     "UpdateLogGroupRequestInput",
     {
         "description": "NotRequired[str | None]",
-        "retention_days": "NotRequired[int]",
-        "clear_retention": "NotRequired[bool]",
+        "retention_days": "NotRequired[Literal[1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, None] | None]",
         "kms_key": "NotRequired[str | None]",
         "tags": "NotRequired[dict[str, str]]",
     },
@@ -391,3 +438,13 @@ UpdateLogGroupRequestInput = TypedDict(
 )
 UpdateLogGroupBody: TypeAlias = "UpdateLogGroupRequestInput"
 UpdateLogGroupResponse: TypeAlias = "LogGroupResponse"
+UpdateTraceSettingsRequestInput = TypedDict(
+    "UpdateTraceSettingsRequestInput",
+    {
+        "retention_days": "NotRequired[Literal[1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, None] | None]",
+        "kms_key": "NotRequired[str | None]",
+    },
+    total=False,
+)
+UpdateTraceSettingsBody: TypeAlias = "UpdateTraceSettingsRequestInput"
+UpdateTraceSettingsResponse: TypeAlias = "TraceSettingsResponse"

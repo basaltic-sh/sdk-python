@@ -248,8 +248,6 @@ InlinePolicy = TypedDict(
     {
         "crn": "Required[str]",
         "id": "NotRequired[str]",
-        "principal_id": "NotRequired[str]",
-        "principal_type": "NotRequired[Literal['user', 'group']]",
         "name": "NotRequired[str]",
         "document": "NotRequired[PolicyDocument]",
         "created_at": "NotRequired[str]",
@@ -325,20 +323,7 @@ GetUserInlinePolicyResponse: TypeAlias = "InlinePolicyResponse"
 GetUserInlinePolicyResource: TypeAlias = "InlinePolicy"
 GetUserInlinePolicyScope = TypedDict("GetUserInlinePolicyScope", {}, total=False)
 PermissionBoundaryResponse = TypedDict(
-    "PermissionBoundaryResponse",
-    {"permission_boundary": "NotRequired[PermissionBoundary]"},
-    total=False,
-)
-PermissionBoundary = TypedDict(
-    "PermissionBoundary",
-    {
-        "principal_id": "NotRequired[str]",
-        "principal_type": "NotRequired[Literal['user']]",
-        "policy_id": "NotRequired[str]",
-        "policy_name": "NotRequired[str]",
-        "created_at": "NotRequired[str]",
-    },
-    total=False,
+    "PermissionBoundaryResponse", {"policy": "Required[Policy]"}, total=False
 )
 GetUserPermissionBoundaryResponse: TypeAlias = "PermissionBoundaryResponse"
 AccountRoleAssignmentListResponse = TypedDict(

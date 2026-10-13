@@ -62,39 +62,31 @@ SnapshotCreateRequestInput = TypedDict(
 )
 TagsInput: TypeAlias = "dict[str, str]"
 CreateSnapshotBody: TypeAlias = "SnapshotCreateRequestInput"
-SnapshotResponse = TypedDict("SnapshotResponse", {"snapshot": "NotRequired[Snapshot]"}, total=False)
+SnapshotResponse = TypedDict("SnapshotResponse", {"snapshot": "Required[Snapshot]"}, total=False)
 Snapshot = TypedDict(
     "Snapshot",
     {
-        "id": "NotRequired[str]",
-        "crn": "NotRequired[str]",
-        "volume_id": "NotRequired[str]",
-        "snapshot_policy_id": "NotRequired[str]",
-        "name": "NotRequired[str]",
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "volume": "Required[ResourceRef]",
+        "snapshot_policy": "NotRequired[ResourceRef]",
+        "name": "Required[str]",
         "description": "NotRequired[str]",
-        "tags": "NotRequired[Tags]",
-        "size_gb": "NotRequired[int]",
-        "logical_size_bytes": "NotRequired[int]",
-        "snapshot_usage": "NotRequired[SnapshotUsage]",
-        "status": "NotRequired[SnapshotStatus]",
+        "tags": "Required[Tags]",
+        "size_bytes": "Required[int]",
+        "status": "Required[SnapshotStatus]",
         "faults": "Required[list[Fault]]",
-        "created_at": "NotRequired[str]",
-        "updated_at": "NotRequired[str]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
     },
+    total=False,
+)
+ResourceRef = TypedDict(
+    "ResourceRef",
+    {"id": "Required[str]", "crn": "Required[str]", "name": "NotRequired[str]"},
     total=False,
 )
 Tags: TypeAlias = "dict[str, str]"
-SnapshotUsage = TypedDict(
-    "SnapshotUsage",
-    {
-        "state": "Required[Literal['unknown', 'stale', 'measured']]",
-        "scope": "Required[Literal['volume_lineage']]",
-        "billable": "Required[Literal[False]]",
-        "measured_at": "Required[str | None]",
-        "lineage_retained_bytes": "Required[int | None]",
-    },
-    total=False,
-)
 SnapshotStatus: TypeAlias = "Literal['creating', 'available', 'deleting', 'error']"
 Fault = TypedDict(
     "Fault",
@@ -113,7 +105,6 @@ CreateSnapshotResponse: TypeAlias = "SnapshotResponse"
 SnapshotPolicyCreateRequestInput = TypedDict(
     "SnapshotPolicyCreateRequestInput",
     {
-        "volume": "Required[str]",
         "name": "Required[str]",
         "description": "NotRequired[str]",
         "interval_minutes": "Required[SnapshotIntervalMinutesInput]",
@@ -129,14 +120,13 @@ SnapshotRetentionCountInput: TypeAlias = "int"
 SnapshotRetentionDaysInput: TypeAlias = "int"
 CreateSnapshotPolicyBody: TypeAlias = "SnapshotPolicyCreateRequestInput"
 SnapshotPolicyResponse = TypedDict(
-    "SnapshotPolicyResponse", {"snapshot_policy": "NotRequired[SnapshotPolicy]"}, total=False
+    "SnapshotPolicyResponse", {"snapshot_policy": "Required[SnapshotPolicy]"}, total=False
 )
 SnapshotPolicy = TypedDict(
     "SnapshotPolicy",
     {
         "id": "NotRequired[str]",
         "crn": "NotRequired[str]",
-        "volume_id": "NotRequired[str]",
         "name": "NotRequired[str]",
         "description": "NotRequired[str]",
         "enabled": "NotRequired[bool]",
@@ -179,40 +169,33 @@ VolumePerformanceRequestInput = TypedDict(
 )
 CreatableVolumeTypeNameInput: TypeAlias = "Literal['ssd', 'nvme']"
 CreateVolumeBody: TypeAlias = "VolumeCreateRequestInput"
-VolumeResponse = TypedDict("VolumeResponse", {"volume": "NotRequired[Volume]"}, total=False)
+VolumeResponse = TypedDict("VolumeResponse", {"volume": "Required[Volume]"}, total=False)
 Volume = TypedDict(
     "Volume",
     {
-        "id": "NotRequired[str]",
-        "crn": "NotRequired[str]",
-        "name": "NotRequired[str]",
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
         "description": "NotRequired[str]",
-        "tags": "NotRequired[Tags]",
-        "volume_type": "NotRequired[VolumeTypeName]",
-        "size_gb": "NotRequired[int]",
-        "performance": "NotRequired[VolumePerformance]",
-        "included_io_limits": "NotRequired[IncludedIOLimits]",
-        "status": "NotRequired[VolumeStatus]",
-        "bootable": "NotRequired[bool]",
-        "source_image_id": "NotRequired[str | None]",
-        "source_snapshot_id": "NotRequired[str | None]",
+        "tags": "Required[Tags]",
+        "volume_type": "Required[VolumeTypeName]",
+        "size_gb": "Required[int]",
+        "performance": "Required[VolumePerformance]",
+        "included_io_limits": "Required[IncludedIOLimits]",
+        "status": "Required[VolumeStatus]",
+        "bootable": "Required[bool]",
         "faults": "Required[list[Fault]]",
-        "created_at": "NotRequired[str]",
-        "updated_at": "NotRequired[str]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+        "source_image": "Required[ResourceRef | Literal[None] | None]",
+        "source_snapshot": "Required[ResourceRef | Literal[None] | None]",
     },
     total=False,
 )
 VolumeTypeName: TypeAlias = "Literal['hdd', 'ssd', 'nvme']"
 VolumePerformance = TypedDict(
     "VolumePerformance",
-    {
-        "requested": "Required[IncludedIOLimits]",
-        "applied": "Required[IncludedIOLimits]",
-        "state": "Required[Literal['creating', 'pending', 'applied']]",
-        "operation_id": "NotRequired[str]",
-        "applied_at": "NotRequired[str]",
-        "last_error": "NotRequired[str]",
-    },
+    {"requested": "Required[IncludedIOLimits]", "applied": "Required[IncludedIOLimits]"},
     total=False,
 )
 IncludedIOLimits = TypedDict(
@@ -227,7 +210,7 @@ IncludedIOLimits = TypedDict(
     total=False,
 )
 VolumeStatus: TypeAlias = (
-    "Literal['creating', 'available', 'in_use', 'extending', 'deleting', 'error']"
+    "Literal['creating', 'available', 'in_use', 'extending', 'updating', 'deleting', 'error']"
 )
 CreateVolumeResponse: TypeAlias = "VolumeResponse"
 DeleteBucketResult = TypedDict(
@@ -239,8 +222,9 @@ VolumeExtendRequestInput = TypedDict(
 )
 ExtendVolumeBody: TypeAlias = "VolumeExtendRequestInput"
 ExtendVolumeResponse: TypeAlias = "VolumeResponse"
-BucketCORSResponse = TypedDict("BucketCORSResponse", {"cors": "Required[CORSConfig]"}, total=False)
-CORSConfig = TypedDict("CORSConfig", {"rules": "Required[list[CORSRule]]"}, total=False)
+BucketCORSResponse = TypedDict(
+    "BucketCORSResponse", {"cors_rules": "Required[list[CORSRule]]"}, total=False
+)
 CORSRule = TypedDict(
     "CORSRule",
     {
@@ -255,10 +239,7 @@ CORSRule = TypedDict(
 )
 GetBucketCORSResponse: TypeAlias = "BucketCORSResponse"
 BucketEncryptionResponse = TypedDict(
-    "BucketEncryptionResponse", {"encryption": "Required[EncryptionConfig]"}, total=False
-)
-EncryptionConfig = TypedDict(
-    "EncryptionConfig", {"rules": "Required[list[EncryptionRule]]"}, total=False
+    "BucketEncryptionResponse", {"encryption_rules": "Required[list[EncryptionRule]]"}, total=False
 )
 EncryptionRule = TypedDict(
     "EncryptionRule",
@@ -273,11 +254,8 @@ EncryptionRuleDefault = TypedDict(
 GetBucketEncryptionResponse: TypeAlias = "BucketEncryptionResponse"
 BucketLifecycleResponse = TypedDict(
     "BucketLifecycleResponse",
-    {"revision": "Required[str]", "lifecycle": "Required[LifecycleConfig]"},
+    {"revision": "Required[str]", "lifecycle_rules": "Required[list[LifecycleRule]]"},
     total=False,
-)
-LifecycleConfig = TypedDict(
-    "LifecycleConfig", {"rules": "Required[list[LifecycleRule]]"}, total=False
 )
 LifecycleRule = TypedDict(
     "LifecycleRule",
@@ -316,21 +294,22 @@ LifecycleRuleAbortIncompleteMultipartUpload = TypedDict(
     total=False,
 )
 GetBucketLifecycleResponse: TypeAlias = "BucketLifecycleResponse"
-BucketObjectLockResponse = TypedDict(
-    "BucketObjectLockResponse", {"object_lock": "Required[ObjectLockConfig]"}, total=False
-)
+BucketObjectLockResponse: TypeAlias = "ObjectLockConfig"
 ObjectLockConfig = TypedDict(
     "ObjectLockConfig",
-    {"object_lock_enabled": "NotRequired[str]", "rule": "NotRequired[ObjectLockConfigRule]"},
+    {
+        "object_lock_enabled": "NotRequired[str]",
+        "object_lock_rule": "NotRequired[ObjectLockConfigObjectLockRule]",
+    },
     total=False,
 )
-ObjectLockConfigRule = TypedDict(
-    "ObjectLockConfigRule",
-    {"default_retention": "NotRequired[ObjectLockConfigRuleDefaultRetention]"},
+ObjectLockConfigObjectLockRule = TypedDict(
+    "ObjectLockConfigObjectLockRule",
+    {"default_retention": "NotRequired[ObjectLockConfigObjectLockRuleDefaultRetention]"},
     total=False,
 )
-ObjectLockConfigRuleDefaultRetention = TypedDict(
-    "ObjectLockConfigRuleDefaultRetention",
+ObjectLockConfigObjectLockRuleDefaultRetention = TypedDict(
+    "ObjectLockConfigObjectLockRuleDefaultRetention",
     {
         "mode": "NotRequired[Literal['GOVERNANCE', 'COMPLIANCE']]",
         "days": "NotRequired[int]",
@@ -372,7 +351,7 @@ GetSnapshotPolicyResponse: TypeAlias = "SnapshotPolicyResponse"
 GetSnapshotPolicyResource: TypeAlias = "SnapshotPolicy"
 GetSnapshotPolicyScope = TypedDict(
     "GetSnapshotPolicyScope",
-    {"limit": "NotRequired[int]", "volume": "NotRequired[str]", "enabled": "NotRequired[bool]"},
+    {"limit": "NotRequired[int]", "enabled": "NotRequired[bool]"},
     total=False,
 )
 GetVolumeResponse: TypeAlias = "VolumeResponse"
@@ -383,7 +362,7 @@ GetVolumeScope = TypedDict(
     total=False,
 )
 VolumeStatusInput: TypeAlias = (
-    "Literal['creating', 'available', 'in_use', 'extending', 'deleting', 'error']"
+    "Literal['creating', 'available', 'in_use', 'extending', 'updating', 'deleting', 'error']"
 )
 InitiateMultipartUploadRequestInput = TypedDict(
     "InitiateMultipartUploadRequestInput",
@@ -540,7 +519,6 @@ ListSnapshotPoliciesParameters = TypedDict(
     {
         "limit": "NotRequired[int]",
         "marker": "NotRequired[str]",
-        "volume": "NotRequired[str]",
         "enabled": "NotRequired[bool]",
         "name": "NotRequired[str]",
         "crn": "NotRequired[str]",
@@ -550,10 +528,7 @@ ListSnapshotPoliciesParameters = TypedDict(
 ListSnapshotPoliciesQuery: TypeAlias = "ListSnapshotPoliciesParameters"
 SnapshotPolicyListResponse = TypedDict(
     "SnapshotPolicyListResponse",
-    {
-        "snapshot_policies": "NotRequired[list[SnapshotPolicy]]",
-        "meta": "NotRequired[PaginationMeta]",
-    },
+    {"snapshot_policies": "Required[list[SnapshotPolicy]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListSnapshotPoliciesResponse: TypeAlias = "SnapshotPolicyListResponse"
@@ -574,7 +549,7 @@ ListSnapshotsParameters = TypedDict(
 ListSnapshotsQuery: TypeAlias = "ListSnapshotsParameters"
 SnapshotListResponse = TypedDict(
     "SnapshotListResponse",
-    {"snapshots": "NotRequired[list[Snapshot]]", "meta": "NotRequired[PaginationMeta]"},
+    {"snapshots": "Required[list[Snapshot]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListSnapshotsResponse: TypeAlias = "SnapshotListResponse"
@@ -618,16 +593,13 @@ ListVolumesParameters = TypedDict(
 ListVolumesQuery: TypeAlias = "ListVolumesParameters"
 VolumeListResponse = TypedDict(
     "VolumeListResponse",
-    {"volumes": "NotRequired[list[Volume]]", "meta": "NotRequired[PaginationMeta]"},
+    {"volumes": "Required[list[Volume]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListVolumesResponse: TypeAlias = "VolumeListResponse"
 ListVolumesItem: TypeAlias = "Volume"
 PutBucketCORSRequestInput = TypedDict(
-    "PutBucketCORSRequestInput", {"cors": "Required[CORSConfigInput]"}, total=False
-)
-CORSConfigInput = TypedDict(
-    "CORSConfigInput", {"rules": "Required[list[CORSRuleInput]]"}, total=False
+    "PutBucketCORSRequestInput", {"cors_rules": "Required[list[CORSRuleInput]]"}, total=False
 )
 CORSRuleInput = TypedDict(
     "CORSRuleInput",
@@ -650,11 +622,8 @@ PutBucketDeletionProtectionRequestInput = TypedDict(
 PutBucketDeletionProtectionBody: TypeAlias = "PutBucketDeletionProtectionRequestInput"
 PutBucketEncryptionRequestInput = TypedDict(
     "PutBucketEncryptionRequestInput",
-    {"encryption": "Required[EncryptionConfigInput]"},
+    {"encryption_rules": "Required[list[EncryptionRuleInput]]"},
     total=False,
-)
-EncryptionConfigInput = TypedDict(
-    "EncryptionConfigInput", {"rules": "Required[list[EncryptionRuleInput]]"}, total=False
 )
 EncryptionRuleInput = TypedDict(
     "EncryptionRuleInput",
@@ -671,10 +640,9 @@ EncryptionRuleInputDefault = TypedDict(
 )
 PutBucketEncryptionBody: TypeAlias = "PutBucketEncryptionRequestInput"
 PutBucketLifecycleRequestInput = TypedDict(
-    "PutBucketLifecycleRequestInput", {"lifecycle": "Required[LifecycleConfigInput]"}, total=False
-)
-LifecycleConfigInput = TypedDict(
-    "LifecycleConfigInput", {"rules": "Required[list[LifecycleRuleInput]]"}, total=False
+    "PutBucketLifecycleRequestInput",
+    {"lifecycle_rules": "Required[list[LifecycleRuleInput]]"},
+    total=False,
 )
 LifecycleRuleInput = TypedDict(
     "LifecycleRuleInput",
@@ -717,23 +685,22 @@ LifecycleRuleInputAbortIncompleteMultipartUpload = TypedDict(
     total=False,
 )
 PutBucketLifecycleBody: TypeAlias = "PutBucketLifecycleRequestInput"
-PutBucketObjectLockRequestInput = TypedDict(
-    "PutBucketObjectLockRequestInput",
-    {"object_lock": "Required[ObjectLockConfigInput]"},
-    total=False,
-)
+PutBucketObjectLockRequestInput: TypeAlias = "ObjectLockConfigInput"
 ObjectLockConfigInput = TypedDict(
     "ObjectLockConfigInput",
-    {"object_lock_enabled": "NotRequired[str]", "rule": "NotRequired[ObjectLockConfigInputRule]"},
+    {
+        "object_lock_enabled": "NotRequired[str]",
+        "object_lock_rule": "NotRequired[ObjectLockConfigInputObjectLockRule]",
+    },
     total=False,
 )
-ObjectLockConfigInputRule = TypedDict(
-    "ObjectLockConfigInputRule",
-    {"default_retention": "NotRequired[ObjectLockConfigInputRuleDefaultRetention]"},
+ObjectLockConfigInputObjectLockRule = TypedDict(
+    "ObjectLockConfigInputObjectLockRule",
+    {"default_retention": "NotRequired[ObjectLockConfigInputObjectLockRuleDefaultRetention]"},
     total=False,
 )
-ObjectLockConfigInputRuleDefaultRetention = TypedDict(
-    "ObjectLockConfigInputRuleDefaultRetention",
+ObjectLockConfigInputObjectLockRuleDefaultRetention = TypedDict(
+    "ObjectLockConfigInputObjectLockRuleDefaultRetention",
     {
         "mode": "NotRequired[Literal['GOVERNANCE', 'COMPLIANCE']]",
         "days": "NotRequired[int]",

@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from typing import Literal, NotRequired, Required, TypeAlias, TypedDict
 
+BillingProfileResponse = TypedDict(
+    "BillingProfileResponse", {"billing_profile": "Required[BillingProfile]"}, total=False
+)
 BillingProfile = TypedDict(
     "BillingProfile",
     {
@@ -41,7 +44,7 @@ BillingAddress = TypedDict(
     },
     total=False,
 )
-GetBillingProfileResponse: TypeAlias = "BillingProfile"
+GetBillingProfileResponse: TypeAlias = "BillingProfileResponse"
 CurrentUsage = TypedDict(
     "CurrentUsage",
     {
@@ -63,6 +66,7 @@ UsageLine = TypedDict(
     total=False,
 )
 GetCurrentUsageResponse: TypeAlias = "CurrentUsage"
+InvoiceResponse = TypedDict("InvoiceResponse", {"invoice": "Required[Invoice]"}, total=False)
 Invoice = TypedDict(
     "Invoice",
     {
@@ -100,8 +104,8 @@ InvoiceItem = TypedDict(
     },
     total=False,
 )
-GetInvoiceResponse: TypeAlias = "Invoice"
-GetInvoiceResource: TypeAlias = "GetInvoiceResponse"
+GetInvoiceResponse: TypeAlias = "InvoiceResponse"
+GetInvoiceResource: TypeAlias = "Invoice"
 GetInvoiceScope = TypedDict("GetInvoiceScope", {"limit": "NotRequired[int]"}, total=False)
 ListCreditsParameters = TypedDict(
     "ListCreditsParameters",
@@ -141,34 +145,33 @@ PaginationMeta = TypedDict(
 ListCreditsResponse: TypeAlias = "CreditListResponse"
 ListCreditsItem: TypeAlias = "Credit"
 ListFiscalInvoicesParameters = TypedDict(
-    "ListFiscalInvoicesParameters", {"invoice": "NotRequired[str]"}, total=False
+    "ListFiscalInvoicesParameters",
+    {"invoice": "NotRequired[str]", "limit": "NotRequired[int]", "marker": "NotRequired[str]"},
+    total=False,
 )
 ListFiscalInvoicesQuery: TypeAlias = "ListFiscalInvoicesParameters"
-ListFiscalInvoicesResult = TypedDict(
-    "ListFiscalInvoicesResult", {"fiscal_documents": "Required[list[FiscalInvoice]]"}, total=False
+FiscalInvoiceListResponse = TypedDict(
+    "FiscalInvoiceListResponse",
+    {"fiscal_invoices": "Required[list[FiscalInvoice]]", "meta": "Required[PaginationMeta]"},
+    total=False,
 )
 FiscalInvoice = TypedDict(
     "FiscalInvoice",
     {
         "id": "Required[str]",
-        "organization_id": "Required[str]",
-        "payment_id": "Required[str]",
-        "invoice_id": "NotRequired[str | None]",
         "amount": "Required[str]",
-        "status": "Required[Literal['queued', 'waiting_details', 'retrying', 'rejected', 'issued', 'review_required']]",
-        "email_status": "Required[Literal['pending', 'queued']]",
-        "last_error": "NotRequired[str]",
-        "attempts": "Required[int]",
-        "number": "NotRequired[str]",
-        "verification_code": "NotRequired[str]",
-        "url": "NotRequired[str]",
-        "issued_at": "NotRequired[str]",
-        "requires_review": "Required[bool]",
+        "number": "Required[str]",
+        "verification_code": "Required[str]",
+        "url": "Required[str]",
+        "issued_at": "Required[str | None]",
         "created_at": "Required[str]",
+        "crn": "Required[str]",
+        "payment": "Required[ResourceRef]",
+        "invoice": "Required[ResourceRef | Literal[None] | None]",
     },
     total=False,
 )
-ListFiscalInvoicesResponse: TypeAlias = "ListFiscalInvoicesResult"
+ListFiscalInvoicesResponse: TypeAlias = "FiscalInvoiceListResponse"
 ListFiscalInvoicesItem: TypeAlias = "FiscalInvoice"
 ListInvoicesParameters = TypedDict(
     "ListInvoicesParameters",
@@ -199,7 +202,7 @@ Payment = TypedDict(
     {
         "crn": "Required[str]",
         "id": "Required[str]",
-        "invoice": "Required[Invoice | Literal[None] | None]",
+        "invoice": "Required[ResourceRef | Literal[None] | None]",
         "amount": "Required[str]",
         "refunded_amount": "Required[str]",
         "disputed_amount": "Required[str]",
@@ -264,7 +267,7 @@ Transaction = TypedDict(
         "type": "Required[Literal['payment', 'refund', 'refund_reversal', 'dispute', 'dispute_reversal', 'adjustment', 'credit_grant', 'credit_applied']]",
         "amount": "Required[str]",
         "description": "NotRequired[str | None]",
-        "reference": "NotRequired[str | None]",
+        "reference": "Required[ResourceRef | Literal[None] | None]",
         "created_at": "Required[str]",
     },
     total=False,
@@ -302,4 +305,4 @@ BillingAddressInput = TypedDict(
     total=False,
 )
 UpdateBillingProfileBody: TypeAlias = "BillingProfileUpdateInput"
-UpdateBillingProfileResponse: TypeAlias = "BillingProfile"
+UpdateBillingProfileResponse: TypeAlias = "BillingProfileResponse"

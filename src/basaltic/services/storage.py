@@ -73,7 +73,7 @@ _OPS = {
     "createSnapshotPolicy": Operation(
         id="createSnapshotPolicy",
         method="POST",
-        path="/v1/snapshot-policies",
+        path="/v1/volumes/{volume_id}/snapshot-policies",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -205,7 +205,7 @@ _OPS = {
     "deleteSnapshotPolicy": Operation(
         id="deleteSnapshotPolicy",
         method="DELETE",
-        path="/v1/snapshot-policies/{policy_id}",
+        path="/v1/volumes/{volume_id}/snapshot-policies/{policy_id}",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -349,7 +349,7 @@ _OPS = {
     "getSnapshotPolicy": Operation(
         id="getSnapshotPolicy",
         method="GET",
-        path="/v1/snapshot-policies/{policy_id}",
+        path="/v1/volumes/{volume_id}/snapshot-policies/{policy_id}",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -491,14 +491,13 @@ _OPS = {
     "listSnapshotPolicies": Operation(
         id="listSnapshotPolicies",
         method="GET",
-        path="/v1/snapshot-policies",
+        path="/v1/volumes/{volume_id}/snapshot-policies",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
         queryEncoding={
             "limit": {"style": "form", "explode": True},
             "marker": {"style": "form", "explode": True},
-            "volume": {"style": "form", "explode": True},
             "enabled": {"style": "form", "explode": True},
             "name": {"style": "form", "explode": True},
             "crn": {"style": "form", "explode": True},
@@ -699,7 +698,7 @@ _OPS = {
     "updateSnapshotPolicy": Operation(
         id="updateSnapshotPolicy",
         method="PATCH",
-        path="/v1/snapshot-policies/{policy_id}",
+        path="/v1/volumes/{volume_id}/snapshot-policies/{policy_id}",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -829,7 +828,11 @@ class StorageService:
         )
 
     def create_snapshot_policy(
-        self, body: m.CreateSnapshotPolicyBody, *, options: RequestOptions | None = None
+        self,
+        volume_id: str,
+        body: m.CreateSnapshotPolicyBody,
+        *,
+        options: RequestOptions | None = None,
     ) -> ApiResponse[m.CreateSnapshotPolicyResponse]:
         "Create snapshot policy"
         return cast(
@@ -839,7 +842,7 @@ class StorageService:
                 "https://storage.{region}.basaltic.sh",
                 _OPS["createSnapshotPolicy"],
                 "json",
-                {},
+                {"volume_id": volume_id},
                 body,
                 None,
                 options,
@@ -1017,7 +1020,7 @@ class StorageService:
         )
 
     def delete_snapshot_policy(
-        self, policy_id: str, *, options: RequestOptions | None = None
+        self, volume_id: str, policy_id: str, *, options: RequestOptions | None = None
     ) -> None:
         "Delete snapshot policy"
         return cast(
@@ -1027,7 +1030,7 @@ class StorageService:
                 "https://storage.{region}.basaltic.sh",
                 _OPS["deleteSnapshotPolicy"],
                 "discard",
-                {"policy_id": policy_id},
+                {"volume_id": volume_id, "policy_id": policy_id},
                 UNSET,
                 None,
                 options,
@@ -1254,7 +1257,7 @@ class StorageService:
         )
 
     def get_snapshot_policy(
-        self, policy_id: str, *, options: RequestOptions | None = None
+        self, volume_id: str, policy_id: str, *, options: RequestOptions | None = None
     ) -> ApiResponse[m.GetSnapshotPolicyResponse]:
         "Get snapshot policy"
         return cast(
@@ -1264,7 +1267,7 @@ class StorageService:
                 "https://storage.{region}.basaltic.sh",
                 _OPS["getSnapshotPolicy"],
                 "json",
-                {"policy_id": policy_id},
+                {"volume_id": volume_id, "policy_id": policy_id},
                 UNSET,
                 None,
                 options,
@@ -1273,6 +1276,7 @@ class StorageService:
 
     def get_snapshot_policy_by_reference(
         self,
+        volume_id: str,
         reference: str,
         *,
         scope: m.GetSnapshotPolicyScope | None = None,
@@ -1282,8 +1286,9 @@ class StorageService:
             ApiResponse[m.GetSnapshotPolicyResource],
             resolve_reference(
                 reference,
-                lambda id: self.get_snapshot_policy(id, options=options),
+                lambda id: self.get_snapshot_policy(volume_id, id, options=options),
                 lambda match: self.list_snapshot_policies(
+                    volume_id,
                     query=cast(
                         m.ListSnapshotPoliciesQuery, {**reference_scope(scope), **match, "limit": 2}
                     ),
@@ -1503,6 +1508,7 @@ class StorageService:
 
     def list_snapshot_policies(
         self,
+        volume_id: str,
         *,
         query: m.ListSnapshotPoliciesQuery | None = None,
         options: RequestOptions | None = None,
@@ -1515,7 +1521,7 @@ class StorageService:
                 "https://storage.{region}.basaltic.sh",
                 _OPS["listSnapshotPolicies"],
                 "page",
-                {},
+                {"volume_id": volume_id},
                 UNSET,
                 query,
                 options,
@@ -1524,12 +1530,14 @@ class StorageService:
 
     def list_snapshot_policies_all(
         self,
+        volume_id: str,
         *,
         query: m.ListSnapshotPoliciesQuery | None = None,
         options: RequestOptions | None = None,
     ) -> Iterator[m.ListSnapshotPoliciesItem]:
         return iterate_pages(
             lambda marker: self.list_snapshot_policies(
+                volume_id,
                 query=cast(m.ListSnapshotPoliciesQuery, {**(query or {}), "marker": marker}),
                 options=options,
             ),
@@ -1813,6 +1821,7 @@ class StorageService:
 
     def update_snapshot_policy(
         self,
+        volume_id: str,
         policy_id: str,
         body: m.UpdateSnapshotPolicyBody,
         *,
@@ -1826,7 +1835,7 @@ class StorageService:
                 "https://storage.{region}.basaltic.sh",
                 _OPS["updateSnapshotPolicy"],
                 "json",
-                {"policy_id": policy_id},
+                {"volume_id": volume_id, "policy_id": policy_id},
                 body,
                 None,
                 options,
@@ -1980,7 +1989,11 @@ class AsyncStorageService:
         )
 
     async def create_snapshot_policy(
-        self, body: m.CreateSnapshotPolicyBody, *, options: RequestOptions | None = None
+        self,
+        volume_id: str,
+        body: m.CreateSnapshotPolicyBody,
+        *,
+        options: RequestOptions | None = None,
     ) -> ApiResponse[m.CreateSnapshotPolicyResponse]:
         "Create snapshot policy"
         return cast(
@@ -1990,7 +2003,7 @@ class AsyncStorageService:
                 "https://storage.{region}.basaltic.sh",
                 _OPS["createSnapshotPolicy"],
                 "json",
-                {},
+                {"volume_id": volume_id},
                 body,
                 None,
                 options,
@@ -2176,7 +2189,7 @@ class AsyncStorageService:
         )
 
     async def delete_snapshot_policy(
-        self, policy_id: str, *, options: RequestOptions | None = None
+        self, volume_id: str, policy_id: str, *, options: RequestOptions | None = None
     ) -> None:
         "Delete snapshot policy"
         return cast(
@@ -2186,7 +2199,7 @@ class AsyncStorageService:
                 "https://storage.{region}.basaltic.sh",
                 _OPS["deleteSnapshotPolicy"],
                 "discard",
-                {"policy_id": policy_id},
+                {"volume_id": volume_id, "policy_id": policy_id},
                 UNSET,
                 None,
                 options,
@@ -2413,7 +2426,7 @@ class AsyncStorageService:
         )
 
     async def get_snapshot_policy(
-        self, policy_id: str, *, options: RequestOptions | None = None
+        self, volume_id: str, policy_id: str, *, options: RequestOptions | None = None
     ) -> ApiResponse[m.GetSnapshotPolicyResponse]:
         "Get snapshot policy"
         return cast(
@@ -2423,7 +2436,7 @@ class AsyncStorageService:
                 "https://storage.{region}.basaltic.sh",
                 _OPS["getSnapshotPolicy"],
                 "json",
-                {"policy_id": policy_id},
+                {"volume_id": volume_id, "policy_id": policy_id},
                 UNSET,
                 None,
                 options,
@@ -2432,6 +2445,7 @@ class AsyncStorageService:
 
     async def get_snapshot_policy_by_reference(
         self,
+        volume_id: str,
         reference: str,
         *,
         scope: m.GetSnapshotPolicyScope | None = None,
@@ -2441,8 +2455,9 @@ class AsyncStorageService:
             ApiResponse[m.GetSnapshotPolicyResource],
             await aresolve_reference(
                 reference,
-                lambda id: self.get_snapshot_policy(id, options=options),
+                lambda id: self.get_snapshot_policy(volume_id, id, options=options),
                 lambda match: self.list_snapshot_policies(
+                    volume_id,
                     query=cast(
                         m.ListSnapshotPoliciesQuery, {**reference_scope(scope), **match, "limit": 2}
                     ),
@@ -2664,6 +2679,7 @@ class AsyncStorageService:
 
     async def list_snapshot_policies(
         self,
+        volume_id: str,
         *,
         query: m.ListSnapshotPoliciesQuery | None = None,
         options: RequestOptions | None = None,
@@ -2676,7 +2692,7 @@ class AsyncStorageService:
                 "https://storage.{region}.basaltic.sh",
                 _OPS["listSnapshotPolicies"],
                 "page",
-                {},
+                {"volume_id": volume_id},
                 UNSET,
                 query,
                 options,
@@ -2685,12 +2701,14 @@ class AsyncStorageService:
 
     def list_snapshot_policies_all(
         self,
+        volume_id: str,
         *,
         query: m.ListSnapshotPoliciesQuery | None = None,
         options: RequestOptions | None = None,
     ) -> AsyncIterator[m.ListSnapshotPoliciesItem]:
         return aiterate_pages(
             lambda marker: self.list_snapshot_policies(
+                volume_id,
                 query=cast(m.ListSnapshotPoliciesQuery, {**(query or {}), "marker": marker}),
                 options=options,
             ),
@@ -2974,6 +2992,7 @@ class AsyncStorageService:
 
     async def update_snapshot_policy(
         self,
+        volume_id: str,
         policy_id: str,
         body: m.UpdateSnapshotPolicyBody,
         *,
@@ -2987,7 +3006,7 @@ class AsyncStorageService:
                 "https://storage.{region}.basaltic.sh",
                 _OPS["updateSnapshotPolicy"],
                 "json",
-                {"policy_id": policy_id},
+                {"volume_id": volume_id, "policy_id": policy_id},
                 body,
                 None,
                 options,

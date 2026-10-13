@@ -23,7 +23,7 @@ _OPS = {
     "attachFloatingIp": Operation(
         id="attachFloatingIp",
         method="POST",
-        path="/v1/floating-ips/{floating_ip_id}/attach",
+        path="/v1/floating-ips/{floating_ip_id}/interfaces",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -32,10 +32,10 @@ _OPS = {
         contentType="application/json",
         accept="application/json",
     ),
-    "attachInternetGateway": Operation(
-        id="attachInternetGateway",
+    "attachInterfaceSecurityGroup": Operation(
+        id="attachInterfaceSecurityGroup",
         method="POST",
-        path="/v1/internet-gateways/{internet_gateway_id}/attach",
+        path="/v1/interfaces/{interface_id}/security-groups",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -382,26 +382,62 @@ _OPS = {
     ),
     "detachFloatingIp": Operation(
         id="detachFloatingIp",
-        method="POST",
-        path="/v1/floating-ips/{floating_ip_id}/detach",
-        authenticated=True,
-        requiredQuery=[],
-        requiredHeaders=[],
-        queryEncoding={},
-        bodyRequired=False,
-        contentType="application/json",
-        accept="application/json",
-    ),
-    "detachInternetGateway": Operation(
-        id="detachInternetGateway",
-        method="POST",
-        path="/v1/internet-gateways/{internet_gateway_id}/detach",
+        method="DELETE",
+        path="/v1/floating-ips/{floating_ip_id}/interfaces",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
         queryEncoding={},
         bodyRequired=False,
         contentType="",
+        accept="application/json",
+    ),
+    "detachFloatingIpInterface": Operation(
+        id="detachFloatingIpInterface",
+        method="DELETE",
+        path="/v1/floating-ips/{floating_ip_id}/interfaces/{interface_id}",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+    ),
+    "detachInterfaceSecurityGroup": Operation(
+        id="detachInterfaceSecurityGroup",
+        method="DELETE",
+        path="/v1/interfaces/{interface_id}/security-groups/{security_group_id}",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+    ),
+    "enableSubnetIPv6": Operation(
+        id="enableSubnetIPv6",
+        method="POST",
+        path="/v1/subnets/{subnet_id}/ipv6",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=True,
+        contentType="application/json",
+        accept="application/json",
+    ),
+    "enableVPCIPv6": Operation(
+        id="enableVPCIPv6",
+        method="POST",
+        path="/v1/vpcs/{vpc_id}/ipv6",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=True,
+        contentType="application/json",
         accept="application/json",
     ),
     "getEgressOnlyGateway": Operation(
@@ -584,6 +620,24 @@ _OPS = {
         accept="application/json",
         itemsKey="egress_only_gateways",
     ),
+    "listFloatingIpInterfaces": Operation(
+        id="listFloatingIpInterfaces",
+        method="GET",
+        path="/v1/floating-ips/{floating_ip_id}/interfaces",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={
+            "limit": {"style": "form", "explode": True},
+            "marker": {"style": "form", "explode": True},
+            "crn": {"style": "form", "explode": True},
+            "name": {"style": "form", "explode": True},
+        },
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+        itemsKey="interfaces",
+    ),
     "listFloatingIps": Operation(
         id="listFloatingIps",
         method="GET",
@@ -627,7 +681,7 @@ _OPS = {
         bodyRequired=False,
         contentType="",
         accept="application/json",
-        itemsKey="routed_prefixes",
+        itemsKey="prefixes",
     ),
     "listInterfaceSecurityGroups": Operation(
         id="listInterfaceSecurityGroups",
@@ -639,11 +693,13 @@ _OPS = {
         queryEncoding={
             "name": {"style": "form", "explode": True},
             "crn": {"style": "form", "explode": True},
+            "marker": {"style": "form", "explode": True},
+            "limit": {"style": "form", "explode": True},
         },
         bodyRequired=False,
         contentType="",
         accept="application/json",
-        itemsKey="security_group_ids",
+        itemsKey="security_groups",
     ),
     "listInterfaces": Operation(
         id="listInterfaces",
@@ -862,18 +918,6 @@ _OPS = {
         accept="application/json",
         itemsKey="vpcs",
     ),
-    "setInterfaceSecurityGroups": Operation(
-        id="setInterfaceSecurityGroups",
-        method="PUT",
-        path="/v1/interfaces/{interface_id}/security-groups",
-        authenticated=True,
-        requiredQuery=[],
-        requiredHeaders=[],
-        queryEncoding={},
-        bodyRequired=True,
-        contentType="application/json",
-        accept="application/json",
-    ),
     "updateEgressOnlyGateway": Operation(
         id="updateEgressOnlyGateway",
         method="PATCH",
@@ -1008,7 +1052,7 @@ class NetworkService:
         *,
         options: RequestOptions | None = None,
     ) -> ApiResponse[m.AttachFloatingIpResponse]:
-        "Attach a floating IP to an interface"
+        "Attach an interface to a floating IP"
         return cast(
             ApiResponse[m.AttachFloatingIpResponse],
             self._transport.request(
@@ -1023,22 +1067,22 @@ class NetworkService:
             ),
         )
 
-    def attach_internet_gateway(
+    def attach_interface_security_group(
         self,
-        internet_gateway_id: str,
-        body: m.AttachInternetGatewayBody,
+        interface_id: str,
+        body: m.AttachInterfaceSecurityGroupBody,
         *,
         options: RequestOptions | None = None,
-    ) -> ApiResponse[m.AttachInternetGatewayResponse]:
-        "Attach internet gateway to a VPC"
+    ) -> ApiResponse[m.AttachInterfaceSecurityGroupResponse]:
+        "Attach a security group to an interface"
         return cast(
-            ApiResponse[m.AttachInternetGatewayResponse],
+            ApiResponse[m.AttachInterfaceSecurityGroupResponse],
             self._transport.request(
                 "network",
                 "https://network.{region}.basaltic.sh",
-                _OPS["attachInternetGateway"],
+                _OPS["attachInterfaceSecurityGroup"],
                 "json",
-                {"internet_gateway_id": internet_gateway_id},
+                {"interface_id": interface_id},
                 body,
                 None,
                 options,
@@ -1556,40 +1600,90 @@ class NetworkService:
         )
 
     def detach_floating_ip(
-        self,
-        floating_ip_id: str,
-        body: m.DetachFloatingIpBody | Unset = UNSET,
-        *,
-        options: RequestOptions | None = None,
-    ) -> ApiResponse[m.DetachFloatingIpResponse]:
-        "Detach a floating IP"
+        self, floating_ip_id: str, *, options: RequestOptions | None = None
+    ) -> None:
+        "Detach all direct interfaces from a floating IP"
         return cast(
-            ApiResponse[m.DetachFloatingIpResponse],
+            None,
             self._transport.request(
                 "network",
                 "https://network.{region}.basaltic.sh",
                 _OPS["detachFloatingIp"],
-                "json",
+                "discard",
                 {"floating_ip_id": floating_ip_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    def detach_floating_ip_interface(
+        self, floating_ip_id: str, interface_id: str, *, options: RequestOptions | None = None
+    ) -> None:
+        "Detach an interface from a floating IP"
+        return cast(
+            None,
+            self._transport.request(
+                "network",
+                "https://network.{region}.basaltic.sh",
+                _OPS["detachFloatingIpInterface"],
+                "discard",
+                {"floating_ip_id": floating_ip_id, "interface_id": interface_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    def detach_interface_security_group(
+        self, interface_id: str, security_group_id: str, *, options: RequestOptions | None = None
+    ) -> None:
+        "Detach a security group from an interface"
+        return cast(
+            None,
+            self._transport.request(
+                "network",
+                "https://network.{region}.basaltic.sh",
+                _OPS["detachInterfaceSecurityGroup"],
+                "discard",
+                {"interface_id": interface_id, "security_group_id": security_group_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    def enable_subnet_i_pv6(
+        self, subnet_id: str, body: m.EnableSubnetIPv6Body, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.EnableSubnetIPv6Response]:
+        "Enable IPv6 on a subnet"
+        return cast(
+            ApiResponse[m.EnableSubnetIPv6Response],
+            self._transport.request(
+                "network",
+                "https://network.{region}.basaltic.sh",
+                _OPS["enableSubnetIPv6"],
+                "json",
+                {"subnet_id": subnet_id},
                 body,
                 None,
                 options,
             ),
         )
 
-    def detach_internet_gateway(
-        self, internet_gateway_id: str, *, options: RequestOptions | None = None
-    ) -> ApiResponse[m.DetachInternetGatewayResponse]:
-        "Detach internet gateway from its VPC"
+    def enable_vpci_pv6(
+        self, vpc_id: str, body: m.EnableVPCIPv6Body, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.EnableVPCIPv6Response]:
+        "Enable IPv6 on a vpc"
         return cast(
-            ApiResponse[m.DetachInternetGatewayResponse],
+            ApiResponse[m.EnableVPCIPv6Response],
             self._transport.request(
                 "network",
                 "https://network.{region}.basaltic.sh",
-                _OPS["detachInternetGateway"],
+                _OPS["enableVPCIPv6"],
                 "json",
-                {"internet_gateway_id": internet_gateway_id},
-                UNSET,
+                {"vpc_id": vpc_id},
+                body,
                 None,
                 options,
             ),
@@ -2137,6 +2231,44 @@ class NetworkService:
             (query or {}).get("marker", ""),
         )
 
+    def list_floating_ip_interfaces(
+        self,
+        floating_ip_id: str,
+        *,
+        query: m.ListFloatingIpInterfacesQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Page[m.ListFloatingIpInterfacesResponse, m.ListFloatingIpInterfacesItem]:
+        "List a floating IP’s interfaces"
+        return cast(
+            Page[m.ListFloatingIpInterfacesResponse, m.ListFloatingIpInterfacesItem],
+            self._transport.request(
+                "network",
+                "https://network.{region}.basaltic.sh",
+                _OPS["listFloatingIpInterfaces"],
+                "page",
+                {"floating_ip_id": floating_ip_id},
+                UNSET,
+                query,
+                options,
+            ),
+        )
+
+    def list_floating_ip_interfaces_all(
+        self,
+        floating_ip_id: str,
+        *,
+        query: m.ListFloatingIpInterfacesQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Iterator[m.ListFloatingIpInterfacesItem]:
+        return iterate_pages(
+            lambda marker: self.list_floating_ip_interfaces(
+                floating_ip_id,
+                query=cast(m.ListFloatingIpInterfacesQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
+        )
+
     def list_floating_ips(
         self, *, query: m.ListFloatingIpsQuery | None = None, options: RequestOptions | None = None
     ) -> Page[m.ListFloatingIpsResponse, m.ListFloatingIpsItem]:
@@ -2209,7 +2341,7 @@ class NetworkService:
         query: m.ListInterfaceSecurityGroupsQuery | None = None,
         options: RequestOptions | None = None,
     ) -> Page[m.ListInterfaceSecurityGroupsResponse, m.ListInterfaceSecurityGroupsItem]:
-        "List interface security-group membership"
+        "List an interface’s security groups"
         return cast(
             Page[m.ListInterfaceSecurityGroupsResponse, m.ListInterfaceSecurityGroupsItem],
             self._transport.request(
@@ -2222,6 +2354,22 @@ class NetworkService:
                 query,
                 options,
             ),
+        )
+
+    def list_interface_security_groups_all(
+        self,
+        interface_id: str,
+        *,
+        query: m.ListInterfaceSecurityGroupsQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Iterator[m.ListInterfaceSecurityGroupsItem]:
+        return iterate_pages(
+            lambda marker: self.list_interface_security_groups(
+                interface_id,
+                query=cast(m.ListInterfaceSecurityGroupsQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
         )
 
     def list_interfaces(
@@ -2607,28 +2755,6 @@ class NetworkService:
             (query or {}).get("marker", ""),
         )
 
-    def set_interface_security_groups(
-        self,
-        interface_id: str,
-        body: m.SetInterfaceSecurityGroupsBody,
-        *,
-        options: RequestOptions | None = None,
-    ) -> ApiResponse[m.SetInterfaceSecurityGroupsResponse]:
-        "Set interface security-group membership"
-        return cast(
-            ApiResponse[m.SetInterfaceSecurityGroupsResponse],
-            self._transport.request(
-                "network",
-                "https://network.{region}.basaltic.sh",
-                _OPS["setInterfaceSecurityGroups"],
-                "json",
-                {"interface_id": interface_id},
-                body,
-                None,
-                options,
-            ),
-        )
-
     def update_egress_only_gateway(
         self,
         egress_only_gateway_id: str,
@@ -2854,7 +2980,7 @@ class AsyncNetworkService:
         *,
         options: RequestOptions | None = None,
     ) -> ApiResponse[m.AttachFloatingIpResponse]:
-        "Attach a floating IP to an interface"
+        "Attach an interface to a floating IP"
         return cast(
             ApiResponse[m.AttachFloatingIpResponse],
             await self._transport.request(
@@ -2869,22 +2995,22 @@ class AsyncNetworkService:
             ),
         )
 
-    async def attach_internet_gateway(
+    async def attach_interface_security_group(
         self,
-        internet_gateway_id: str,
-        body: m.AttachInternetGatewayBody,
+        interface_id: str,
+        body: m.AttachInterfaceSecurityGroupBody,
         *,
         options: RequestOptions | None = None,
-    ) -> ApiResponse[m.AttachInternetGatewayResponse]:
-        "Attach internet gateway to a VPC"
+    ) -> ApiResponse[m.AttachInterfaceSecurityGroupResponse]:
+        "Attach a security group to an interface"
         return cast(
-            ApiResponse[m.AttachInternetGatewayResponse],
+            ApiResponse[m.AttachInterfaceSecurityGroupResponse],
             await self._transport.request(
                 "network",
                 "https://network.{region}.basaltic.sh",
-                _OPS["attachInternetGateway"],
+                _OPS["attachInterfaceSecurityGroup"],
                 "json",
-                {"internet_gateway_id": internet_gateway_id},
+                {"interface_id": interface_id},
                 body,
                 None,
                 options,
@@ -3404,40 +3530,90 @@ class AsyncNetworkService:
         )
 
     async def detach_floating_ip(
-        self,
-        floating_ip_id: str,
-        body: m.DetachFloatingIpBody | Unset = UNSET,
-        *,
-        options: RequestOptions | None = None,
-    ) -> ApiResponse[m.DetachFloatingIpResponse]:
-        "Detach a floating IP"
+        self, floating_ip_id: str, *, options: RequestOptions | None = None
+    ) -> None:
+        "Detach all direct interfaces from a floating IP"
         return cast(
-            ApiResponse[m.DetachFloatingIpResponse],
+            None,
             await self._transport.request(
                 "network",
                 "https://network.{region}.basaltic.sh",
                 _OPS["detachFloatingIp"],
-                "json",
+                "discard",
                 {"floating_ip_id": floating_ip_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    async def detach_floating_ip_interface(
+        self, floating_ip_id: str, interface_id: str, *, options: RequestOptions | None = None
+    ) -> None:
+        "Detach an interface from a floating IP"
+        return cast(
+            None,
+            await self._transport.request(
+                "network",
+                "https://network.{region}.basaltic.sh",
+                _OPS["detachFloatingIpInterface"],
+                "discard",
+                {"floating_ip_id": floating_ip_id, "interface_id": interface_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    async def detach_interface_security_group(
+        self, interface_id: str, security_group_id: str, *, options: RequestOptions | None = None
+    ) -> None:
+        "Detach a security group from an interface"
+        return cast(
+            None,
+            await self._transport.request(
+                "network",
+                "https://network.{region}.basaltic.sh",
+                _OPS["detachInterfaceSecurityGroup"],
+                "discard",
+                {"interface_id": interface_id, "security_group_id": security_group_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    async def enable_subnet_i_pv6(
+        self, subnet_id: str, body: m.EnableSubnetIPv6Body, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.EnableSubnetIPv6Response]:
+        "Enable IPv6 on a subnet"
+        return cast(
+            ApiResponse[m.EnableSubnetIPv6Response],
+            await self._transport.request(
+                "network",
+                "https://network.{region}.basaltic.sh",
+                _OPS["enableSubnetIPv6"],
+                "json",
+                {"subnet_id": subnet_id},
                 body,
                 None,
                 options,
             ),
         )
 
-    async def detach_internet_gateway(
-        self, internet_gateway_id: str, *, options: RequestOptions | None = None
-    ) -> ApiResponse[m.DetachInternetGatewayResponse]:
-        "Detach internet gateway from its VPC"
+    async def enable_vpci_pv6(
+        self, vpc_id: str, body: m.EnableVPCIPv6Body, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.EnableVPCIPv6Response]:
+        "Enable IPv6 on a vpc"
         return cast(
-            ApiResponse[m.DetachInternetGatewayResponse],
+            ApiResponse[m.EnableVPCIPv6Response],
             await self._transport.request(
                 "network",
                 "https://network.{region}.basaltic.sh",
-                _OPS["detachInternetGateway"],
+                _OPS["enableVPCIPv6"],
                 "json",
-                {"internet_gateway_id": internet_gateway_id},
-                UNSET,
+                {"vpc_id": vpc_id},
+                body,
                 None,
                 options,
             ),
@@ -3985,6 +4161,44 @@ class AsyncNetworkService:
             (query or {}).get("marker", ""),
         )
 
+    async def list_floating_ip_interfaces(
+        self,
+        floating_ip_id: str,
+        *,
+        query: m.ListFloatingIpInterfacesQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Page[m.ListFloatingIpInterfacesResponse, m.ListFloatingIpInterfacesItem]:
+        "List a floating IP’s interfaces"
+        return cast(
+            Page[m.ListFloatingIpInterfacesResponse, m.ListFloatingIpInterfacesItem],
+            await self._transport.request(
+                "network",
+                "https://network.{region}.basaltic.sh",
+                _OPS["listFloatingIpInterfaces"],
+                "page",
+                {"floating_ip_id": floating_ip_id},
+                UNSET,
+                query,
+                options,
+            ),
+        )
+
+    def list_floating_ip_interfaces_all(
+        self,
+        floating_ip_id: str,
+        *,
+        query: m.ListFloatingIpInterfacesQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> AsyncIterator[m.ListFloatingIpInterfacesItem]:
+        return aiterate_pages(
+            lambda marker: self.list_floating_ip_interfaces(
+                floating_ip_id,
+                query=cast(m.ListFloatingIpInterfacesQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
+        )
+
     async def list_floating_ips(
         self, *, query: m.ListFloatingIpsQuery | None = None, options: RequestOptions | None = None
     ) -> Page[m.ListFloatingIpsResponse, m.ListFloatingIpsItem]:
@@ -4057,7 +4271,7 @@ class AsyncNetworkService:
         query: m.ListInterfaceSecurityGroupsQuery | None = None,
         options: RequestOptions | None = None,
     ) -> Page[m.ListInterfaceSecurityGroupsResponse, m.ListInterfaceSecurityGroupsItem]:
-        "List interface security-group membership"
+        "List an interface’s security groups"
         return cast(
             Page[m.ListInterfaceSecurityGroupsResponse, m.ListInterfaceSecurityGroupsItem],
             await self._transport.request(
@@ -4070,6 +4284,22 @@ class AsyncNetworkService:
                 query,
                 options,
             ),
+        )
+
+    def list_interface_security_groups_all(
+        self,
+        interface_id: str,
+        *,
+        query: m.ListInterfaceSecurityGroupsQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> AsyncIterator[m.ListInterfaceSecurityGroupsItem]:
+        return aiterate_pages(
+            lambda marker: self.list_interface_security_groups(
+                interface_id,
+                query=cast(m.ListInterfaceSecurityGroupsQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
         )
 
     async def list_interfaces(
@@ -4453,28 +4683,6 @@ class AsyncNetworkService:
                 query=cast(m.ListVpcsQuery, {**(query or {}), "marker": marker}), options=options
             ),
             (query or {}).get("marker", ""),
-        )
-
-    async def set_interface_security_groups(
-        self,
-        interface_id: str,
-        body: m.SetInterfaceSecurityGroupsBody,
-        *,
-        options: RequestOptions | None = None,
-    ) -> ApiResponse[m.SetInterfaceSecurityGroupsResponse]:
-        "Set interface security-group membership"
-        return cast(
-            ApiResponse[m.SetInterfaceSecurityGroupsResponse],
-            await self._transport.request(
-                "network",
-                "https://network.{region}.basaltic.sh",
-                _OPS["setInterfaceSecurityGroups"],
-                "json",
-                {"interface_id": interface_id},
-                body,
-                None,
-                options,
-            ),
         )
 
     async def update_egress_only_gateway(

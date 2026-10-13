@@ -10,92 +10,55 @@ AttachFloatingIpRequest = TypedDict(
     total=False,
 )
 AttachFloatingIpBody: TypeAlias = "AttachFloatingIpRequest"
-AttachFloatingIpResult = TypedDict(
-    "AttachFloatingIpResult", {"floating_ip": "NotRequired[FloatingIp]"}, total=False
+FloatingIpInterfaceResponse = TypedDict(
+    "FloatingIpInterfaceResponse", {"interface": "Required[FloatingIpInterface]"}, total=False
 )
-FloatingIp = TypedDict(
-    "FloatingIp",
+FloatingIpInterface = TypedDict(
+    "FloatingIpInterface",
     {
         "id": "Required[str]",
         "crn": "Required[str]",
+        "subnet": "Required[ResourceRef]",
+        "name": "Required[str]",
         "description": "NotRequired[str]",
-        "family": "Required[IpFamily]",
-        "attached_to": "Required[str | None]",
-        "members": "Required[list[FloatingIpMember]]",
+        "mac": "Required[str]",
+        "attached_to": "Required[ResourceRef | Literal[None] | None]",
         "tags": "Required[dict[str, str]]",
-        "health_check": "NotRequired[FloatingIpHealthCheck]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
-        "address": "Required[str]",
-        "visibility": "Required[Literal['public', 'private']]",
-        "subnet_id": "NotRequired[str | None]",
-        "vpc_id": "NotRequired[str]",
-    },
-    total=False,
-)
-IpFamily: TypeAlias = "Literal['ipv4', 'ipv6']"
-FloatingIpMember = TypedDict(
-    "FloatingIpMember",
-    {
-        "interface": "Required[FloatingIpMemberInterfaceObject | None]",
         "health": "Required[Literal['unknown', 'healthy', 'unhealthy']]",
         "reason": "Required[Literal['unprobed', 'booting', 'probe_failed', 'passing']]",
-        "created_at": "Required[str]",
-        "address_id": "NotRequired[str | None]",
+        "address_id": "NotRequired[str]",
     },
     total=False,
 )
-FloatingIpMemberInterfaceObject = TypedDict(
-    "FloatingIpMemberInterfaceObject",
-    {
-        "id": "Required[str]",
-        "crn": "Required[str]",
-        "instance": "Required[FloatingIpMemberInterfaceObjectInstanceObject | None]",
-    },
+ResourceRef = TypedDict(
+    "ResourceRef",
+    {"id": "Required[str]", "crn": "Required[str]", "name": "NotRequired[str]"},
     total=False,
 )
-FloatingIpMemberInterfaceObjectInstanceObject = TypedDict(
-    "FloatingIpMemberInterfaceObjectInstanceObject",
-    {"id": "Required[str]", "crn": "Required[str]", "name": "Required[str]"},
-    total=False,
+AttachFloatingIpResponse: TypeAlias = "FloatingIpInterfaceResponse"
+InterfaceSecurityGroupRequestInput = TypedDict(
+    "InterfaceSecurityGroupRequestInput", {"security_group": "Required[str]"}, total=False
 )
-FloatingIpHealthCheck = TypedDict(
-    "FloatingIpHealthCheck",
-    {
-        "protocol": "Required[Literal['tcp', 'http', 'https']]",
-        "path": "NotRequired[str]",
-        "port": "Required[int]",
-        "interval_sec": "Required[int]",
-        "timeout_sec": "Required[int]",
-        "healthy_threshold": "Required[int]",
-        "unhealthy_threshold": "Required[int]",
-        "matcher": "NotRequired[str]",
-    },
-    total=False,
+AttachInterfaceSecurityGroupBody: TypeAlias = "InterfaceSecurityGroupRequestInput"
+SecurityGroupResponse = TypedDict(
+    "SecurityGroupResponse", {"security_group": "NotRequired[SecurityGroup]"}, total=False
 )
-AttachFloatingIpResponse: TypeAlias = "AttachFloatingIpResult"
-InternetGatewayAttachRequestInput = TypedDict(
-    "InternetGatewayAttachRequestInput", {"vpc": "Required[str]"}, total=False
-)
-AttachInternetGatewayBody: TypeAlias = "InternetGatewayAttachRequestInput"
-InternetGatewayResponse = TypedDict(
-    "InternetGatewayResponse", {"internet_gateway": "NotRequired[InternetGateway]"}, total=False
-)
-InternetGateway = TypedDict(
-    "InternetGateway",
+SecurityGroup = TypedDict(
+    "SecurityGroup",
     {
         "id": "Required[str]",
         "crn": "Required[str]",
         "name": "Required[str]",
         "description": "NotRequired[str]",
-        "attached_vpc_id": "NotRequired[str | None]",
         "tags": "Required[dict[str, str]]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
     },
     total=False,
 )
-AttachInternetGatewayResponse: TypeAlias = "InternetGatewayResponse"
+AttachInterfaceSecurityGroupResponse: TypeAlias = "SecurityGroupResponse"
 EgressOnlyGatewayCreateRequestInput = TypedDict(
     "EgressOnlyGatewayCreateRequestInput",
     {
@@ -119,22 +82,7 @@ EgressOnlyGateway = TypedDict(
         "crn": "Required[str]",
         "name": "Required[str]",
         "description": "NotRequired[str]",
-        "vpc": "Required[Vpc]",
-        "tags": "Required[dict[str, str]]",
-        "created_at": "Required[str]",
-        "updated_at": "Required[str]",
-    },
-    total=False,
-)
-Vpc = TypedDict(
-    "Vpc",
-    {
-        "id": "Required[str]",
-        "crn": "Required[str]",
-        "name": "Required[str]",
-        "description": "NotRequired[str]",
-        "cidr_ipv4": "Required[str]",
-        "cidr_ipv6": "NotRequired[str | None]",
+        "vpc": "Required[ResourceRef]",
         "tags": "Required[dict[str, str]]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
@@ -171,7 +119,41 @@ FloatingIpHealthCheckInput = TypedDict(
 )
 CreateFloatingIpBody: TypeAlias = "FloatingIpCreateRequestInput"
 FloatingIpResponse = TypedDict(
-    "FloatingIpResponse", {"floating_ip": "NotRequired[FloatingIp]"}, total=False
+    "FloatingIpResponse", {"floating_ip": "Required[FloatingIp]"}, total=False
+)
+FloatingIp = TypedDict(
+    "FloatingIp",
+    {
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "description": "NotRequired[str]",
+        "family": "Required[IpFamily]",
+        "attached_to": "Required[ResourceRef | Literal[None] | None]",
+        "tags": "Required[dict[str, str]]",
+        "health_check": "NotRequired[FloatingIpHealthCheck]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+        "address": "Required[str]",
+        "visibility": "Required[Literal['public', 'private']]",
+        "subnet": "Required[ResourceRef | Literal[None] | None]",
+        "vpc": "Required[ResourceRef | Literal[None] | None]",
+    },
+    total=False,
+)
+IpFamily: TypeAlias = "Literal['ipv4', 'ipv6']"
+FloatingIpHealthCheck = TypedDict(
+    "FloatingIpHealthCheck",
+    {
+        "protocol": "Required[Literal['tcp', 'http', 'https']]",
+        "path": "NotRequired[str]",
+        "port": "Required[int]",
+        "interval_sec": "Required[int]",
+        "timeout_sec": "Required[int]",
+        "healthy_threshold": "Required[int]",
+        "unhealthy_threshold": "Required[int]",
+        "matcher": "NotRequired[str]",
+    },
+    total=False,
 )
 CreateFloatingIpResponse: TypeAlias = "FloatingIpResponse"
 InterfaceCreateRequestInput = TypedDict(
@@ -193,50 +175,28 @@ AddressRequestInput = TypedDict(
 )
 CreateInterfaceBody: TypeAlias = "InterfaceCreateRequestInput"
 InterfaceResponse = TypedDict(
-    "InterfaceResponse", {"interface": "NotRequired[Interface]"}, total=False
+    "InterfaceResponse", {"interface": "Required[Interface]"}, total=False
 )
 Interface = TypedDict(
     "Interface",
     {
         "id": "Required[str]",
         "crn": "Required[str]",
-        "subnet": "Required[Subnet]",
+        "subnet": "Required[ResourceRef]",
         "name": "Required[str]",
         "description": "NotRequired[str]",
         "mac": "Required[str]",
-        "attached_to": "NotRequired[str | None]",
-        "tags": "Required[dict[str, str]]",
-        "created_at": "Required[str]",
-        "updated_at": "Required[str]",
-        "addresses": "Required[list[InterfaceAddress]]",
-        "routed_prefixes": "Required[list[RoutedPrefix]]",
-    },
-    total=False,
-)
-Subnet = TypedDict(
-    "Subnet",
-    {
-        "id": "Required[str]",
-        "crn": "Required[str]",
-        "vpc": "Required[Vpc]",
-        "route_table": "Required[RouteTableSummary]",
-        "name": "Required[str]",
-        "description": "NotRequired[str]",
-        "cidr_ipv4": "Required[str]",
-        "gateway_ipv4": "Required[str]",
-        "cidr_ipv6": "NotRequired[str | None]",
-        "gateway_ipv6": "NotRequired[str | None]",
+        "attached_to": "Required[ResourceRef | Literal[None] | None]",
         "tags": "Required[dict[str, str]]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
     },
     total=False,
 )
-RouteTableSummary: TypeAlias = "RouteTableSummaryObject | None"
-RouteTableSummaryObject = TypedDict(
-    "RouteTableSummaryObject",
-    {"id": "Required[str]", "crn": "Required[str]", "name": "Required[str]"},
-    total=False,
+CreateInterfaceResponse: TypeAlias = "InterfaceResponse"
+CreateInterfaceAddressBody: TypeAlias = "AddressRequestInput"
+CreateInterfaceAddressResult = TypedDict(
+    "CreateInterfaceAddressResult", {"address": "NotRequired[InterfaceAddress]"}, total=False
 )
 InterfaceAddress = TypedDict(
     "InterfaceAddress",
@@ -246,12 +206,12 @@ InterfaceAddress = TypedDict(
         "address": "Required[str]",
         "prefix": "Required[str]",
         "primary": "Required[bool]",
-        "floating_ips": "Required[list[AddressFloatingIp]]",
+        "floating_ips": "Required[list[FloatingIPRef]]",
     },
     total=False,
 )
-AddressFloatingIp = TypedDict(
-    "AddressFloatingIp",
+FloatingIPRef = TypedDict(
+    "FloatingIPRef",
     {
         "id": "Required[str]",
         "crn": "Required[str]",
@@ -260,35 +220,29 @@ AddressFloatingIp = TypedDict(
     },
     total=False,
 )
+CreateInterfaceAddressResponse: TypeAlias = "CreateInterfaceAddressResult"
+CreateInterfacePrefixRequest = TypedDict(
+    "CreateInterfacePrefixRequest", {"pool": "Required[str]"}, total=False
+)
+CreateInterfacePrefixBody: TypeAlias = "CreateInterfacePrefixRequest"
+CreateInterfacePrefixResult = TypedDict(
+    "CreateInterfacePrefixResult", {"prefix": "Required[RoutedPrefix]"}, total=False
+)
 RoutedPrefix = TypedDict(
     "RoutedPrefix",
     {
         "id": "Required[str]",
-        "pool_id": "Required[str]",
+        "pool": "Required[ResourceRef]",
         "family": "Required[Literal['ipv4']]",
         "prefix": "Required[str]",
     },
-    total=False,
-)
-CreateInterfaceResponse: TypeAlias = "InterfaceResponse"
-CreateInterfaceAddressBody: TypeAlias = "AddressRequestInput"
-CreateInterfaceAddressResult = TypedDict(
-    "CreateInterfaceAddressResult", {"address": "NotRequired[InterfaceAddress]"}, total=False
-)
-CreateInterfaceAddressResponse: TypeAlias = "CreateInterfaceAddressResult"
-CreateInterfacePrefixRequest = TypedDict(
-    "CreateInterfacePrefixRequest", {"pool_id": "Required[str]"}, total=False
-)
-CreateInterfacePrefixBody: TypeAlias = "CreateInterfacePrefixRequest"
-CreateInterfacePrefixResult = TypedDict(
-    "CreateInterfacePrefixResult",
-    {"routed_prefixes": "NotRequired[list[RoutedPrefix]]"},
     total=False,
 )
 CreateInterfacePrefixResponse: TypeAlias = "CreateInterfacePrefixResult"
 InternetGatewayCreateRequestInput = TypedDict(
     "InternetGatewayCreateRequestInput",
     {
+        "vpc": "Required[str]",
         "name": "Required[str]",
         "description": "NotRequired[str]",
         "tags": "NotRequired[dict[str, str]]",
@@ -296,6 +250,23 @@ InternetGatewayCreateRequestInput = TypedDict(
     total=False,
 )
 CreateInternetGatewayBody: TypeAlias = "InternetGatewayCreateRequestInput"
+InternetGatewayResponse = TypedDict(
+    "InternetGatewayResponse", {"internet_gateway": "Required[InternetGateway]"}, total=False
+)
+InternetGateway = TypedDict(
+    "InternetGateway",
+    {
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
+        "description": "NotRequired[str]",
+        "attached_vpc": "NotRequired[ResourceRef | Literal[None] | None]",
+        "tags": "Required[dict[str, str]]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+    },
+    total=False,
+)
 CreateInternetGatewayResponse: TypeAlias = "InternetGatewayResponse"
 NATGatewayCreateRequestInput = TypedDict(
     "NATGatewayCreateRequestInput",
@@ -318,7 +289,7 @@ NATGateway = TypedDict(
         "crn": "Required[str]",
         "name": "Required[str]",
         "description": "NotRequired[str]",
-        "subnet": "Required[Subnet]",
+        "subnet": "Required[ResourceRef]",
         "public_ipv4": "Required[str]",
         "public_ipv6": "NotRequired[str]",
         "tags": "Required[dict[str, str]]",
@@ -333,10 +304,12 @@ CreatePrefixPoolRequest = TypedDict(
 )
 CreatePrefixPoolBody: TypeAlias = "CreatePrefixPoolRequest"
 CreatePrefixPoolResult = TypedDict(
-    "CreatePrefixPoolResult", {"prefix_pools": "NotRequired[list[PrefixPool]]"}, total=False
+    "CreatePrefixPoolResult", {"prefix_pool": "Required[PrefixPool]"}, total=False
 )
 PrefixPool = TypedDict(
-    "PrefixPool", {"id": "Required[str]", "cidr_ipv4": "Required[str]"}, total=False
+    "PrefixPool",
+    {"crn": "Required[str]", "id": "Required[str]", "cidr_ipv4": "Required[str]"},
+    total=False,
 )
 CreatePrefixPoolResponse: TypeAlias = "CreatePrefixPoolResult"
 RouteCreateRequestInput = TypedDict(
@@ -359,14 +332,13 @@ Route = TypedDict(
     {
         "id": "Required[str]",
         "crn": "Required[str]",
-        "route_table_id": "Required[str]",
         "description": "NotRequired[str]",
         "destination_cidr": "Required[str]",
         "target_type": "Required[RouteTargetType]",
         "next_hop_ip": "NotRequired[str | None]",
-        "target_internet_gateway_id": "NotRequired[str | None]",
-        "target_nat_gateway_id": "NotRequired[str | None]",
-        "target_egress_only_gateway_id": "NotRequired[str | None]",
+        "target_internet_gateway": "NotRequired[ResourceRef]",
+        "target_nat_gateway": "NotRequired[ResourceRef]",
+        "target_egress_only_gateway": "NotRequired[ResourceRef]",
         "tags": "Required[dict[str, str]]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
@@ -396,7 +368,7 @@ RouteTable = TypedDict(
     {
         "id": "Required[str]",
         "crn": "Required[str]",
-        "vpc": "Required[Vpc]",
+        "vpc": "Required[ResourceRef]",
         "name": "Required[str]",
         "description": "NotRequired[str]",
         "is_main": "Required[bool]",
@@ -417,22 +389,6 @@ SecurityGroupCreateRequestInput = TypedDict(
     total=False,
 )
 CreateSecurityGroupBody: TypeAlias = "SecurityGroupCreateRequestInput"
-SecurityGroupResponse = TypedDict(
-    "SecurityGroupResponse", {"security_group": "NotRequired[SecurityGroup]"}, total=False
-)
-SecurityGroup = TypedDict(
-    "SecurityGroup",
-    {
-        "id": "Required[str]",
-        "crn": "Required[str]",
-        "name": "Required[str]",
-        "description": "NotRequired[str]",
-        "tags": "Required[dict[str, str]]",
-        "created_at": "Required[str]",
-        "updated_at": "Required[str]",
-    },
-    total=False,
-)
 CreateSecurityGroupResponse: TypeAlias = "SecurityGroupResponse"
 SecurityGroupRuleCreateRequestInput = TypedDict(
     "SecurityGroupRuleCreateRequestInput",
@@ -459,7 +415,6 @@ SecurityGroupRule = TypedDict(
     "SecurityGroupRule",
     {
         "id": "Required[str]",
-        "security_group_id": "Required[str]",
         "description": "NotRequired[str]",
         "direction": "Required[SecurityGroupRuleDirection]",
         "ethertype": "Required[SecurityGroupRuleEthertype]",
@@ -467,7 +422,7 @@ SecurityGroupRule = TypedDict(
         "port_min": "NotRequired[int | None]",
         "port_max": "NotRequired[int | None]",
         "remote_cidr": "NotRequired[str | None]",
-        "source_security_group_id": "NotRequired[str | None]",
+        "source_security_group": "NotRequired[ResourceRef]",
         "created_at": "Required[str]",
     },
     total=False,
@@ -492,7 +447,26 @@ SubnetCreateRequestInput = TypedDict(
     total=False,
 )
 CreateSubnetBody: TypeAlias = "SubnetCreateRequestInput"
-SubnetResponse = TypedDict("SubnetResponse", {"subnet": "NotRequired[Subnet]"}, total=False)
+SubnetResponse = TypedDict("SubnetResponse", {"subnet": "Required[Subnet]"}, total=False)
+Subnet = TypedDict(
+    "Subnet",
+    {
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "vpc": "Required[ResourceRef]",
+        "route_table": "Required[ResourceRef | Literal[None] | None]",
+        "name": "Required[str]",
+        "description": "NotRequired[str]",
+        "cidr_ipv4": "Required[str]",
+        "gateway_ipv4": "Required[str]",
+        "cidr_ipv6": "NotRequired[str | None]",
+        "gateway_ipv6": "NotRequired[str | None]",
+        "tags": "Required[dict[str, str]]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+    },
+    total=False,
+)
 CreateSubnetResponse: TypeAlias = "SubnetResponse"
 VpcCreateRequestInput = TypedDict(
     "VpcCreateRequestInput",
@@ -507,17 +481,61 @@ VpcCreateRequestInput = TypedDict(
     total=False,
 )
 CreateVpcBody: TypeAlias = "VpcCreateRequestInput"
-VpcResponse = TypedDict("VpcResponse", {"vpc": "NotRequired[Vpc]"}, total=False)
+VpcResponse = TypedDict("VpcResponse", {"vpc": "Required[Vpc]"}, total=False)
+Vpc = TypedDict(
+    "Vpc",
+    {
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
+        "description": "NotRequired[str]",
+        "cidr_ipv4": "Required[str]",
+        "cidr_ipv6": "NotRequired[str | None]",
+        "tags": "Required[dict[str, str]]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+    },
+    total=False,
+)
 CreateVpcResponse: TypeAlias = "VpcResponse"
-DetachFloatingIpRequest = TypedDict(
-    "DetachFloatingIpRequest", {"interface": "NotRequired[str]"}, total=False
+SubnetIPv6RequestInput: TypeAlias = (
+    "SubnetIPv6RequestInputVariant1 | SubnetIPv6RequestInputVariant2"
 )
-DetachFloatingIpBody: TypeAlias = "DetachFloatingIpRequest"
-DetachFloatingIpResult = TypedDict(
-    "DetachFloatingIpResult", {"floating_ip": "NotRequired[FloatingIp]"}, total=False
+SubnetIPv6RequestInputVariant1 = TypedDict(
+    "SubnetIPv6RequestInputVariant1",
+    {
+        "allocate_cidr_ipv6": "Required[bool]",
+        "cidr_ipv6": "NotRequired[str]",
+        "copy_ipv4_security_rules": "NotRequired[bool]",
+        "ipv6_routing": "NotRequired[Literal['match_ipv4', 'unchanged', 'internet_gateway', 'nat_gateway', 'egress_only_gateway']]",
+    },
+    total=False,
 )
-DetachFloatingIpResponse: TypeAlias = "DetachFloatingIpResult"
-DetachInternetGatewayResponse: TypeAlias = "InternetGatewayResponse"
+SubnetIPv6RequestInputVariant2 = TypedDict(
+    "SubnetIPv6RequestInputVariant2",
+    {
+        "allocate_cidr_ipv6": "NotRequired[bool]",
+        "cidr_ipv6": "Required[str]",
+        "copy_ipv4_security_rules": "NotRequired[bool]",
+        "ipv6_routing": "NotRequired[Literal['match_ipv4', 'unchanged', 'internet_gateway', 'nat_gateway', 'egress_only_gateway']]",
+    },
+    total=False,
+)
+EnableSubnetIPv6Body: TypeAlias = "SubnetIPv6RequestInput"
+EnableSubnetIPv6Response: TypeAlias = "SubnetResponse"
+VpcIPv6RequestInput: TypeAlias = "VpcIPv6RequestInputVariant1 | VpcIPv6RequestInputVariant2"
+VpcIPv6RequestInputVariant1 = TypedDict(
+    "VpcIPv6RequestInputVariant1",
+    {"allocate_cidr_ipv6": "Required[bool]", "cidr_ipv6": "NotRequired[str]"},
+    total=False,
+)
+VpcIPv6RequestInputVariant2 = TypedDict(
+    "VpcIPv6RequestInputVariant2",
+    {"allocate_cidr_ipv6": "NotRequired[bool]", "cidr_ipv6": "Required[str]"},
+    total=False,
+)
+EnableVPCIPv6Body: TypeAlias = "VpcIPv6RequestInput"
+EnableVPCIPv6Response: TypeAlias = "VpcResponse"
 GetEgressOnlyGatewayResponse: TypeAlias = "EgressOnlyGatewayResponse"
 GetEgressOnlyGatewayResource: TypeAlias = "EgressOnlyGateway"
 GetEgressOnlyGatewayScope = TypedDict(
@@ -600,18 +618,17 @@ GatewayRoute = TypedDict(
     {
         "id": "Required[str]",
         "crn": "Required[str]",
-        "route_table_id": "Required[str]",
         "description": "NotRequired[str]",
         "destination_cidr": "Required[str]",
         "target_type": "Required[RouteTargetType]",
         "next_hop_ip": "NotRequired[str | None]",
-        "target_internet_gateway_id": "NotRequired[str | None]",
-        "target_nat_gateway_id": "NotRequired[str | None]",
-        "target_egress_only_gateway_id": "NotRequired[str | None]",
+        "target_internet_gateway": "NotRequired[ResourceRef]",
+        "target_nat_gateway": "NotRequired[ResourceRef]",
+        "target_egress_only_gateway": "NotRequired[ResourceRef]",
         "tags": "Required[dict[str, str]]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
-        "route_table": "Required[RouteTableSummary]",
+        "route_table": "Required[ResourceRef]",
     },
     total=False,
 )
@@ -648,6 +665,24 @@ EgressOnlyGatewayListResponse = TypedDict(
 )
 ListEgressOnlyGatewaysResponse: TypeAlias = "EgressOnlyGatewayListResponse"
 ListEgressOnlyGatewaysItem: TypeAlias = "EgressOnlyGateway"
+ListFloatingIpInterfacesParameters = TypedDict(
+    "ListFloatingIpInterfacesParameters",
+    {
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+        "crn": "NotRequired[str]",
+        "name": "NotRequired[str]",
+    },
+    total=False,
+)
+ListFloatingIpInterfacesQuery: TypeAlias = "ListFloatingIpInterfacesParameters"
+FloatingIpInterfaceListResponse = TypedDict(
+    "FloatingIpInterfaceListResponse",
+    {"interfaces": "Required[list[FloatingIpInterface]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+ListFloatingIpInterfacesResponse: TypeAlias = "FloatingIpInterfaceListResponse"
+ListFloatingIpInterfacesItem: TypeAlias = "FloatingIpInterface"
 ListFloatingIpsParameters = TypedDict(
     "ListFloatingIpsParameters",
     {
@@ -676,22 +711,29 @@ ListInterfaceAddressesResponse: TypeAlias = "ListInterfaceAddressesResult"
 ListInterfaceAddressesItem: TypeAlias = "InterfaceAddress"
 ListInterfacePrefixesResult = TypedDict(
     "ListInterfacePrefixesResult",
-    {"routed_prefixes": "NotRequired[list[RoutedPrefix]]"},
+    {"prefixes": "Required[list[RoutedPrefix]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListInterfacePrefixesResponse: TypeAlias = "ListInterfacePrefixesResult"
 ListInterfacePrefixesItem: TypeAlias = "RoutedPrefix"
 ListInterfaceSecurityGroupsParameters = TypedDict(
     "ListInterfaceSecurityGroupsParameters",
-    {"name": "NotRequired[str]", "crn": "NotRequired[str]"},
+    {
+        "name": "NotRequired[str]",
+        "crn": "NotRequired[str]",
+        "marker": "NotRequired[str]",
+        "limit": "NotRequired[int]",
+    },
     total=False,
 )
 ListInterfaceSecurityGroupsQuery: TypeAlias = "ListInterfaceSecurityGroupsParameters"
-InterfaceSecurityGroupsResponse = TypedDict(
-    "InterfaceSecurityGroupsResponse", {"security_group_ids": "Required[list[str]]"}, total=False
+SecurityGroupListResponse = TypedDict(
+    "SecurityGroupListResponse",
+    {"security_groups": "Required[list[SecurityGroup]]", "meta": "Required[PaginationMeta]"},
+    total=False,
 )
-ListInterfaceSecurityGroupsResponse: TypeAlias = "InterfaceSecurityGroupsResponse"
-ListInterfaceSecurityGroupsItem: TypeAlias = "str"
+ListInterfaceSecurityGroupsResponse: TypeAlias = "SecurityGroupListResponse"
+ListInterfaceSecurityGroupsItem: TypeAlias = "SecurityGroup"
 ListInterfacesParameters = TypedDict(
     "ListInterfacesParameters",
     {
@@ -777,7 +819,9 @@ NATGatewayListResponse = TypedDict(
 ListNATGatewaysResponse: TypeAlias = "NATGatewayListResponse"
 ListNATGatewaysItem: TypeAlias = "NATGateway"
 ListPrefixPoolsResult = TypedDict(
-    "ListPrefixPoolsResult", {"prefix_pools": "NotRequired[list[PrefixPool]]"}, total=False
+    "ListPrefixPoolsResult",
+    {"prefix_pools": "Required[list[PrefixPool]]", "meta": "Required[PaginationMeta]"},
+    total=False,
 )
 ListPrefixPoolsResponse: TypeAlias = "ListPrefixPoolsResult"
 ListPrefixPoolsItem: TypeAlias = "PrefixPool"
@@ -847,11 +891,6 @@ ListSecurityGroupsParameters = TypedDict(
     total=False,
 )
 ListSecurityGroupsQuery: TypeAlias = "ListSecurityGroupsParameters"
-SecurityGroupListResponse = TypedDict(
-    "SecurityGroupListResponse",
-    {"security_groups": "Required[list[SecurityGroup]]", "meta": "Required[PaginationMeta]"},
-    total=False,
-)
 ListSecurityGroupsResponse: TypeAlias = "SecurityGroupListResponse"
 ListSecurityGroupsItem: TypeAlias = "SecurityGroup"
 ListSubnetsParameters = TypedDict(
@@ -891,11 +930,6 @@ VpcListResponse = TypedDict(
 )
 ListVpcsResponse: TypeAlias = "VpcListResponse"
 ListVpcsItem: TypeAlias = "Vpc"
-InterfaceSecurityGroupsRequestInput = TypedDict(
-    "InterfaceSecurityGroupsRequestInput", {"security_groups": "Required[list[str]]"}, total=False
-)
-SetInterfaceSecurityGroupsBody: TypeAlias = "InterfaceSecurityGroupsRequestInput"
-SetInterfaceSecurityGroupsResponse: TypeAlias = "InterfaceSecurityGroupsResponse"
 EgressOnlyGatewayUpdateRequestInput = TypedDict(
     "EgressOnlyGatewayUpdateRequestInput",
     {"description": "NotRequired[str | None]", "tags": "NotRequired[dict[str, str]]"},
@@ -908,7 +942,7 @@ FloatingIpUpdateRequestInput = TypedDict(
     {
         "description": "NotRequired[str | None]",
         "tags": "NotRequired[dict[str, str]]",
-        "health_check": "NotRequired[FloatingIpHealthCheckInput | None]",
+        "health_check": "NotRequired[FloatingIpHealthCheckInput | Literal[None] | None]",
     },
     total=False,
 )
@@ -962,10 +996,6 @@ SubnetUpdateRequestInput = TypedDict(
         "description": "NotRequired[str | None]",
         "route_table": "NotRequired[str]",
         "tags": "NotRequired[dict[str, str]]",
-        "allocate_cidr_ipv6": "NotRequired[bool]",
-        "cidr_ipv6": "NotRequired[str | None]",
-        "copy_ipv4_security_rules": "NotRequired[bool]",
-        "ipv6_routing": "NotRequired[Literal['match_ipv4', 'unchanged', 'internet_gateway', 'nat_gateway', 'egress_only_gateway']]",
     },
     total=False,
 )
@@ -973,12 +1003,7 @@ UpdateSubnetBody: TypeAlias = "SubnetUpdateRequestInput"
 UpdateSubnetResponse: TypeAlias = "SubnetResponse"
 VpcUpdateRequestInput = TypedDict(
     "VpcUpdateRequestInput",
-    {
-        "description": "NotRequired[str | None]",
-        "tags": "NotRequired[dict[str, str]]",
-        "allocate_cidr_ipv6": "NotRequired[bool]",
-        "cidr_ipv6": "NotRequired[str]",
-    },
+    {"description": "NotRequired[str | None]", "tags": "NotRequired[dict[str, str]]"},
     total=False,
 )
 UpdateVpcBody: TypeAlias = "VpcUpdateRequestInput"

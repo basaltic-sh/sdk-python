@@ -4,56 +4,45 @@ from __future__ import annotations
 
 from typing import Literal, NotRequired, Required, TypeAlias, TypedDict
 
-AttachInstanceNICRequest = TypedDict(
-    "AttachInstanceNICRequest", {"interface": "Required[str]"}, total=False
+AttachInstanceInterfaceRequest = TypedDict(
+    "AttachInstanceInterfaceRequest", {"interface": "Required[str]"}, total=False
 )
-AttachInstanceNICBody: TypeAlias = "AttachInstanceNICRequest"
-AttachInstanceNICResult = TypedDict(
-    "AttachInstanceNICResult",
-    {"attachment": "NotRequired[AttachInstanceNICResultAttachment]"},
-    total=False,
+AttachInstanceInterfaceBody: TypeAlias = "AttachInstanceInterfaceRequest"
+InstanceInterfaceResponse = TypedDict(
+    "InstanceInterfaceResponse", {"interface": "Required[AttachedInterface]"}, total=False
 )
-AttachInstanceNICResultAttachment = TypedDict(
-    "AttachInstanceNICResultAttachment",
-    {
-        "interface_id": "NotRequired[str]",
-        "mac": "NotRequired[str]",
-        "boot_index": "NotRequired[int]",
-        "external": "NotRequired[bool]",
-        "restart_required": "NotRequired[bool]",
-        "addresses": "NotRequired[list[InterfaceAddress]]",
-    },
-    total=False,
-)
-InterfaceAddress = TypedDict(
-    "InterfaceAddress",
-    {
-        "id": "Required[str]",
-        "family": "Required[Literal['ipv4', 'ipv6']]",
-        "address": "Required[str]",
-        "prefix": "Required[str]",
-        "primary": "Required[bool]",
-        "floating_ips": "Required[list[AddressFloatingIp]]",
-    },
-    total=False,
-)
-AddressFloatingIp = TypedDict(
-    "AddressFloatingIp",
+AttachedInterface = TypedDict(
+    "AttachedInterface",
     {
         "id": "Required[str]",
         "crn": "Required[str]",
-        "visibility": "Required[Literal['public', 'private']]",
-        "address": "Required[str]",
+        "subnet": "Required[ResourceRef]",
+        "name": "Required[str]",
+        "description": "NotRequired[str]",
+        "mac": "Required[str]",
+        "attached_to": "Required[ResourceRef | Literal[None] | None]",
+        "tags": "Required[dict[str, str]]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+        "boot_index": "Required[int]",
+        "primary": "Required[bool]",
+        "external": "Required[bool]",
+        "restart_required": "NotRequired[bool]",
     },
     total=False,
 )
-AttachInstanceNICResponse: TypeAlias = "AttachInstanceNICResult"
+ResourceRef = TypedDict(
+    "ResourceRef",
+    {"id": "Required[str]", "crn": "Required[str]", "name": "NotRequired[str]"},
+    total=False,
+)
+AttachInstanceInterfaceResponse: TypeAlias = "InstanceInterfaceResponse"
 InstancePoolFloatingIpAttachRequestInput = TypedDict(
     "InstancePoolFloatingIpAttachRequestInput", {"floating_ip": "Required[str]"}, total=False
 )
 AttachInstancePoolFloatingIpBody: TypeAlias = "InstancePoolFloatingIpAttachRequestInput"
 InstancePoolFloatingIpResponse = TypedDict(
-    "InstancePoolFloatingIpResponse", {"floating_ip": "NotRequired[FloatingIp]"}, total=False
+    "InstancePoolFloatingIpResponse", {"floating_ip": "Required[FloatingIp]"}, total=False
 )
 FloatingIp = TypedDict(
     "FloatingIp",
@@ -62,45 +51,19 @@ FloatingIp = TypedDict(
         "crn": "Required[str]",
         "description": "NotRequired[str]",
         "family": "Required[IpFamily]",
-        "attached_to": "Required[str | None]",
-        "members": "Required[list[FloatingIpMember]]",
+        "attached_to": "Required[ResourceRef | Literal[None] | None]",
         "tags": "Required[dict[str, str]]",
         "health_check": "NotRequired[FloatingIpHealthCheck]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
         "address": "Required[str]",
         "visibility": "Required[Literal['public', 'private']]",
-        "subnet_id": "NotRequired[str | None]",
-        "vpc_id": "NotRequired[str]",
+        "subnet": "Required[ResourceRef | Literal[None] | None]",
+        "vpc": "Required[ResourceRef | Literal[None] | None]",
     },
     total=False,
 )
 IpFamily: TypeAlias = "Literal['ipv4', 'ipv6']"
-FloatingIpMember = TypedDict(
-    "FloatingIpMember",
-    {
-        "interface": "Required[FloatingIpMemberInterfaceObject | None]",
-        "health": "Required[Literal['unknown', 'healthy', 'unhealthy']]",
-        "reason": "Required[Literal['unprobed', 'booting', 'probe_failed', 'passing']]",
-        "created_at": "Required[str]",
-        "address_id": "NotRequired[str | None]",
-    },
-    total=False,
-)
-FloatingIpMemberInterfaceObject = TypedDict(
-    "FloatingIpMemberInterfaceObject",
-    {
-        "id": "Required[str]",
-        "crn": "Required[str]",
-        "instance": "Required[FloatingIpMemberInterfaceObjectInstanceObject | None]",
-    },
-    total=False,
-)
-FloatingIpMemberInterfaceObjectInstanceObject = TypedDict(
-    "FloatingIpMemberInterfaceObjectInstanceObject",
-    {"id": "Required[str]", "crn": "Required[str]", "name": "Required[str]"},
-    total=False,
-)
 FloatingIpHealthCheck = TypedDict(
     "FloatingIpHealthCheck",
     {
@@ -127,21 +90,83 @@ AttachInstanceVolumeRequest = TypedDict(
     total=False,
 )
 AttachInstanceVolumeBody: TypeAlias = "AttachInstanceVolumeRequest"
-AttachInstanceVolumeResult = TypedDict(
-    "AttachInstanceVolumeResult",
-    {"attachment": "NotRequired[AttachInstanceVolumeResultAttachment]"},
-    total=False,
+InstanceVolumeResponse = TypedDict(
+    "InstanceVolumeResponse", {"volume": "Required[AttachedVolume]"}, total=False
 )
-AttachInstanceVolumeResultAttachment = TypedDict(
-    "AttachInstanceVolumeResultAttachment",
+AttachedVolume = TypedDict(
+    "AttachedVolume",
     {
-        "instance_id": "NotRequired[str]",
-        "volume_id": "NotRequired[str]",
-        "device": "NotRequired[str]",
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
+        "description": "NotRequired[str]",
+        "tags": "Required[Tags]",
+        "volume_type": "Required[VolumeTypeName]",
+        "size_gb": "Required[int]",
+        "performance": "Required[VolumePerformance]",
+        "included_io_limits": "Required[IncludedIOLimits]",
+        "status": "Required[VolumeStatus]",
+        "bootable": "Required[bool]",
+        "faults": "Required[list[Fault]]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+        "source_image": "Required[ResourceRef | Literal[None] | None]",
+        "source_snapshot": "Required[ResourceRef | Literal[None] | None]",
+        "device": "Required[str]",
+        "boot_index": "Required[int]",
+        "delete_on_termination": "Required[bool]",
+        "mount_path": "NotRequired[str]",
+        "fstype": "NotRequired[Literal['ext4', 'xfs']]",
+        "mount": "NotRequired[VolumeMount]",
     },
     total=False,
 )
-AttachInstanceVolumeResponse: TypeAlias = "AttachInstanceVolumeResult"
+Tags: TypeAlias = "dict[str, str]"
+VolumeTypeName: TypeAlias = "Literal['hdd', 'ssd', 'nvme']"
+VolumePerformance = TypedDict(
+    "VolumePerformance",
+    {"requested": "Required[IncludedIOLimits]", "applied": "Required[IncludedIOLimits]"},
+    total=False,
+)
+IncludedIOLimits = TypedDict(
+    "IncludedIOLimits",
+    {
+        "iops": "Required[int]",
+        "bytes_per_sec": "Required[int]",
+        "burst_iops": "Required[int]",
+        "burst_bytes_per_sec": "Required[int]",
+        "burst_seconds": "Required[int]",
+    },
+    total=False,
+)
+VolumeStatus: TypeAlias = (
+    "Literal['creating', 'available', 'in_use', 'extending', 'updating', 'deleting', 'error']"
+)
+Fault = TypedDict(
+    "Fault",
+    {
+        "code": "Required[str]",
+        "severity": "Required[Literal['error', 'warning']]",
+        "message": "Required[str]",
+        "details": "Required[dict[str, object] | None]",
+        "first_at": "Required[str]",
+        "last_at": "Required[str]",
+        "occurrences": "Required[int]",
+    },
+    total=False,
+)
+VolumeMount = TypedDict(
+    "VolumeMount",
+    {
+        "state": "Required[Literal['unknown', 'pending', 'mounted', 'failed']]",
+        "code": "NotRequired[Literal['unsafe_serial', 'device_absent', 'probe_failed', 'signatures_no_filesystem', 'unsupported_fstype', 'mkfs_failed', 'unsafe_mount_path', 'mkdir_failed', 'mount_failed', 'fstab_write_failed', 'unknown_error']]",
+        "message": "NotRequired[str]",
+        "since": "NotRequired[str]",
+        "reported_at": "NotRequired[str]",
+    },
+    total=False,
+)
+AttachInstanceVolumeResponse: TypeAlias = "InstanceVolumeResponse"
 ImageCreateRequestInput = TypedDict(
     "ImageCreateRequestInput",
     {
@@ -200,20 +225,6 @@ ImageDeletionRetention = TypedDict(
     },
     total=False,
 )
-Fault = TypedDict(
-    "Fault",
-    {
-        "code": "Required[str]",
-        "severity": "Required[Literal['error', 'warning']]",
-        "message": "Required[str]",
-        "details": "Required[dict[str, object] | None]",
-        "first_at": "Required[str]",
-        "last_at": "Required[str]",
-        "occurrences": "Required[int]",
-    },
-    total=False,
-)
-Tags: TypeAlias = "dict[str, str]"
 CreateImageResponse: TypeAlias = "ImageResponse"
 InstanceCreateRequestInput = TypedDict(
     "InstanceCreateRequestInput",
@@ -305,55 +316,30 @@ InstanceLaunchVolumeInputVariant2 = TypedDict(
 MetadataInput: TypeAlias = "dict[str, str]"
 CreateInstanceBody: TypeAlias = "InstanceCreateRequestInput"
 CreateInstanceResult = TypedDict(
-    "CreateInstanceResult", {"instance": "NotRequired[Instance]"}, total=False
+    "CreateInstanceResult", {"instance": "Required[Instance]"}, total=False
 )
 Instance = TypedDict(
     "Instance",
     {
-        "id": "NotRequired[str]",
-        "crn": "NotRequired[str]",
-        "name": "NotRequired[str]",
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
         "description": "NotRequired[str]",
         "task_state": "NotRequired[str | None]",
-        "flavor": "NotRequired[Flavor]",
-        "image": "NotRequired[Image]",
+        "flavor": "Required[ResourceRef]",
+        "image": "Required[ResourceRef | Literal[None] | None]",
         "user_data": "NotRequired[str]",
-        "iam_role": "NotRequired[InstanceRole]",
+        "iam_role": "Required[ResourceRef | Literal[None] | None]",
         "metadata": "NotRequired[Metadata]",
         "tags": "NotRequired[Tags]",
         "faults": "Required[list[Fault]]",
-        "created_at": "NotRequired[str]",
-        "updated_at": "NotRequired[str]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
         "launched_at": "NotRequired[str | None]",
         "terminated_at": "NotRequired[str | None]",
-        "desired_state": "NotRequired[Literal['running', 'stopped', 'deleted']]",
-        "current_state": "NotRequired[CurrentState]",
+        "desired_state": "Required[Literal['running', 'stopped', 'deleted']]",
+        "current_state": "Required[CurrentState]",
     },
-    total=False,
-)
-Flavor = TypedDict(
-    "Flavor",
-    {
-        "id": "NotRequired[str]",
-        "crn": "NotRequired[str]",
-        "name": "NotRequired[str]",
-        "description": "NotRequired[str]",
-        "vcpus": "NotRequired[int]",
-        "ram_mb": "NotRequired[int]",
-        "class": "NotRequired[Literal['shared', 'dedicated']]",
-        "family": "NotRequired[Literal['general', 'loadbalancer', 'database']]",
-        "net_mbps": "NotRequired[int]",
-        "cpu_baseline_pct": "NotRequired[int]",
-        "cpu_burst_pct": "NotRequired[int]",
-        "status": "NotRequired[Literal['active', 'disabled']]",
-        "created_at": "NotRequired[str]",
-        "updated_at": "NotRequired[str]",
-    },
-    total=False,
-)
-InstanceRole = TypedDict(
-    "InstanceRole",
-    {"id": "Required[str]", "crn": "Required[str]", "name": "Required[str]"},
     total=False,
 )
 Metadata: TypeAlias = "dict[str, str]"
@@ -362,6 +348,7 @@ CreateInstanceResponse: TypeAlias = "CreateInstanceResult"
 InstancePoolCreateRequestInput = TypedDict(
     "InstancePoolCreateRequestInput",
     {
+        "subnets": "Required[list[str]]",
         "autoscaling": "NotRequired[AutoscalingPolicyInput]",
         "name": "Required[str]",
         "description": "NotRequired[str]",
@@ -409,7 +396,9 @@ InstancePoolTemplateRequestInput = TypedDict(
         "flavor": "Required[str]",
         "architecture": "NotRequired[str]",
         "image": "NotRequired[str]",
-        "networks": "Required[list[NetworkConfigInput]]",
+        "addresses": "NotRequired[list[AddressRequestInput]]",
+        "security_groups": "NotRequired[list[str]]",
+        "floating_ip_assignment": "NotRequired[Literal['none', 'ipv4', 'ipv6', 'dual_stack', 'auto']]",
         "user_data": "NotRequired[str]",
         "metadata": "NotRequired[MetadataInput]",
         "tags": "NotRequired[TagsInput]",
@@ -433,11 +422,13 @@ InstanceVolumeInput = TypedDict(
 )
 CreateInstancePoolBody: TypeAlias = "InstancePoolCreateRequestInput"
 InstancePoolResponse = TypedDict(
-    "InstancePoolResponse", {"instance_pool": "NotRequired[InstancePool]"}, total=False
+    "InstancePoolResponse", {"instance_pool": "Required[InstancePool]"}, total=False
 )
 InstancePool = TypedDict(
     "InstancePool",
     {
+        "subnets": "Required[list[ResourceRef]]",
+        "vpc": "Required[ResourceRef | Literal[None] | None]",
         "autoscaling": "NotRequired[AutoscalingPolicy]",
         "autoscaling_status": "NotRequired[AutoscalingStatus]",
         "rollout_surge": "NotRequired[bool]",
@@ -526,66 +517,17 @@ RetiringPoolMember = TypedDict(
 InstancePoolTemplate = TypedDict(
     "InstancePoolTemplate",
     {
-        "flavor_id": "NotRequired[str]",
-        "image_id": "NotRequired[str]",
-        "networks": "NotRequired[list[NetworkConfigResponse]]",
+        "addresses": "NotRequired[list[AddressRequest]]",
+        "security_groups": "Required[list[ResourceRef]]",
+        "floating_ip_assignment": "Required[Literal['none', 'ipv4', 'ipv6', 'dual_stack', 'auto']]",
         "user_data": "NotRequired[str]",
         "metadata": "NotRequired[Metadata]",
         "tags": "NotRequired[Tags]",
-        "iam_role": "NotRequired[InstanceRole]",
+        "iam_role": "Required[ResourceRef | Literal[None] | None]",
         "volumes": "NotRequired[list[InstanceVolume]]",
+        "flavor": "Required[ResourceRef]",
+        "image": "Required[ResourceRef | Literal[None] | None]",
     },
-    total=False,
-)
-NetworkConfigResponse = TypedDict(
-    "NetworkConfigResponse",
-    {
-        "subnet": "Required[Subnet | Literal[None] | None]",
-        "mac": "NotRequired[str]",
-        "security_group_ids": "NotRequired[list[str]]",
-        "floating_ip_assignment": "NotRequired[Literal['none', 'ipv4', 'ipv6', 'dual_stack', 'auto']]",
-        "addresses": "NotRequired[list[AddressRequest]]",
-    },
-    total=False,
-)
-Subnet = TypedDict(
-    "Subnet",
-    {
-        "id": "Required[str]",
-        "crn": "Required[str]",
-        "vpc": "Required[Vpc]",
-        "route_table": "Required[RouteTableSummary]",
-        "name": "Required[str]",
-        "description": "NotRequired[str]",
-        "cidr_ipv4": "Required[str]",
-        "gateway_ipv4": "Required[str]",
-        "cidr_ipv6": "NotRequired[str | None]",
-        "gateway_ipv6": "NotRequired[str | None]",
-        "tags": "Required[dict[str, str]]",
-        "created_at": "Required[str]",
-        "updated_at": "Required[str]",
-    },
-    total=False,
-)
-Vpc = TypedDict(
-    "Vpc",
-    {
-        "id": "Required[str]",
-        "crn": "Required[str]",
-        "name": "Required[str]",
-        "description": "NotRequired[str]",
-        "cidr_ipv4": "Required[str]",
-        "cidr_ipv6": "NotRequired[str | None]",
-        "tags": "Required[dict[str, str]]",
-        "created_at": "Required[str]",
-        "updated_at": "Required[str]",
-    },
-    total=False,
-)
-RouteTableSummary: TypeAlias = "RouteTableSummaryObject | None"
-RouteTableSummaryObject = TypedDict(
-    "RouteTableSummaryObject",
-    {"id": "Required[str]", "crn": "Required[str]", "name": "Required[str]"},
     total=False,
 )
 AddressRequest = TypedDict(
@@ -629,7 +571,25 @@ GetConsoleOutputResult = TypedDict(
     total=False,
 )
 GetConsoleOutputResponse: TypeAlias = "GetConsoleOutputResult"
-GetFlavorResult = TypedDict("GetFlavorResult", {"flavor": "NotRequired[Flavor]"}, total=False)
+GetFlavorResult = TypedDict("GetFlavorResult", {"flavor": "Required[Flavor]"}, total=False)
+Flavor = TypedDict(
+    "Flavor",
+    {
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
+        "description": "NotRequired[str]",
+        "vcpus": "Required[int]",
+        "ram_mb": "Required[int]",
+        "class": "Required[Literal['shared', 'dedicated']]",
+        "family": "Required[Literal['general', 'loadbalancer', 'database']]",
+        "net_mbps": "NotRequired[int]",
+        "cpu_baseline_pct": "NotRequired[int]",
+        "cpu_burst_pct": "NotRequired[int]",
+        "status": "Required[Literal['active', 'unavailable']]",
+    },
+    total=False,
+)
 GetFlavorResponse: TypeAlias = "GetFlavorResult"
 GetFlavorResource: TypeAlias = "Flavor"
 GetFlavorScope = TypedDict(
@@ -650,9 +610,7 @@ GetImageScope = TypedDict(
     },
     total=False,
 )
-GetInstanceResult = TypedDict(
-    "GetInstanceResult", {"instance": "NotRequired[Instance]"}, total=False
-)
+GetInstanceResult = TypedDict("GetInstanceResult", {"instance": "Required[Instance]"}, total=False)
 GetInstanceResponse: TypeAlias = "GetInstanceResult"
 GetInstanceResource: TypeAlias = "Instance"
 GetInstanceScope = TypedDict(
@@ -680,7 +638,19 @@ ListFlavorsParameters = TypedDict(
 )
 ListFlavorsQuery: TypeAlias = "ListFlavorsParameters"
 FlavorListResponse = TypedDict(
-    "FlavorListResponse", {"flavors": "NotRequired[list[Flavor]]"}, total=False
+    "FlavorListResponse",
+    {"flavors": "Required[list[Flavor]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+PaginationMeta = TypedDict(
+    "PaginationMeta",
+    {
+        "total": "NotRequired[int]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+        "has_more": "NotRequired[bool]",
+    },
+    total=False,
 )
 ListFlavorsResponse: TypeAlias = "FlavorListResponse"
 ListFlavorsItem: TypeAlias = "Flavor"
@@ -721,16 +691,6 @@ CatalogImage = TypedDict(
     },
     total=False,
 )
-PaginationMeta = TypedDict(
-    "PaginationMeta",
-    {
-        "total": "NotRequired[int]",
-        "limit": "NotRequired[int]",
-        "marker": "NotRequired[str]",
-        "has_more": "NotRequired[bool]",
-    },
-    total=False,
-)
 ListImageCatalogResponse: TypeAlias = "ImageCatalogResponse"
 ListImageCatalogItem: TypeAlias = "ImageCatalogCategory"
 ListImagesParameters = TypedDict(
@@ -755,59 +715,19 @@ ImageListResponse = TypedDict(
 )
 ListImagesResponse: TypeAlias = "ImageListResponse"
 ListImagesItem: TypeAlias = "Image"
-ListInstanceNICsParameters = TypedDict(
-    "ListInstanceNICsParameters",
+ListInstanceInterfacesParameters = TypedDict(
+    "ListInstanceInterfacesParameters",
     {"name": "NotRequired[str]", "crn": "NotRequired[str]"},
     total=False,
 )
-ListInstanceNICsQuery: TypeAlias = "ListInstanceNICsParameters"
-ListInstanceNICsResult = TypedDict(
-    "ListInstanceNICsResult",
-    {"nics": "NotRequired[list[ListInstanceNICsResultNicsItem]]"},
+ListInstanceInterfacesQuery: TypeAlias = "ListInstanceInterfacesParameters"
+InstanceInterfaceListResponse = TypedDict(
+    "InstanceInterfaceListResponse",
+    {"interfaces": "Required[list[AttachedInterface]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
-ListInstanceNICsResultNicsItem = TypedDict(
-    "ListInstanceNICsResultNicsItem",
-    {
-        "interface_id": "Required[str]",
-        "boot_index": "Required[int]",
-        "primary": "Required[bool]",
-        "external": "Required[bool]",
-        "name": "NotRequired[str]",
-        "mac": "NotRequired[str]",
-        "subnet": "Required[Subnet | Literal[None] | None]",
-        "addresses": "Required[list[InterfaceAddress]]",
-        "routed_prefixes": "Required[list[RoutedPrefix]]",
-    },
-    total=False,
-)
-RoutedPrefix = TypedDict(
-    "RoutedPrefix",
-    {
-        "id": "Required[str]",
-        "pool_id": "Required[str]",
-        "family": "Required[Literal['ipv4']]",
-        "prefix": "Required[str]",
-    },
-    total=False,
-)
-ListInstanceNICsResponse: TypeAlias = "ListInstanceNICsResult"
-ListInstanceNICsEntry = TypedDict(
-    "ListInstanceNICsEntry",
-    {
-        "interface_id": "Required[str]",
-        "boot_index": "Required[int]",
-        "primary": "Required[bool]",
-        "external": "Required[bool]",
-        "name": "NotRequired[str]",
-        "mac": "NotRequired[str]",
-        "subnet": "Required[Subnet | Literal[None] | None]",
-        "addresses": "Required[list[InterfaceAddress]]",
-        "routed_prefixes": "Required[list[RoutedPrefix]]",
-    },
-    total=False,
-)
-ListInstanceNICsItem: TypeAlias = "ListInstanceNICsEntry"
+ListInstanceInterfacesResponse: TypeAlias = "InstanceInterfaceListResponse"
+ListInstanceInterfacesItem: TypeAlias = "AttachedInterface"
 ListInstancePoolFloatingIpsParameters = TypedDict(
     "ListInstancePoolFloatingIpsParameters",
     {
@@ -839,7 +759,7 @@ ListInstancePoolsParameters = TypedDict(
 ListInstancePoolsQuery: TypeAlias = "ListInstancePoolsParameters"
 InstancePoolListResponse = TypedDict(
     "InstancePoolListResponse",
-    {"instance_pools": "NotRequired[list[InstancePool]]", "meta": "NotRequired[PaginationMeta]"},
+    {"instance_pools": "Required[list[InstancePool]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListInstancePoolsResponse: TypeAlias = "InstancePoolListResponse"
@@ -850,60 +770,13 @@ ListInstanceVolumesParameters = TypedDict(
     total=False,
 )
 ListInstanceVolumesQuery: TypeAlias = "ListInstanceVolumesParameters"
-ListInstanceVolumesResult = TypedDict(
-    "ListInstanceVolumesResult",
-    {"attachments": "NotRequired[list[ListInstanceVolumesResultAttachmentsItem]]"},
+InstanceVolumeListResponse = TypedDict(
+    "InstanceVolumeListResponse",
+    {"volumes": "Required[list[AttachedVolume]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
-ListInstanceVolumesResultAttachmentsItem = TypedDict(
-    "ListInstanceVolumesResultAttachmentsItem",
-    {
-        "volume_id": "NotRequired[str]",
-        "device": "NotRequired[str]",
-        "boot_index": "NotRequired[int]",
-        "delete_on_termination": "NotRequired[bool]",
-        "mount_path": "NotRequired[str]",
-        "fstype": "NotRequired[Literal['ext4', 'xfs']]",
-        "name": "NotRequired[str]",
-        "volume_type": "NotRequired[str]",
-        "size_gb": "NotRequired[int]",
-        "status": "NotRequired[str]",
-        "bootable": "NotRequired[bool]",
-        "mount": "NotRequired[VolumeMount]",
-    },
-    total=False,
-)
-VolumeMount = TypedDict(
-    "VolumeMount",
-    {
-        "state": "Required[Literal['unknown', 'pending', 'mounted', 'failed']]",
-        "code": "NotRequired[Literal['unsafe_serial', 'device_absent', 'probe_failed', 'signatures_no_filesystem', 'unsupported_fstype', 'mkfs_failed', 'unsafe_mount_path', 'mkdir_failed', 'mount_failed', 'fstab_write_failed', 'unknown_error']]",
-        "message": "NotRequired[str]",
-        "since": "NotRequired[str]",
-        "reported_at": "NotRequired[str]",
-    },
-    total=False,
-)
-ListInstanceVolumesResponse: TypeAlias = "ListInstanceVolumesResult"
-ListInstanceVolumesEntry = TypedDict(
-    "ListInstanceVolumesEntry",
-    {
-        "volume_id": "NotRequired[str]",
-        "device": "NotRequired[str]",
-        "boot_index": "NotRequired[int]",
-        "delete_on_termination": "NotRequired[bool]",
-        "mount_path": "NotRequired[str]",
-        "fstype": "NotRequired[Literal['ext4', 'xfs']]",
-        "name": "NotRequired[str]",
-        "volume_type": "NotRequired[str]",
-        "size_gb": "NotRequired[int]",
-        "status": "NotRequired[str]",
-        "bootable": "NotRequired[bool]",
-        "mount": "NotRequired[VolumeMount]",
-    },
-    total=False,
-)
-ListInstanceVolumesItem: TypeAlias = "ListInstanceVolumesEntry"
+ListInstanceVolumesResponse: TypeAlias = "InstanceVolumeListResponse"
+ListInstanceVolumesItem: TypeAlias = "AttachedVolume"
 ListInstancesParameters = TypedDict(
     "ListInstancesParameters",
     {
@@ -920,7 +793,7 @@ ListInstancesParameters = TypedDict(
 ListInstancesQuery: TypeAlias = "ListInstancesParameters"
 InstanceListResponse = TypedDict(
     "InstanceListResponse",
-    {"instances": "NotRequired[list[Instance]]", "meta": "NotRequired[PaginationMeta]"},
+    {"instances": "Required[list[Instance]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListInstancesResponse: TypeAlias = "InstanceListResponse"
@@ -987,12 +860,13 @@ InstanceUpdateRequestInput = TypedDict(
 )
 UpdateInstanceBody: TypeAlias = "InstanceUpdateRequestInput"
 UpdateInstanceResult = TypedDict(
-    "UpdateInstanceResult", {"instance": "NotRequired[Instance]"}, total=False
+    "UpdateInstanceResult", {"instance": "Required[Instance]"}, total=False
 )
 UpdateInstanceResponse: TypeAlias = "UpdateInstanceResult"
 InstancePoolUpdateRequestInput = TypedDict(
     "InstancePoolUpdateRequestInput",
     {
+        "subnets": "NotRequired[list[str]]",
         "autoscaling": "NotRequired[AutoscalingPolicyInput]",
         "description": "NotRequired[str]",
         "tags": "NotRequired[TagsInput]",

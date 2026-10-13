@@ -224,6 +224,19 @@ _OPS = {
         contentType="",
         accept="application/json",
     ),
+    "listListenerCertificates": Operation(
+        id="listListenerCertificates",
+        method="GET",
+        path="/v1/load-balancers/{id}/listeners/{listener_id}/certificates",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+        itemsKey="certificates",
+    ),
     "listListeners": Operation(
         id="listListeners",
         method="GET",
@@ -240,21 +253,26 @@ _OPS = {
         accept="application/json",
         itemsKey="listeners",
     ),
-    "listLoadBalancerReplicas": Operation(
-        id="listLoadBalancerReplicas",
+    "listLoadBalancerInstances": Operation(
+        id="listLoadBalancerInstances",
         method="GET",
-        path="/v1/load-balancers/{id}/replicas",
+        path="/v1/load-balancers/{id}/instances",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
         queryEncoding={
-            "name": {"style": "form", "explode": True},
             "crn": {"style": "form", "explode": True},
+            "limit": {"style": "form", "explode": True},
+            "marker": {"style": "form", "explode": True},
+            "name": {"style": "form", "explode": True},
+            "current_state": {"style": "form", "explode": True},
+            "flavor": {"style": "form", "explode": True},
+            "image": {"style": "form", "explode": True},
         },
         bodyRequired=False,
         contentType="",
         accept="application/json",
-        itemsKey="replicas",
+        itemsKey="instances",
     ),
     "listLoadBalancers": Operation(
         id="listLoadBalancers",
@@ -815,6 +833,24 @@ class LoadbalancerService:
             ),
         )
 
+    def list_listener_certificates(
+        self, id: str, listener_id: str, *, options: RequestOptions | None = None
+    ) -> Page[m.ListListenerCertificatesResponse, m.ListListenerCertificatesItem]:
+        "List listener certificates"
+        return cast(
+            Page[m.ListListenerCertificatesResponse, m.ListListenerCertificatesItem],
+            self._transport.request(
+                "loadbalancer",
+                "https://loadbalancer.{region}.basaltic.sh",
+                _OPS["listListenerCertificates"],
+                "page",
+                {"id": id, "listener_id": listener_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
     def list_listeners(
         self,
         id: str,
@@ -837,26 +873,42 @@ class LoadbalancerService:
             ),
         )
 
-    def list_load_balancer_replicas(
+    def list_load_balancer_instances(
         self,
         id: str,
         *,
-        query: m.ListLoadBalancerReplicasQuery | None = None,
+        query: m.ListLoadBalancerInstancesQuery | None = None,
         options: RequestOptions | None = None,
-    ) -> Page[m.ListLoadBalancerReplicasResponse, m.ListLoadBalancerReplicasItem]:
-        "List the LB's instance replicas with live health"
+    ) -> Page[m.ListLoadBalancerInstancesResponse, m.ListLoadBalancerInstancesItem]:
+        "List a load balancer's instances"
         return cast(
-            Page[m.ListLoadBalancerReplicasResponse, m.ListLoadBalancerReplicasItem],
+            Page[m.ListLoadBalancerInstancesResponse, m.ListLoadBalancerInstancesItem],
             self._transport.request(
                 "loadbalancer",
                 "https://loadbalancer.{region}.basaltic.sh",
-                _OPS["listLoadBalancerReplicas"],
+                _OPS["listLoadBalancerInstances"],
                 "page",
                 {"id": id},
                 UNSET,
                 query,
                 options,
             ),
+        )
+
+    def list_load_balancer_instances_all(
+        self,
+        id: str,
+        *,
+        query: m.ListLoadBalancerInstancesQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Iterator[m.ListLoadBalancerInstancesItem]:
+        return iterate_pages(
+            lambda marker: self.list_load_balancer_instances(
+                id,
+                query=cast(m.ListLoadBalancerInstancesQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
         )
 
     def list_load_balancers(
@@ -976,7 +1028,7 @@ class LoadbalancerService:
         *,
         options: RequestOptions | None = None,
     ) -> ApiResponse[m.UpdateListenerResponse]:
-        "Patch a listener (rotate cert, change default target group)"
+        "Update a listener"
         return cast(
             ApiResponse[m.UpdateListenerResponse],
             self._transport.request(
@@ -1490,6 +1542,24 @@ class AsyncLoadbalancerService:
             ),
         )
 
+    async def list_listener_certificates(
+        self, id: str, listener_id: str, *, options: RequestOptions | None = None
+    ) -> Page[m.ListListenerCertificatesResponse, m.ListListenerCertificatesItem]:
+        "List listener certificates"
+        return cast(
+            Page[m.ListListenerCertificatesResponse, m.ListListenerCertificatesItem],
+            await self._transport.request(
+                "loadbalancer",
+                "https://loadbalancer.{region}.basaltic.sh",
+                _OPS["listListenerCertificates"],
+                "page",
+                {"id": id, "listener_id": listener_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
     async def list_listeners(
         self,
         id: str,
@@ -1512,26 +1582,42 @@ class AsyncLoadbalancerService:
             ),
         )
 
-    async def list_load_balancer_replicas(
+    async def list_load_balancer_instances(
         self,
         id: str,
         *,
-        query: m.ListLoadBalancerReplicasQuery | None = None,
+        query: m.ListLoadBalancerInstancesQuery | None = None,
         options: RequestOptions | None = None,
-    ) -> Page[m.ListLoadBalancerReplicasResponse, m.ListLoadBalancerReplicasItem]:
-        "List the LB's instance replicas with live health"
+    ) -> Page[m.ListLoadBalancerInstancesResponse, m.ListLoadBalancerInstancesItem]:
+        "List a load balancer's instances"
         return cast(
-            Page[m.ListLoadBalancerReplicasResponse, m.ListLoadBalancerReplicasItem],
+            Page[m.ListLoadBalancerInstancesResponse, m.ListLoadBalancerInstancesItem],
             await self._transport.request(
                 "loadbalancer",
                 "https://loadbalancer.{region}.basaltic.sh",
-                _OPS["listLoadBalancerReplicas"],
+                _OPS["listLoadBalancerInstances"],
                 "page",
                 {"id": id},
                 UNSET,
                 query,
                 options,
             ),
+        )
+
+    def list_load_balancer_instances_all(
+        self,
+        id: str,
+        *,
+        query: m.ListLoadBalancerInstancesQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> AsyncIterator[m.ListLoadBalancerInstancesItem]:
+        return aiterate_pages(
+            lambda marker: self.list_load_balancer_instances(
+                id,
+                query=cast(m.ListLoadBalancerInstancesQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
         )
 
     async def list_load_balancers(
@@ -1651,7 +1737,7 @@ class AsyncLoadbalancerService:
         *,
         options: RequestOptions | None = None,
     ) -> ApiResponse[m.UpdateListenerResponse]:
-        "Patch a listener (rotate cert, change default target group)"
+        "Update a listener"
         return cast(
             ApiResponse[m.UpdateListenerResponse],
             await self._transport.request(

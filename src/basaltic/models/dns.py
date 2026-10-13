@@ -27,18 +27,17 @@ RecordValueInput = TypedDict(
     "RecordValueInput", {"content": "Required[str]", "disabled": "NotRequired[bool]"}, total=False
 )
 CreateRecordBody: TypeAlias = "RecordCreateRequestInput"
-RecordResponse = TypedDict("RecordResponse", {"record": "NotRequired[Record]"}, total=False)
+RecordResponse = TypedDict("RecordResponse", {"record": "Required[Record]"}, total=False)
 Record = TypedDict(
     "Record",
     {
-        "id": "NotRequired[str]",
-        "crn": "NotRequired[str]",
-        "zone_id": "NotRequired[str]",
-        "name": "NotRequired[str]",
-        "type": "NotRequired[str]",
-        "ttl": "NotRequired[int]",
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
+        "type": "Required[str]",
+        "ttl": "Required[int]",
         "managed": "NotRequired[bool]",
-        "values": "NotRequired[list[RecordValue]]",
+        "values": "Required[list[RecordValue]]",
     },
     total=False,
 )
@@ -195,7 +194,7 @@ ListRecordsParameters = TypedDict(
 ListRecordsQuery: TypeAlias = "ListRecordsParameters"
 RecordListResponse = TypedDict(
     "RecordListResponse",
-    {"records": "NotRequired[list[Record]]", "meta": "NotRequired[PaginationMeta]"},
+    {"records": "Required[list[Record]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 PaginationMeta = TypedDict(
@@ -217,10 +216,27 @@ ListZoneVPCAssociationsParameters = TypedDict(
 )
 ListZoneVPCAssociationsQuery: TypeAlias = "ListZoneVPCAssociationsParameters"
 VPCAssociationsResponse = TypedDict(
-    "VPCAssociationsResponse", {"vpc_ids": "Required[list[str]]"}, total=False
+    "VPCAssociationsResponse",
+    {"vpcs": "Required[list[Vpc]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+Vpc = TypedDict(
+    "Vpc",
+    {
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
+        "description": "NotRequired[str]",
+        "cidr_ipv4": "Required[str]",
+        "cidr_ipv6": "NotRequired[str | None]",
+        "tags": "Required[dict[str, str]]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+    },
+    total=False,
 )
 ListZoneVPCAssociationsResponse: TypeAlias = "VPCAssociationsResponse"
-ListZoneVPCAssociationsItem: TypeAlias = "str"
+ListZoneVPCAssociationsItem: TypeAlias = "Vpc"
 ListZonesParameters = TypedDict(
     "ListZonesParameters",
     {

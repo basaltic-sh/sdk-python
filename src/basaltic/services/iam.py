@@ -80,6 +80,18 @@ _OPS = {
         contentType="application/json",
         accept="application/json",
     ),
+    "createOIDCProvider": Operation(
+        id="createOIDCProvider",
+        method="POST",
+        path="/v1/oidc-providers",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=True,
+        contentType="application/json",
+        accept="application/json",
+    ),
     "createPersonalSSHKey": Operation(
         id="createPersonalSSHKey",
         method="POST",
@@ -150,6 +162,18 @@ _OPS = {
         queryEncoding={},
         bodyRequired=True,
         contentType="application/json",
+        accept="application/json",
+    ),
+    "deleteOIDCProvider": Operation(
+        id="deleteOIDCProvider",
+        method="DELETE",
+        path="/v1/oidc-providers/{provider_id}",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
         accept="application/json",
     ),
     "deletePersonalSSHKey": Operation(
@@ -284,6 +308,18 @@ _OPS = {
         contentType="application/json",
         accept="application/json",
     ),
+    "getOIDCProvider": Operation(
+        id="getOIDCProvider",
+        method="GET",
+        path="/v1/oidc-providers/{provider_id}",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+    ),
     "getPersonalLinuxIdentity": Operation(
         id="getPersonalLinuxIdentity",
         method="GET",
@@ -404,6 +440,24 @@ _OPS = {
         contentType="",
         accept="application/json",
     ),
+    "listOIDCProviders": Operation(
+        id="listOIDCProviders",
+        method="GET",
+        path="/v1/oidc-providers",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={
+            "name": {"style": "form", "explode": True},
+            "crn": {"style": "form", "explode": True},
+            "limit": {"style": "form", "explode": True},
+            "marker": {"style": "form", "explode": True},
+        },
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+        itemsKey="oidc_providers",
+    ),
     "listPersonalSSHKeys": Operation(
         id="listPersonalSSHKeys",
         method="GET",
@@ -470,22 +524,6 @@ _OPS = {
         contentType="",
         accept="application/json",
         itemsKey="service_accounts",
-    ),
-    "listRegions": Operation(
-        id="listRegions",
-        method="GET",
-        path="/v1/regions",
-        authenticated=False,
-        requiredQuery=[],
-        requiredHeaders=[],
-        queryEncoding={
-            "name": {"style": "form", "explode": True},
-            "crn": {"style": "form", "explode": True},
-        },
-        bodyRequired=False,
-        contentType="",
-        accept="application/json",
-        itemsKey="regions",
     ),
     "listRoleInlinePolicies": Operation(
         id="listRoleInlinePolicies",
@@ -734,6 +772,18 @@ _OPS = {
         contentType="application/json",
         accept="application/json",
     ),
+    "updateOIDCProvider": Operation(
+        id="updateOIDCProvider",
+        method="PATCH",
+        path="/v1/oidc-providers/{provider_id}",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=True,
+        contentType="application/json",
+        accept="application/json",
+    ),
     "updatePolicy": Operation(
         id="updatePolicy",
         method="PATCH",
@@ -871,6 +921,24 @@ class IamService:
             ),
         )
 
+    def create_oidc_provider(
+        self, body: m.CreateOIDCProviderBody, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.CreateOIDCProviderResponse]:
+        "Create an OIDC provider"
+        return cast(
+            ApiResponse[m.CreateOIDCProviderResponse],
+            self._transport.request(
+                "iam",
+                "https://iam.basaltic.sh",
+                _OPS["createOIDCProvider"],
+                "json",
+                {},
+                body,
+                None,
+                options,
+            ),
+        )
+
     def create_personal_ssh_key(
         self, body: m.CreatePersonalSSHKeyBody, *, options: RequestOptions | None = None
     ) -> ApiResponse[m.CreatePersonalSSHKeyResponse]:
@@ -982,6 +1050,24 @@ class IamService:
                 "json",
                 {"service_account_id": service_account_id},
                 body,
+                None,
+                options,
+            ),
+        )
+
+    def delete_oidc_provider(
+        self, provider_id: str, *, options: RequestOptions | None = None
+    ) -> None:
+        "Delete an OIDC provider"
+        return cast(
+            None,
+            self._transport.request(
+                "iam",
+                "https://iam.basaltic.sh",
+                _OPS["deleteOIDCProvider"],
+                "discard",
+                {"provider_id": provider_id},
+                UNSET,
                 None,
                 options,
             ),
@@ -1178,6 +1264,47 @@ class IamService:
                 body,
                 None,
                 options,
+            ),
+        )
+
+    def get_oidc_provider(
+        self, provider_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.GetOIDCProviderResponse]:
+        "Get an OIDC provider"
+        return cast(
+            ApiResponse[m.GetOIDCProviderResponse],
+            self._transport.request(
+                "iam",
+                "https://iam.basaltic.sh",
+                _OPS["getOIDCProvider"],
+                "json",
+                {"provider_id": provider_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    def get_oidc_provider_by_reference(
+        self,
+        reference: str,
+        *,
+        scope: m.GetOIDCProviderScope | None = None,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.GetOIDCProviderResource]:
+        return cast(
+            ApiResponse[m.GetOIDCProviderResource],
+            resolve_reference(
+                reference,
+                lambda id: self.get_oidc_provider(id, options=options),
+                lambda match: self.list_oidc_providers(
+                    query=cast(
+                        m.ListOIDCProvidersQuery, {**reference_scope(scope), **match, "limit": 2}
+                    ),
+                    options=options,
+                ),
+                True,
+                "oidc_provider",
             ),
         )
 
@@ -1501,6 +1628,41 @@ class IamService:
             ),
         )
 
+    def list_oidc_providers(
+        self,
+        *,
+        query: m.ListOIDCProvidersQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Page[m.ListOIDCProvidersResponse, m.ListOIDCProvidersItem]:
+        "List OIDC providers"
+        return cast(
+            Page[m.ListOIDCProvidersResponse, m.ListOIDCProvidersItem],
+            self._transport.request(
+                "iam",
+                "https://iam.basaltic.sh",
+                _OPS["listOIDCProviders"],
+                "page",
+                {},
+                UNSET,
+                query,
+                options,
+            ),
+        )
+
+    def list_oidc_providers_all(
+        self,
+        *,
+        query: m.ListOIDCProvidersQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Iterator[m.ListOIDCProvidersItem]:
+        return iterate_pages(
+            lambda marker: self.list_oidc_providers(
+                query=cast(m.ListOIDCProvidersQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
+        )
+
     def list_personal_ssh_keys(
         self, *, options: RequestOptions | None = None
     ) -> Page[m.ListPersonalSSHKeysResponse, m.ListPersonalSSHKeysItem]:
@@ -1622,24 +1784,6 @@ class IamService:
                 options=options,
             ),
             (query or {}).get("marker", ""),
-        )
-
-    def list_regions(
-        self, *, query: m.ListRegionsQuery | None = None, options: RequestOptions | None = None
-    ) -> Page[m.ListRegionsResponse, m.ListRegionsItem]:
-        "List regions (legacy IAM)"
-        return cast(
-            Page[m.ListRegionsResponse, m.ListRegionsItem],
-            self._transport.request(
-                "iam",
-                "https://iam.basaltic.sh",
-                _OPS["listRegions"],
-                "page",
-                {},
-                UNSET,
-                query,
-                options,
-            ),
         )
 
     def list_role_inline_policies(
@@ -2030,6 +2174,28 @@ class IamService:
             ),
         )
 
+    def update_oidc_provider(
+        self,
+        provider_id: str,
+        body: m.UpdateOIDCProviderBody,
+        *,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.UpdateOIDCProviderResponse]:
+        "Update an OIDC provider"
+        return cast(
+            ApiResponse[m.UpdateOIDCProviderResponse],
+            self._transport.request(
+                "iam",
+                "https://iam.basaltic.sh",
+                _OPS["updateOIDCProvider"],
+                "json",
+                {"provider_id": provider_id},
+                body,
+                None,
+                options,
+            ),
+        )
+
     def update_policy(
         self, policy_id: str, body: m.UpdatePolicyBody, *, options: RequestOptions | None = None
     ) -> ApiResponse[m.UpdatePolicyResponse]:
@@ -2187,6 +2353,24 @@ class AsyncIamService:
             ),
         )
 
+    async def create_oidc_provider(
+        self, body: m.CreateOIDCProviderBody, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.CreateOIDCProviderResponse]:
+        "Create an OIDC provider"
+        return cast(
+            ApiResponse[m.CreateOIDCProviderResponse],
+            await self._transport.request(
+                "iam",
+                "https://iam.basaltic.sh",
+                _OPS["createOIDCProvider"],
+                "json",
+                {},
+                body,
+                None,
+                options,
+            ),
+        )
+
     async def create_personal_ssh_key(
         self, body: m.CreatePersonalSSHKeyBody, *, options: RequestOptions | None = None
     ) -> ApiResponse[m.CreatePersonalSSHKeyResponse]:
@@ -2298,6 +2482,24 @@ class AsyncIamService:
                 "json",
                 {"service_account_id": service_account_id},
                 body,
+                None,
+                options,
+            ),
+        )
+
+    async def delete_oidc_provider(
+        self, provider_id: str, *, options: RequestOptions | None = None
+    ) -> None:
+        "Delete an OIDC provider"
+        return cast(
+            None,
+            await self._transport.request(
+                "iam",
+                "https://iam.basaltic.sh",
+                _OPS["deleteOIDCProvider"],
+                "discard",
+                {"provider_id": provider_id},
+                UNSET,
                 None,
                 options,
             ),
@@ -2494,6 +2696,47 @@ class AsyncIamService:
                 body,
                 None,
                 options,
+            ),
+        )
+
+    async def get_oidc_provider(
+        self, provider_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.GetOIDCProviderResponse]:
+        "Get an OIDC provider"
+        return cast(
+            ApiResponse[m.GetOIDCProviderResponse],
+            await self._transport.request(
+                "iam",
+                "https://iam.basaltic.sh",
+                _OPS["getOIDCProvider"],
+                "json",
+                {"provider_id": provider_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    async def get_oidc_provider_by_reference(
+        self,
+        reference: str,
+        *,
+        scope: m.GetOIDCProviderScope | None = None,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.GetOIDCProviderResource]:
+        return cast(
+            ApiResponse[m.GetOIDCProviderResource],
+            await aresolve_reference(
+                reference,
+                lambda id: self.get_oidc_provider(id, options=options),
+                lambda match: self.list_oidc_providers(
+                    query=cast(
+                        m.ListOIDCProvidersQuery, {**reference_scope(scope), **match, "limit": 2}
+                    ),
+                    options=options,
+                ),
+                True,
+                "oidc_provider",
             ),
         )
 
@@ -2817,6 +3060,41 @@ class AsyncIamService:
             ),
         )
 
+    async def list_oidc_providers(
+        self,
+        *,
+        query: m.ListOIDCProvidersQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> Page[m.ListOIDCProvidersResponse, m.ListOIDCProvidersItem]:
+        "List OIDC providers"
+        return cast(
+            Page[m.ListOIDCProvidersResponse, m.ListOIDCProvidersItem],
+            await self._transport.request(
+                "iam",
+                "https://iam.basaltic.sh",
+                _OPS["listOIDCProviders"],
+                "page",
+                {},
+                UNSET,
+                query,
+                options,
+            ),
+        )
+
+    def list_oidc_providers_all(
+        self,
+        *,
+        query: m.ListOIDCProvidersQuery | None = None,
+        options: RequestOptions | None = None,
+    ) -> AsyncIterator[m.ListOIDCProvidersItem]:
+        return aiterate_pages(
+            lambda marker: self.list_oidc_providers(
+                query=cast(m.ListOIDCProvidersQuery, {**(query or {}), "marker": marker}),
+                options=options,
+            ),
+            (query or {}).get("marker", ""),
+        )
+
     async def list_personal_ssh_keys(
         self, *, options: RequestOptions | None = None
     ) -> Page[m.ListPersonalSSHKeysResponse, m.ListPersonalSSHKeysItem]:
@@ -2938,24 +3216,6 @@ class AsyncIamService:
                 options=options,
             ),
             (query or {}).get("marker", ""),
-        )
-
-    async def list_regions(
-        self, *, query: m.ListRegionsQuery | None = None, options: RequestOptions | None = None
-    ) -> Page[m.ListRegionsResponse, m.ListRegionsItem]:
-        "List regions (legacy IAM)"
-        return cast(
-            Page[m.ListRegionsResponse, m.ListRegionsItem],
-            await self._transport.request(
-                "iam",
-                "https://iam.basaltic.sh",
-                _OPS["listRegions"],
-                "page",
-                {},
-                UNSET,
-                query,
-                options,
-            ),
         )
 
     async def list_role_inline_policies(
@@ -3340,6 +3600,28 @@ class AsyncIamService:
                 _OPS["setServiceAccountPermissionBoundary"],
                 "discard",
                 {"service_account_id": service_account_id},
+                body,
+                None,
+                options,
+            ),
+        )
+
+    async def update_oidc_provider(
+        self,
+        provider_id: str,
+        body: m.UpdateOIDCProviderBody,
+        *,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.UpdateOIDCProviderResponse]:
+        "Update an OIDC provider"
+        return cast(
+            ApiResponse[m.UpdateOIDCProviderResponse],
+            await self._transport.request(
+                "iam",
+                "https://iam.basaltic.sh",
+                _OPS["updateOIDCProvider"],
+                "json",
+                {"provider_id": provider_id},
                 body,
                 None,
                 options,

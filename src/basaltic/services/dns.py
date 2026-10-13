@@ -200,7 +200,7 @@ _OPS = {
         bodyRequired=False,
         contentType="",
         accept="application/json",
-        itemsKey="vpc_ids",
+        itemsKey="vpcs",
     ),
     "listZones": Operation(
         id="listZones",

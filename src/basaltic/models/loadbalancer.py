@@ -10,48 +10,41 @@ AttachListenerCertificateRequestInput = TypedDict(
     total=False,
 )
 AttachListenerCertificateBody: TypeAlias = "AttachListenerCertificateRequestInput"
-ListenerResponse = TypedDict("ListenerResponse", {"listener": "NotRequired[Listener]"}, total=False)
-Listener = TypedDict(
-    "Listener",
-    {
-        "crn": "Required[str]",
-        "id": "Required[str]",
-        "load_balancer_id": "Required[str]",
-        "protocol": "Required[Literal['http', 'https', 'tcp', 'udp']]",
-        "port": "Required[int]",
-        "certificates": "NotRequired[list[ListenerCertificate]]",
-        "default_target_group_id": "NotRequired[str]",
-        "exposure": "Required[Literal['public_only', 'private_only', 'both']]",
-        "tags": "Required[Tags]",
-        "created_at": "Required[str]",
-        "updated_at": "Required[str]",
-    },
+ListenerCertificateResponse = TypedDict(
+    "ListenerCertificateResponse", {"certificate": "Required[ResourceRef]"}, total=False
+)
+ResourceRef = TypedDict(
+    "ResourceRef",
+    {"id": "Required[str]", "crn": "Required[str]", "name": "NotRequired[str]"},
     total=False,
 )
-ListenerCertificate = TypedDict(
-    "ListenerCertificate",
-    {
-        "id": "Required[str]",
-        "certificate_crn": "Required[str]",
-        "is_default": "Required[bool]",
-        "created_at": "Required[str]",
-        "updated_at": "Required[str]",
-    },
-    total=False,
-)
-Tags: TypeAlias = "dict[str, str]"
-AttachListenerCertificateResponse: TypeAlias = "ListenerResponse"
+AttachListenerCertificateResponse: TypeAlias = "ListenerCertificateResponse"
 AttachTargetRequestInput = TypedDict(
     "AttachTargetRequestInput", {"target": "Required[str]", "port": "NotRequired[int]"}, total=False
 )
 AttachTargetBody: TypeAlias = "AttachTargetRequestInput"
-TargetResponse = TypedDict("TargetResponse", {"target": "NotRequired[Target]"}, total=False)
-Target = TypedDict(
-    "Target",
+TargetResponse = TypedDict("TargetResponse", {"target": "Required[Target]"}, total=False)
+Target: TypeAlias = "TargetVariant1 | TargetVariant2"
+TargetVariant1 = TypedDict(
+    "TargetVariant1",
     {
         "id": "Required[str]",
-        "target_group_id": "Required[str]",
-        "target_ref": "Required[str]",
+        "instance": "Required[ResourceRef]",
+        "address": "NotRequired[str]",
+        "port": "NotRequired[int]",
+        "health": "Required[Literal['initial', 'healthy', 'unhealthy', 'draining']]",
+        "last_seen_at": "NotRequired[str]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+    },
+    total=False,
+)
+TargetVariant2 = TypedDict(
+    "TargetVariant2",
+    {
+        "id": "Required[str]",
+        "instance": "NotRequired[ResourceRef]",
+        "address": "Required[str]",
         "port": "NotRequired[int]",
         "health": "Required[Literal['initial', 'healthy', 'unhealthy', 'draining']]",
         "last_seen_at": "NotRequired[str]",
@@ -66,18 +59,33 @@ CreateListenerRequestInput = TypedDict(
     {
         "protocol": "Required[Literal['http', 'https', 'tcp', 'udp']]",
         "port": "Required[int]",
-        "certificates": "NotRequired[list[CreateListenerCertificateInput]]",
+        "certificates": "NotRequired[list[str]]",
         "default_target_group": "NotRequired[str]",
         "exposure": "NotRequired[Literal['public_only', 'private_only', 'both']]",
         "tags": "NotRequired[TagsInput]",
     },
     total=False,
 )
-CreateListenerCertificateInput = TypedDict(
-    "CreateListenerCertificateInput", {"certificate": "Required[str]"}, total=False
-)
 TagsInput: TypeAlias = "dict[str, str]"
 CreateListenerBody: TypeAlias = "CreateListenerRequestInput"
+ListenerResponse = TypedDict("ListenerResponse", {"listener": "Required[Listener]"}, total=False)
+Listener = TypedDict(
+    "Listener",
+    {
+        "crn": "Required[str]",
+        "id": "Required[str]",
+        "protocol": "Required[Literal['http', 'https', 'tcp', 'udp']]",
+        "port": "Required[int]",
+        "exposure": "Required[Literal['public_only', 'private_only', 'both']]",
+        "tags": "Required[Tags]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+        "default_certificate": "Required[ResourceRef | Literal[None] | None]",
+        "default_target_group": "Required[ResourceRef | Literal[None] | None]",
+    },
+    total=False,
+)
+Tags: TypeAlias = "dict[str, str]"
 CreateListenerResponse: TypeAlias = "ListenerResponse"
 CreateLoadBalancerRequestInput = TypedDict(
     "CreateLoadBalancerRequestInput",
@@ -89,10 +97,9 @@ CreateLoadBalancerRequestInput = TypedDict(
         "name": "Required[str]",
         "type": "Required[Literal['application', 'network']]",
         "vpc": "Required[str]",
-        "subnet": "Required[str]",
+        "subnets": "Required[list[str]]",
         "flavor": "Required[str]",
         "replica_count": "NotRequired[int]",
-        "floating_ip": "NotRequired[str]",
         "floating_ips": "NotRequired[list[str]]",
         "security_groups": "Required[list[str]]",
         "tags": "NotRequired[TagsInput]",
@@ -131,7 +138,7 @@ ScalingMetricInput = TypedDict(
 )
 CreateLoadBalancerBody: TypeAlias = "CreateLoadBalancerRequestInput"
 LoadBalancerResponse = TypedDict(
-    "LoadBalancerResponse", {"load_balancer": "NotRequired[LoadBalancer]"}, total=False
+    "LoadBalancerResponse", {"load_balancer": "Required[LoadBalancer]"}, total=False
 )
 LoadBalancer = TypedDict(
     "LoadBalancer",
@@ -144,23 +151,18 @@ LoadBalancer = TypedDict(
         "autoscaling_status": "NotRequired[AutoscalingStatus]",
         "id": "Required[str]",
         "crn": "Required[str]",
-        "account_id": "Required[str]",
         "name": "Required[str]",
         "type": "Required[Literal['application', 'network']]",
         "status": "Required[Literal['provisioning', 'active', 'error', 'deleting']]",
         "faults": "Required[list[Fault]]",
-        "subnet": "Required[Subnet | Literal[None] | None]",
-        "flavor_id": "Required[str]",
+        "subnets": "Required[list[ResourceRef]]",
         "replica_count": "Required[int]",
-        "internal_ipv4": "NotRequired[str]",
-        "internal_ipv6": "NotRequired[str]",
-        "public_ipv6": "NotRequired[str]",
-        "floating_ip_id": "NotRequired[str]",
-        "floating_ips": "Required[list[FloatingIp]]",
+        "floating_ips": "Required[list[FloatingIPRef]]",
         "dns_name": "NotRequired[str]",
         "tags": "Required[Tags]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
+        "flavor": "Required[ResourceRef]",
     },
     total=False,
 )
@@ -228,103 +230,13 @@ Fault = TypedDict(
     },
     total=False,
 )
-Subnet = TypedDict(
-    "Subnet",
+FloatingIPRef = TypedDict(
+    "FloatingIPRef",
     {
         "id": "Required[str]",
         "crn": "Required[str]",
-        "vpc": "Required[Vpc]",
-        "route_table": "Required[RouteTableSummary]",
-        "name": "Required[str]",
-        "description": "NotRequired[str]",
-        "cidr_ipv4": "Required[str]",
-        "gateway_ipv4": "Required[str]",
-        "cidr_ipv6": "NotRequired[str | None]",
-        "gateway_ipv6": "NotRequired[str | None]",
-        "tags": "Required[dict[str, str]]",
-        "created_at": "Required[str]",
-        "updated_at": "Required[str]",
-    },
-    total=False,
-)
-Vpc = TypedDict(
-    "Vpc",
-    {
-        "id": "Required[str]",
-        "crn": "Required[str]",
-        "name": "Required[str]",
-        "description": "NotRequired[str]",
-        "cidr_ipv4": "Required[str]",
-        "cidr_ipv6": "NotRequired[str | None]",
-        "tags": "Required[dict[str, str]]",
-        "created_at": "Required[str]",
-        "updated_at": "Required[str]",
-    },
-    total=False,
-)
-RouteTableSummary: TypeAlias = "RouteTableSummaryObject | None"
-RouteTableSummaryObject = TypedDict(
-    "RouteTableSummaryObject",
-    {"id": "Required[str]", "crn": "Required[str]", "name": "Required[str]"},
-    total=False,
-)
-FloatingIp = TypedDict(
-    "FloatingIp",
-    {
-        "id": "Required[str]",
-        "crn": "Required[str]",
-        "description": "NotRequired[str]",
-        "family": "Required[IpFamily]",
-        "attached_to": "Required[str | None]",
-        "members": "Required[list[FloatingIpMember]]",
-        "tags": "Required[dict[str, str]]",
-        "health_check": "NotRequired[FloatingIpHealthCheck]",
-        "created_at": "Required[str]",
-        "updated_at": "Required[str]",
-        "address": "Required[str]",
         "visibility": "Required[Literal['public', 'private']]",
-        "subnet_id": "NotRequired[str | None]",
-        "vpc_id": "NotRequired[str]",
-    },
-    total=False,
-)
-IpFamily: TypeAlias = "Literal['ipv4', 'ipv6']"
-FloatingIpMember = TypedDict(
-    "FloatingIpMember",
-    {
-        "interface": "Required[FloatingIpMemberInterfaceObject | None]",
-        "health": "Required[Literal['unknown', 'healthy', 'unhealthy']]",
-        "reason": "Required[Literal['unprobed', 'booting', 'probe_failed', 'passing']]",
-        "created_at": "Required[str]",
-        "address_id": "NotRequired[str | None]",
-    },
-    total=False,
-)
-FloatingIpMemberInterfaceObject = TypedDict(
-    "FloatingIpMemberInterfaceObject",
-    {
-        "id": "Required[str]",
-        "crn": "Required[str]",
-        "instance": "Required[FloatingIpMemberInterfaceObjectInstanceObject | None]",
-    },
-    total=False,
-)
-FloatingIpMemberInterfaceObjectInstanceObject = TypedDict(
-    "FloatingIpMemberInterfaceObjectInstanceObject",
-    {"id": "Required[str]", "crn": "Required[str]", "name": "Required[str]"},
-    total=False,
-)
-FloatingIpHealthCheck = TypedDict(
-    "FloatingIpHealthCheck",
-    {
-        "protocol": "Required[Literal['tcp', 'http', 'https']]",
-        "path": "NotRequired[str]",
-        "port": "Required[int]",
-        "interval_sec": "Required[int]",
-        "timeout_sec": "Required[int]",
-        "healthy_threshold": "Required[int]",
-        "unhealthy_threshold": "Required[int]",
-        "matcher": "NotRequired[str]",
+        "address": "Required[str]",
     },
     total=False,
 )
@@ -349,16 +261,15 @@ RuleConditionInput = TypedDict(
     total=False,
 )
 CreateRuleBody: TypeAlias = "CreateRuleRequestInput"
-RuleResponse = TypedDict("RuleResponse", {"rule": "NotRequired[Rule]"}, total=False)
+RuleResponse = TypedDict("RuleResponse", {"rule": "Required[Rule]"}, total=False)
 Rule = TypedDict(
     "Rule",
     {
         "crn": "Required[str]",
         "id": "Required[str]",
-        "listener_id": "Required[str]",
         "priority": "Required[int]",
         "conditions": "Required[list[RuleCondition]]",
-        "target_group_id": "Required[str]",
+        "target_group": "Required[ResourceRef]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
     },
@@ -417,14 +328,13 @@ SessionAffinityInput = TypedDict(
 )
 CreateTargetGroupBody: TypeAlias = "CreateTargetGroupRequestInput"
 TargetGroupResponse = TypedDict(
-    "TargetGroupResponse", {"target_group": "NotRequired[TargetGroup]"}, total=False
+    "TargetGroupResponse", {"target_group": "Required[TargetGroup]"}, total=False
 )
 TargetGroup = TypedDict(
     "TargetGroup",
     {
         "id": "Required[str]",
         "crn": "Required[str]",
-        "account_id": "Required[str]",
         "name": "Required[str]",
         "protocol": "Required[Literal['http', 'https', 'tcp', 'udp']]",
         "target_type": "Required[Literal['ip', 'instance', 'function']]",
@@ -433,7 +343,7 @@ TargetGroup = TypedDict(
         "proxy_protocol": "Required[bool]",
         "session_affinity": "Required[SessionAffinity]",
         "target_mode": "Required[Literal['static', 'pool']]",
-        "instance_pool_id": "NotRequired[str]",
+        "instance_pool": "NotRequired[ResourceRef]",
         "tags": "Required[Tags]",
         "created_at": "Required[str]",
         "updated_at": "Required[str]",
@@ -494,34 +404,115 @@ GetTargetGroupScope = TypedDict(
     },
     total=False,
 )
+ListenerCertificateListResponse = TypedDict(
+    "ListenerCertificateListResponse",
+    {"certificates": "Required[list[Certificate]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+Certificate = TypedDict(
+    "Certificate",
+    {
+        "id": "NotRequired[str]",
+        "crn": "NotRequired[str]",
+        "name": "NotRequired[str]",
+        "domains": "NotRequired[list[str]]",
+        "status": "NotRequired[CertificateStatus]",
+        "source": "NotRequired[CertificateSource]",
+        "key_algorithm": "NotRequired[CertificateKeyAlgorithm]",
+        "challenges": "NotRequired[list[CertificateChallenge]]",
+        "certificate_pem": "NotRequired[str]",
+        "chain_pem": "NotRequired[str]",
+        "fingerprint": "NotRequired[str]",
+        "issued_at": "NotRequired[str]",
+        "expires_at": "NotRequired[str]",
+        "faults": "Required[list[Fault]]",
+        "tags": "NotRequired[Tags]",
+    },
+    total=False,
+)
+CertificateStatus: TypeAlias = (
+    "Literal['pending_dns', 'pending', 'active', 'error', 'expired', 'revoked']"
+)
+CertificateSource: TypeAlias = "Literal['acme', 'uploaded']"
+CertificateKeyAlgorithm: TypeAlias = "Literal['ecdsa-p256', 'ecdsa-p384', 'rsa-2048', 'rsa-4096']"
+CertificateChallenge = TypedDict(
+    "CertificateChallenge",
+    {
+        "domain": "NotRequired[str]",
+        "cname_record_name": "NotRequired[str]",
+        "expected_cname": "NotRequired[str]",
+        "our_dns": "NotRequired[bool]",
+        "verified": "NotRequired[bool]",
+        "verified_at": "NotRequired[str]",
+        "faults": "Required[list[Fault]]",
+    },
+    total=False,
+)
+PaginationMeta = TypedDict(
+    "PaginationMeta",
+    {
+        "total": "NotRequired[int]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+        "has_more": "NotRequired[bool]",
+    },
+    total=False,
+)
+ListListenerCertificatesResponse: TypeAlias = "ListenerCertificateListResponse"
+ListListenerCertificatesItem: TypeAlias = "Certificate"
 ListListenersParameters = TypedDict(
     "ListListenersParameters", {"name": "NotRequired[str]", "crn": "NotRequired[str]"}, total=False
 )
 ListListenersQuery: TypeAlias = "ListListenersParameters"
 ListenerListResponse = TypedDict(
-    "ListenerListResponse", {"listeners": "NotRequired[list[Listener]]"}, total=False
+    "ListenerListResponse",
+    {"listeners": "Required[list[Listener]]", "meta": "Required[PaginationMeta]"},
+    total=False,
 )
 ListListenersResponse: TypeAlias = "ListenerListResponse"
 ListListenersItem: TypeAlias = "Listener"
-ListLoadBalancerReplicasParameters = TypedDict(
-    "ListLoadBalancerReplicasParameters",
-    {"name": "NotRequired[str]", "crn": "NotRequired[str]"},
-    total=False,
-)
-ListLoadBalancerReplicasQuery: TypeAlias = "ListLoadBalancerReplicasParameters"
-LoadBalancerReplicasResponse = TypedDict(
-    "LoadBalancerReplicasResponse",
-    {"replicas": "NotRequired[list[LoadBalancerReplica]]"},
-    total=False,
-)
-LoadBalancerReplica = TypedDict(
-    "LoadBalancerReplica",
+ListLoadBalancerInstancesParameters = TypedDict(
+    "ListLoadBalancerInstancesParameters",
     {
-        "retirement": "NotRequired[Retirement]",
-        "instance_id": "Required[str]",
-        "replica_index": "Required[int]",
+        "crn": "NotRequired[str]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+        "name": "NotRequired[str]",
+        "current_state": "NotRequired[CurrentStateInput]",
+        "flavor": "NotRequired[str]",
+        "image": "NotRequired[str]",
+    },
+    total=False,
+)
+CurrentStateInput: TypeAlias = "Literal['pending', 'building', 'running', 'stopping', 'stopped', 'rebooting', 'migrating', 'deleting', 'deleted', 'error', 'crashed', 'paused', 'suspended']"
+ListLoadBalancerInstancesQuery: TypeAlias = "ListLoadBalancerInstancesParameters"
+LoadBalancerInstancesResponse = TypedDict(
+    "LoadBalancerInstancesResponse",
+    {"instances": "Required[list[LoadBalancerInstance]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+LoadBalancerInstance = TypedDict(
+    "LoadBalancerInstance",
+    {
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
+        "description": "NotRequired[str]",
+        "task_state": "NotRequired[str | None]",
+        "flavor": "Required[ResourceRef]",
+        "image": "Required[ResourceRef | Literal[None] | None]",
+        "user_data": "NotRequired[str]",
+        "iam_role": "Required[ResourceRef | Literal[None] | None]",
+        "metadata": "NotRequired[Metadata]",
+        "tags": "NotRequired[Tags]",
+        "faults": "Required[list[Fault]]",
         "created_at": "Required[str]",
-        "flavor_id": "Required[str]",
+        "updated_at": "Required[str]",
+        "launched_at": "NotRequired[str | None]",
+        "terminated_at": "NotRequired[str | None]",
+        "desired_state": "Required[Literal['running', 'stopped', 'deleted']]",
+        "current_state": "Required[CurrentState]",
+        "retirement": "NotRequired[Retirement]",
         "status": "Required[Literal['initializing', 'healthy', 'unhealthy', 'draining']]",
         "proxy_ok": "Required[bool]",
         "agent_version": "NotRequired[str]",
@@ -529,6 +520,8 @@ LoadBalancerReplica = TypedDict(
     },
     total=False,
 )
+Metadata: TypeAlias = "dict[str, str]"
+CurrentState: TypeAlias = "Literal['pending', 'building', 'running', 'stopping', 'stopped', 'rebooting', 'migrating', 'deleting', 'deleted', 'error', 'crashed', 'paused', 'suspended']"
 Retirement = TypedDict(
     "Retirement",
     {
@@ -539,8 +532,8 @@ Retirement = TypedDict(
     },
     total=False,
 )
-ListLoadBalancerReplicasResponse: TypeAlias = "LoadBalancerReplicasResponse"
-ListLoadBalancerReplicasItem: TypeAlias = "LoadBalancerReplica"
+ListLoadBalancerInstancesResponse: TypeAlias = "LoadBalancerInstancesResponse"
+ListLoadBalancerInstancesItem: TypeAlias = "LoadBalancerInstance"
 ListLoadBalancersParameters = TypedDict(
     "ListLoadBalancersParameters",
     {
@@ -555,17 +548,7 @@ ListLoadBalancersParameters = TypedDict(
 ListLoadBalancersQuery: TypeAlias = "ListLoadBalancersParameters"
 LoadBalancerListResponse = TypedDict(
     "LoadBalancerListResponse",
-    {"load_balancers": "NotRequired[list[LoadBalancer]]", "meta": "NotRequired[PaginationMeta]"},
-    total=False,
-)
-PaginationMeta = TypedDict(
-    "PaginationMeta",
-    {
-        "total": "NotRequired[int]",
-        "limit": "NotRequired[int]",
-        "marker": "NotRequired[str]",
-        "has_more": "NotRequired[bool]",
-    },
+    {"load_balancers": "Required[list[LoadBalancer]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListLoadBalancersResponse: TypeAlias = "LoadBalancerListResponse"
@@ -574,7 +557,11 @@ ListRulesParameters = TypedDict(
     "ListRulesParameters", {"name": "NotRequired[str]", "crn": "NotRequired[str]"}, total=False
 )
 ListRulesQuery: TypeAlias = "ListRulesParameters"
-RuleListResponse = TypedDict("RuleListResponse", {"rules": "NotRequired[list[Rule]]"}, total=False)
+RuleListResponse = TypedDict(
+    "RuleListResponse",
+    {"rules": "Required[list[Rule]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
 ListRulesResponse: TypeAlias = "RuleListResponse"
 ListRulesItem: TypeAlias = "Rule"
 ListTargetGroupsParameters = TypedDict(
@@ -591,7 +578,7 @@ ListTargetGroupsParameters = TypedDict(
 ListTargetGroupsQuery: TypeAlias = "ListTargetGroupsParameters"
 TargetGroupListResponse = TypedDict(
     "TargetGroupListResponse",
-    {"target_groups": "NotRequired[list[TargetGroup]]", "meta": "NotRequired[PaginationMeta]"},
+    {"target_groups": "Required[list[TargetGroup]]", "meta": "Required[PaginationMeta]"},
     total=False,
 )
 ListTargetGroupsResponse: TypeAlias = "TargetGroupListResponse"
@@ -601,18 +588,19 @@ ListTargetsParameters = TypedDict(
 )
 ListTargetsQuery: TypeAlias = "ListTargetsParameters"
 TargetListResponse = TypedDict(
-    "TargetListResponse", {"targets": "NotRequired[list[Target]]"}, total=False
+    "TargetListResponse",
+    {"targets": "Required[list[Target]]", "meta": "Required[PaginationMeta]"},
+    total=False,
 )
 ListTargetsResponse: TypeAlias = "TargetListResponse"
 ListTargetsItem: TypeAlias = "Target"
 UpdateListenerRequestInput = TypedDict(
     "UpdateListenerRequestInput",
     {
-        "certificate": "NotRequired[str]",
-        "default_target_group": "NotRequired[str]",
-        "clear_default_target_group": "NotRequired[bool]",
+        "default_target_group": "NotRequired[str | None]",
         "exposure": "NotRequired[Literal['public_only', 'private_only', 'both']]",
         "tags": "NotRequired[TagsInput]",
+        "default_certificate": "NotRequired[str]",
     },
     total=False,
 )
