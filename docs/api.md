@@ -3775,6 +3775,16 @@ Get account
 def get_account(self, account_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetAccountResponse]:
 ```
 
+## `workspace.get_account_onboarding`
+
+Get shared account setup progress
+
+`GET /v1/accounts/{account_id}/onboarding`
+
+```python
+def get_account_onboarding(self, account_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetAccountOnboardingResponse]:
+```
+
 ## `workspace.get_account_resources`
 
 Check account resource presence
@@ -4125,6 +4135,16 @@ Remove a user's permission boundary
 def remove_user_permission_boundary(self, user_id: str, *, options: RequestOptions | None = None) -> None:
 ```
 
+## `workspace.retry_account_provisioning`
+
+Resume failed default network provisioning
+
+`POST /v1/accounts/{account_id}/onboarding/retry`
+
+```python
+def retry_account_provisioning(self, account_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.RetryAccountProvisioningResponse]:
+```
+
 ## `workspace.set_user_permission_boundary`
 
 Set a user's permission boundary
@@ -4143,6 +4163,16 @@ Update account
 
 ```python
 def update_account(self, account_id: str, body: m.UpdateAccountBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateAccountResponse]:
+```
+
+## `workspace.update_account_onboarding`
+
+Update shared account guide preferences
+
+`PATCH /v1/accounts/{account_id}/onboarding`
+
+```python
+def update_account_onboarding(self, account_id: str, body: m.UpdateAccountOnboardingBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateAccountOnboardingResponse]:
 ```
 
 ## `workspace.update_group`

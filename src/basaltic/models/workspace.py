@@ -232,6 +232,35 @@ CreatePolicyResponse: TypeAlias = "CreatePolicyResult"
 GetAccountResponse: TypeAlias = "AccountResponse"
 GetAccountResource: TypeAlias = "Account"
 GetAccountScope = TypedDict("GetAccountScope", {"limit": "NotRequired[int]"}, total=False)
+AccountOnboardingResponse = TypedDict(
+    "AccountOnboardingResponse", {"onboarding": "Required[AccountOnboarding]"}, total=False
+)
+AccountOnboarding = TypedDict(
+    "AccountOnboarding",
+    {
+        "account_id": "Required[str]",
+        "region": "Required[str]",
+        "provisioning_status": "Required[Literal['pending', 'provisioning', 'ready', 'failed', 'existing']]",
+        "provisioning_step": "Required[str]",
+        "error_code": "NotRequired[str]",
+        "dismissed": "Required[bool]",
+        "welcome_seen": "Required[bool]",
+        "connection_recorded": "Required[bool]",
+        "steps": "Required[list[AccountOnboardingStepsItem]]",
+        "vpc_id": "NotRequired[str]",
+        "subnet_id": "NotRequired[str]",
+        "security_group_id": "NotRequired[str]",
+        "instance_id": "NotRequired[str]",
+        "confirmed_instance_id": "NotRequired[str]",
+    },
+    total=False,
+)
+AccountOnboardingStepsItem = TypedDict(
+    "AccountOnboardingStepsItem",
+    {"id": "Required[Literal['ssh', 'launch', 'connect']]", "complete": "Required[bool]"},
+    total=False,
+)
+GetAccountOnboardingResponse: TypeAlias = "AccountOnboardingResponse"
 GetAccountResourcesResult = TypedDict(
     "GetAccountResourcesResult", {"has_resources": "Required[bool]"}, total=False
 )
@@ -675,6 +704,7 @@ PutGroupInlinePolicyBody: TypeAlias = "PutInlinePolicyRequestInput"
 PutGroupInlinePolicyResponse: TypeAlias = "InlinePolicyResponse"
 PutUserInlinePolicyBody: TypeAlias = "PutInlinePolicyRequestInput"
 PutUserInlinePolicyResponse: TypeAlias = "InlinePolicyResponse"
+RetryAccountProvisioningResponse: TypeAlias = "AccountOnboardingResponse"
 SetBoundaryRequestInput = TypedDict(
     "SetBoundaryRequestInput", {"policy": "Required[PolicyReferenceInput]"}, total=False
 )
@@ -686,6 +716,18 @@ UpdateAccountRequestInput = TypedDict(
 )
 UpdateAccountBody: TypeAlias = "UpdateAccountRequestInput"
 UpdateAccountResponse: TypeAlias = "AccountResponse"
+AccountOnboardingUpdateRequestInput = TypedDict(
+    "AccountOnboardingUpdateRequestInput",
+    {
+        "dismissed": "NotRequired[bool]",
+        "welcome_seen": "NotRequired[bool]",
+        "instance_id": "NotRequired[str]",
+        "confirmed_instance_id": "NotRequired[str]",
+    },
+    total=False,
+)
+UpdateAccountOnboardingBody: TypeAlias = "AccountOnboardingUpdateRequestInput"
+UpdateAccountOnboardingResponse: TypeAlias = "AccountOnboardingResponse"
 GroupUpdateRequestInput = TypedDict(
     "GroupUpdateRequestInput", {"description": "NotRequired[str]"}, total=False
 )

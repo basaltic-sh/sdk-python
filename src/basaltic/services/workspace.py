@@ -284,6 +284,18 @@ _OPS = {
         contentType="",
         accept="application/json",
     ),
+    "getAccountOnboarding": Operation(
+        id="getAccountOnboarding",
+        method="GET",
+        path="/v1/accounts/{account_id}/onboarding",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+    ),
     "getAccountResources": Operation(
         id="getAccountResources",
         method="GET",
@@ -800,6 +812,18 @@ _OPS = {
         contentType="",
         accept="application/json",
     ),
+    "retryAccountProvisioning": Operation(
+        id="retryAccountProvisioning",
+        method="POST",
+        path="/v1/accounts/{account_id}/onboarding/retry",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+    ),
     "setUserPermissionBoundary": Operation(
         id="setUserPermissionBoundary",
         method="PUT",
@@ -816,6 +840,18 @@ _OPS = {
         id="updateAccount",
         method="PATCH",
         path="/v1/accounts/{account_id}",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=True,
+        contentType="application/json",
+        accept="application/json",
+    ),
+    "updateAccountOnboarding": Operation(
+        id="updateAccountOnboarding",
+        method="PATCH",
+        path="/v1/accounts/{account_id}/onboarding",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -1285,6 +1321,24 @@ class WorkspaceService:
                 ),
                 True,
                 "account",
+            ),
+        )
+
+    def get_account_onboarding(
+        self, account_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.GetAccountOnboardingResponse]:
+        "Get shared account setup progress"
+        return cast(
+            ApiResponse[m.GetAccountOnboardingResponse],
+            self._transport.request(
+                "workspace",
+                "https://workspace.basaltic.sh",
+                _OPS["getAccountOnboarding"],
+                "json",
+                {"account_id": account_id},
+                UNSET,
+                None,
+                options,
             ),
         )
 
@@ -2281,6 +2335,24 @@ class WorkspaceService:
             ),
         )
 
+    def retry_account_provisioning(
+        self, account_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.RetryAccountProvisioningResponse]:
+        "Resume failed default network provisioning"
+        return cast(
+            ApiResponse[m.RetryAccountProvisioningResponse],
+            self._transport.request(
+                "workspace",
+                "https://workspace.basaltic.sh",
+                _OPS["retryAccountProvisioning"],
+                "json",
+                {"account_id": account_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
     def set_user_permission_boundary(
         self,
         user_id: str,
@@ -2313,6 +2385,28 @@ class WorkspaceService:
                 "workspace",
                 "https://workspace.basaltic.sh",
                 _OPS["updateAccount"],
+                "json",
+                {"account_id": account_id},
+                body,
+                None,
+                options,
+            ),
+        )
+
+    def update_account_onboarding(
+        self,
+        account_id: str,
+        body: m.UpdateAccountOnboardingBody,
+        *,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.UpdateAccountOnboardingResponse]:
+        "Update shared account guide preferences"
+        return cast(
+            ApiResponse[m.UpdateAccountOnboardingResponse],
+            self._transport.request(
+                "workspace",
+                "https://workspace.basaltic.sh",
+                _OPS["updateAccountOnboarding"],
                 "json",
                 {"account_id": account_id},
                 body,
@@ -2804,6 +2898,24 @@ class AsyncWorkspaceService:
                 ),
                 True,
                 "account",
+            ),
+        )
+
+    async def get_account_onboarding(
+        self, account_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.GetAccountOnboardingResponse]:
+        "Get shared account setup progress"
+        return cast(
+            ApiResponse[m.GetAccountOnboardingResponse],
+            await self._transport.request(
+                "workspace",
+                "https://workspace.basaltic.sh",
+                _OPS["getAccountOnboarding"],
+                "json",
+                {"account_id": account_id},
+                UNSET,
+                None,
+                options,
             ),
         )
 
@@ -3800,6 +3912,24 @@ class AsyncWorkspaceService:
             ),
         )
 
+    async def retry_account_provisioning(
+        self, account_id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.RetryAccountProvisioningResponse]:
+        "Resume failed default network provisioning"
+        return cast(
+            ApiResponse[m.RetryAccountProvisioningResponse],
+            await self._transport.request(
+                "workspace",
+                "https://workspace.basaltic.sh",
+                _OPS["retryAccountProvisioning"],
+                "json",
+                {"account_id": account_id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
     async def set_user_permission_boundary(
         self,
         user_id: str,
@@ -3832,6 +3962,28 @@ class AsyncWorkspaceService:
                 "workspace",
                 "https://workspace.basaltic.sh",
                 _OPS["updateAccount"],
+                "json",
+                {"account_id": account_id},
+                body,
+                None,
+                options,
+            ),
+        )
+
+    async def update_account_onboarding(
+        self,
+        account_id: str,
+        body: m.UpdateAccountOnboardingBody,
+        *,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.UpdateAccountOnboardingResponse]:
+        "Update shared account guide preferences"
+        return cast(
+            ApiResponse[m.UpdateAccountOnboardingResponse],
+            await self._transport.request(
+                "workspace",
+                "https://workspace.basaltic.sh",
+                _OPS["updateAccountOnboarding"],
                 "json",
                 {"account_id": account_id},
                 body,

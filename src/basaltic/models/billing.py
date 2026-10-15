@@ -51,6 +51,7 @@ CurrentUsage = TypedDict(
         "amount": "Required[str]",
         "period_start": "Required[str]",
         "items": "Required[list[UsageLine]]",
+        "included_usage": "Required[list[IncludedUsage]]",
     },
     total=False,
 )
@@ -62,6 +63,25 @@ UsageLine = TypedDict(
         "quantity": "Required[str]",
         "unit": "Required[str]",
         "amount": "Required[str]",
+    },
+    total=False,
+)
+IncludedUsage = TypedDict(
+    "IncludedUsage",
+    {
+        "code": "Required[str]",
+        "name": "Required[str]",
+        "unit": "Required[str]",
+        "period_start": "Required[str]",
+        "period_end": "Required[str]",
+        "counted_from": "Required[str]",
+        "base": "Required[str]",
+        "contributed": "Required[str]",
+        "total": "Required[str]",
+        "used": "Required[str]",
+        "included_used": "Required[str]",
+        "remaining": "Required[str]",
+        "overage": "Required[str]",
     },
     total=False,
 )
@@ -243,6 +263,17 @@ Price = TypedDict(
         "unit_price": "Required[str]",
         "currency": "Required[str]",
         "metadata": "Required[dict[str, object]]",
+        "included_usage": "NotRequired[list[CatalogAllowance]]",
+    },
+    total=False,
+)
+CatalogAllowance = TypedDict(
+    "CatalogAllowance",
+    {
+        "policy_code": "Required[str]",
+        "unit": "Required[str]",
+        "monthly_quantity": "Required[str]",
+        "monthly_base": "Required[str]",
     },
     total=False,
 )
