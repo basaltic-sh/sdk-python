@@ -20,6 +20,18 @@ from ..response import (
 )
 
 _OPS = {
+    "createAlert": Operation(
+        id="createAlert",
+        method="POST",
+        path="/v1/alerts",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=True,
+        contentType="application/json",
+        accept="application/json",
+    ),
     "createLogGroup": Operation(
         id="createLogGroup",
         method="POST",
@@ -30,6 +42,18 @@ _OPS = {
         queryEncoding={},
         bodyRequired=True,
         contentType="application/json",
+        accept="application/json",
+    ),
+    "deleteAlert": Operation(
+        id="deleteAlert",
+        method="DELETE",
+        path="/v1/alerts/{id}",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
         accept="application/json",
     ),
     "deleteLogGroup": Operation(
@@ -48,6 +72,18 @@ _OPS = {
         id="deleteTraceSettings",
         method="DELETE",
         path="/v1/trace-settings",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+    ),
+    "getAlert": Operation(
+        id="getAlert",
+        method="GET",
+        path="/v1/alerts/{id}",
         authenticated=True,
         requiredQuery=[],
         requiredHeaders=[],
@@ -139,6 +175,25 @@ _OPS = {
         bodyRequired=True,
         contentType="application/json",
         accept="application/json",
+    ),
+    "listAlerts": Operation(
+        id="listAlerts",
+        method="GET",
+        path="/v1/alerts",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={
+            "name": {"style": "form", "explode": True},
+            "crn": {"style": "form", "explode": True},
+            "state": {"style": "form", "explode": True},
+            "limit": {"style": "form", "explode": True},
+            "marker": {"style": "form", "explode": True},
+        },
+        bodyRequired=False,
+        contentType="",
+        accept="application/json",
+        itemsKey="alerts",
     ),
     "listLogGroups": Operation(
         id="listLogGroups",
@@ -342,6 +397,18 @@ _OPS = {
         contentType="",
         accept="application/json",
     ),
+    "updateAlert": Operation(
+        id="updateAlert",
+        method="PATCH",
+        path="/v1/alerts/{id}",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=True,
+        contentType="application/json",
+        accept="application/json",
+    ),
     "updateLogGroup": Operation(
         id="updateLogGroup",
         method="PATCH",
@@ -385,6 +452,24 @@ class TelemetryService:
     def __init__(self, transport: SyncTransport) -> None:
         self._transport = transport
 
+    def create_alert(
+        self, body: m.CreateAlertBody, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.CreateAlertResponse]:
+        "Create a metric alert"
+        return cast(
+            ApiResponse[m.CreateAlertResponse],
+            self._transport.request(
+                "telemetry",
+                "https://telemetry.{region}.basaltic.sh",
+                _OPS["createAlert"],
+                "json",
+                {},
+                body,
+                None,
+                options,
+            ),
+        )
+
     def create_log_group(
         self, body: m.CreateLogGroupBody, *, options: RequestOptions | None = None
     ) -> ApiResponse[m.CreateLogGroupResponse]:
@@ -398,6 +483,22 @@ class TelemetryService:
                 "json",
                 {},
                 body,
+                None,
+                options,
+            ),
+        )
+
+    def delete_alert(self, id: str, *, options: RequestOptions | None = None) -> None:
+        "Delete a metric alert"
+        return cast(
+            None,
+            self._transport.request(
+                "telemetry",
+                "https://telemetry.{region}.basaltic.sh",
+                _OPS["deleteAlert"],
+                "discard",
+                {"id": id},
+                UNSET,
                 None,
                 options,
             ),
@@ -432,6 +533,45 @@ class TelemetryService:
                 UNSET,
                 None,
                 options,
+            ),
+        )
+
+    def get_alert(
+        self, id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.GetAlertResponse]:
+        "Get a metric alert"
+        return cast(
+            ApiResponse[m.GetAlertResponse],
+            self._transport.request(
+                "telemetry",
+                "https://telemetry.{region}.basaltic.sh",
+                _OPS["getAlert"],
+                "json",
+                {"id": id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    def get_alert_by_reference(
+        self,
+        reference: str,
+        *,
+        scope: m.GetAlertScope | None = None,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.GetAlertResource]:
+        return cast(
+            ApiResponse[m.GetAlertResource],
+            resolve_reference(
+                reference,
+                lambda id: self.get_alert(id, options=options),
+                lambda match: self.list_alerts(
+                    query=cast(m.ListAlertsQuery, {**reference_scope(scope), **match, "limit": 2}),
+                    options=options,
+                ),
+                True,
+                "alert",
             ),
         )
 
@@ -582,6 +722,34 @@ class TelemetryService:
                 None,
                 options,
             ),
+        )
+
+    def list_alerts(
+        self, *, query: m.ListAlertsQuery | None = None, options: RequestOptions | None = None
+    ) -> Page[m.ListAlertsResponse, m.ListAlertsItem]:
+        "List metric alerts"
+        return cast(
+            Page[m.ListAlertsResponse, m.ListAlertsItem],
+            self._transport.request(
+                "telemetry",
+                "https://telemetry.{region}.basaltic.sh",
+                _OPS["listAlerts"],
+                "page",
+                {},
+                UNSET,
+                query,
+                options,
+            ),
+        )
+
+    def list_alerts_all(
+        self, *, query: m.ListAlertsQuery | None = None, options: RequestOptions | None = None
+    ) -> Iterator[m.ListAlertsItem]:
+        return iterate_pages(
+            lambda marker: self.list_alerts(
+                query=cast(m.ListAlertsQuery, {**(query or {}), "marker": marker}), options=options
+            ),
+            (query or {}).get("marker", ""),
         )
 
     def list_log_groups(
@@ -853,6 +1021,24 @@ class TelemetryService:
             ),
         )
 
+    def update_alert(
+        self, id: str, body: m.UpdateAlertBody, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.UpdateAlertResponse]:
+        "Update a metric alert"
+        return cast(
+            ApiResponse[m.UpdateAlertResponse],
+            self._transport.request(
+                "telemetry",
+                "https://telemetry.{region}.basaltic.sh",
+                _OPS["updateAlert"],
+                "json",
+                {"id": id},
+                body,
+                None,
+                options,
+            ),
+        )
+
     def update_log_group(
         self, id: str, body: m.UpdateLogGroupBody, *, options: RequestOptions | None = None
     ) -> ApiResponse[m.UpdateLogGroupResponse]:
@@ -910,6 +1096,24 @@ class AsyncTelemetryService:
     def __init__(self, transport: AsyncTransport) -> None:
         self._transport = transport
 
+    async def create_alert(
+        self, body: m.CreateAlertBody, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.CreateAlertResponse]:
+        "Create a metric alert"
+        return cast(
+            ApiResponse[m.CreateAlertResponse],
+            await self._transport.request(
+                "telemetry",
+                "https://telemetry.{region}.basaltic.sh",
+                _OPS["createAlert"],
+                "json",
+                {},
+                body,
+                None,
+                options,
+            ),
+        )
+
     async def create_log_group(
         self, body: m.CreateLogGroupBody, *, options: RequestOptions | None = None
     ) -> ApiResponse[m.CreateLogGroupResponse]:
@@ -923,6 +1127,22 @@ class AsyncTelemetryService:
                 "json",
                 {},
                 body,
+                None,
+                options,
+            ),
+        )
+
+    async def delete_alert(self, id: str, *, options: RequestOptions | None = None) -> None:
+        "Delete a metric alert"
+        return cast(
+            None,
+            await self._transport.request(
+                "telemetry",
+                "https://telemetry.{region}.basaltic.sh",
+                _OPS["deleteAlert"],
+                "discard",
+                {"id": id},
+                UNSET,
                 None,
                 options,
             ),
@@ -957,6 +1177,45 @@ class AsyncTelemetryService:
                 UNSET,
                 None,
                 options,
+            ),
+        )
+
+    async def get_alert(
+        self, id: str, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.GetAlertResponse]:
+        "Get a metric alert"
+        return cast(
+            ApiResponse[m.GetAlertResponse],
+            await self._transport.request(
+                "telemetry",
+                "https://telemetry.{region}.basaltic.sh",
+                _OPS["getAlert"],
+                "json",
+                {"id": id},
+                UNSET,
+                None,
+                options,
+            ),
+        )
+
+    async def get_alert_by_reference(
+        self,
+        reference: str,
+        *,
+        scope: m.GetAlertScope | None = None,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.GetAlertResource]:
+        return cast(
+            ApiResponse[m.GetAlertResource],
+            await aresolve_reference(
+                reference,
+                lambda id: self.get_alert(id, options=options),
+                lambda match: self.list_alerts(
+                    query=cast(m.ListAlertsQuery, {**reference_scope(scope), **match, "limit": 2}),
+                    options=options,
+                ),
+                True,
+                "alert",
             ),
         )
 
@@ -1107,6 +1366,34 @@ class AsyncTelemetryService:
                 None,
                 options,
             ),
+        )
+
+    async def list_alerts(
+        self, *, query: m.ListAlertsQuery | None = None, options: RequestOptions | None = None
+    ) -> Page[m.ListAlertsResponse, m.ListAlertsItem]:
+        "List metric alerts"
+        return cast(
+            Page[m.ListAlertsResponse, m.ListAlertsItem],
+            await self._transport.request(
+                "telemetry",
+                "https://telemetry.{region}.basaltic.sh",
+                _OPS["listAlerts"],
+                "page",
+                {},
+                UNSET,
+                query,
+                options,
+            ),
+        )
+
+    def list_alerts_all(
+        self, *, query: m.ListAlertsQuery | None = None, options: RequestOptions | None = None
+    ) -> AsyncIterator[m.ListAlertsItem]:
+        return aiterate_pages(
+            lambda marker: self.list_alerts(
+                query=cast(m.ListAlertsQuery, {**(query or {}), "marker": marker}), options=options
+            ),
+            (query or {}).get("marker", ""),
         )
 
     async def list_log_groups(
@@ -1374,6 +1661,24 @@ class AsyncTelemetryService:
                 {},
                 UNSET,
                 query,
+                options,
+            ),
+        )
+
+    async def update_alert(
+        self, id: str, body: m.UpdateAlertBody, *, options: RequestOptions | None = None
+    ) -> ApiResponse[m.UpdateAlertResponse]:
+        "Update a metric alert"
+        return cast(
+            ApiResponse[m.UpdateAlertResponse],
+            await self._transport.request(
+                "telemetry",
+                "https://telemetry.{region}.basaltic.sh",
+                _OPS["updateAlert"],
+                "json",
+                {"id": id},
+                body,
+                None,
                 options,
             ),
         )

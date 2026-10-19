@@ -6,11 +6,15 @@ from . import catalog as catalog
 from . import certificate as certificate
 from . import compute as compute
 from . import dns as dns
+from . import email as email
 from . import iam as iam
 from . import kms as kms
 from . import loadbalancer as loadbalancer
 from . import network as network
+from . import notifications as notifications
+from . import queue as queue
 from . import quota as quota
+from . import registry as registry
 from . import secrets as secrets
 from . import storage as storage
 from . import telemetry as telemetry

@@ -795,6 +795,626 @@ Verify zone ownership
 def verify_zone_ownership(self, zone_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.VerifyZoneOwnershipResponse]:
 ```
 
+## `email.add_suppression_override`
+
+Add a suppression override address
+
+`POST /v1/configuration-sets/{configuration_set_id}/suppression-overrides`
+
+```python
+def add_suppression_override(self, configuration_set_id: str, body: m.AddSuppressionOverrideBody, *, options: RequestOptions | None = None) -> ApiResponse[m.AddSuppressionOverrideResponse]:
+```
+
+## `email.begin_dkim_rotation`
+
+Begin DKIM key rotation
+
+`POST /v1/identities/{identity_id}/dkim/rotate`
+
+```python
+def begin_dkim_rotation(self, identity_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.BeginDKIMRotationResponse]:
+```
+
+## `email.cancel_dkim_rotation`
+
+Cancel in-progress DKIM rotation
+
+`DELETE /v1/identities/{identity_id}/dkim/rotate`
+
+```python
+def cancel_dkim_rotation(self, identity_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.CancelDKIMRotationResponse]:
+```
+
+## `email.create_configuration_set`
+
+Create a configuration set
+
+`POST /v1/configuration-sets`
+
+```python
+def create_configuration_set(self, body: m.CreateConfigurationSetBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateConfigurationSetResponse]:
+```
+
+## `email.create_ip_pool`
+
+Create an IP pool
+
+`POST /v1/ip-pools`
+
+```python
+def create_ip_pool(self, body: m.CreateIPPoolBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateIPPoolResponse]:
+```
+
+## `email.create_identity`
+
+Create a sender identity
+
+`POST /v1/identities`
+
+```python
+def create_identity(self, body: m.CreateIdentityBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateIdentityResponse]:
+```
+
+## `email.create_recipient_rule`
+
+Create recipient rule
+
+`POST /v1/identities/{identity_id}/recipient-rules`
+
+```python
+def create_recipient_rule(self, identity_id: str, body: m.CreateRecipientRuleBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateRecipientRuleResponse]:
+```
+
+## `email.create_suppression`
+
+Add a suppression entry
+
+`POST /v1/suppressions`
+
+```python
+def create_suppression(self, body: m.CreateSuppressionBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateSuppressionResponse]:
+```
+
+## `email.create_template`
+
+Create a template
+
+`POST /v1/templates`
+
+```python
+def create_template(self, body: m.CreateTemplateBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateTemplateResponse]:
+```
+
+## `email.delete_configuration_set`
+
+Delete a configuration set
+
+`DELETE /v1/configuration-sets/{configuration_set_id}`
+
+```python
+def delete_configuration_set(self, configuration_set_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `email.delete_ip_pool`
+
+Delete an IP pool
+
+`DELETE /v1/ip-pools/{ip_pool_id}`
+
+```python
+def delete_ip_pool(self, ip_pool_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `email.delete_identity`
+
+Delete an identity
+
+`DELETE /v1/identities/{identity_id}`
+
+```python
+def delete_identity(self, identity_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `email.delete_recipient_rule`
+
+Delete recipient rule
+
+`DELETE /v1/identities/{identity_id}/recipient-rules/{rule_id}`
+
+```python
+def delete_recipient_rule(self, identity_id: str, rule_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `email.delete_suppression`
+
+Delete suppression
+
+`DELETE /v1/suppressions/{suppression_id}`
+
+```python
+def delete_suppression(self, suppression_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `email.delete_template`
+
+Delete a template
+
+`DELETE /v1/templates/{template_id}`
+
+```python
+def delete_template(self, template_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `email.describe_configuration_set`
+
+Describe a configuration set
+
+`GET /v1/configuration-sets/{configuration_set_id}`
+
+```python
+def describe_configuration_set(self, configuration_set_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeConfigurationSetResponse]:
+```
+
+## `email.describe_dedicated_ip`
+
+Describe a dedicated IP
+
+`GET /v1/dedicated-ips/{dedicated_ip_id}`
+
+```python
+def describe_dedicated_ip(self, dedicated_ip_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeDedicatedIPResponse]:
+```
+
+## `email.describe_ip_pool`
+
+Describe an IP pool
+
+`GET /v1/ip-pools/{ip_pool_id}`
+
+```python
+def describe_ip_pool(self, ip_pool_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeIPPoolResponse]:
+```
+
+## `email.describe_identity`
+
+Describe an identity
+
+`GET /v1/identities/{identity_id}`
+
+```python
+def describe_identity(self, identity_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeIdentityResponse]:
+```
+
+## `email.describe_received_message`
+
+Get received message metadata
+
+`GET /v1/received-messages/{message_id}`
+
+```python
+def describe_received_message(self, message_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeReceivedMessageResponse]:
+```
+
+## `email.describe_recipient_rule`
+
+Get recipient rule
+
+`GET /v1/identities/{identity_id}/recipient-rules/{rule_id}`
+
+```python
+def describe_recipient_rule(self, identity_id: str, rule_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeRecipientRuleResponse]:
+```
+
+## `email.describe_sent_message`
+
+Describe a sent message
+
+`GET /v1/sent-messages/{message_id}`
+
+```python
+def describe_sent_message(self, message_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeSentMessageResponse]:
+```
+
+## `email.describe_suppression`
+
+Get suppression
+
+`GET /v1/suppressions/{suppression_id}`
+
+```python
+def describe_suppression(self, suppression_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeSuppressionResponse]:
+```
+
+## `email.describe_template`
+
+Describe a template
+
+`GET /v1/templates/{template_id}`
+
+```python
+def describe_template(self, template_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeTemplateResponse]:
+```
+
+## `email.download_received_attachment`
+
+Download received attachment
+
+`GET /v1/received-messages/{message_id}/attachments/{attachment_id}`
+
+```python
+def download_received_attachment(self, message_id: str, attachment_id: str, *, options: RequestOptions | None = None) -> httpx.Response:
+```
+
+## `email.download_received_message`
+
+Download received message
+
+`GET /v1/received-messages/{message_id}/raw`
+
+```python
+def download_received_message(self, message_id: str, *, options: RequestOptions | None = None) -> httpx.Response:
+```
+
+## `email.download_sent_attachment`
+
+Download sent attachment
+
+`GET /v1/sent-messages/{message_id}/attachments/{attachment_id}`
+
+```python
+def download_sent_attachment(self, message_id: str, attachment_id: str, *, options: RequestOptions | None = None) -> httpx.Response:
+```
+
+## `email.download_sent_message`
+
+Download sent message
+
+`GET /v1/sent-messages/{message_id}/raw`
+
+```python
+def download_sent_message(self, message_id: str, *, options: RequestOptions | None = None) -> httpx.Response:
+```
+
+## `email.finalize_dkim_rotation`
+
+Finalize DKIM key rotation
+
+`POST /v1/identities/{identity_id}/dkim/rotate/finalize`
+
+```python
+def finalize_dkim_rotation(self, identity_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.FinalizeDKIMRotationResponse]:
+```
+
+## `email.get_received_message_content`
+
+Get received message content
+
+`GET /v1/received-messages/{message_id}/content`
+
+```python
+def get_received_message_content(self, message_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetReceivedMessageContentResponse]:
+```
+
+## `email.get_receiving_configuration`
+
+Get receiving configuration
+
+`GET /v1/identities/{identity_id}/receiving`
+
+```python
+def get_receiving_configuration(self, identity_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetReceivingConfigurationResponse]:
+```
+
+## `email.get_sent_message_content`
+
+Get sent message content
+
+`GET /v1/sent-messages/{message_id}/content`
+
+```python
+def get_sent_message_content(self, message_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetSentMessageContentResponse]:
+```
+
+## `email.get_sent_message_engagement`
+
+Sent message engagement
+
+`GET /v1/sent-messages/{message_id}/engagement`
+
+```python
+def get_sent_message_engagement(self, message_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetSentMessageEngagementResponse]:
+```
+
+## `email.list_configuration_sets`
+
+List configuration sets
+
+`GET /v1/configuration-sets`
+
+```python
+def list_configuration_sets(self, *, query: m.ListConfigurationSetsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListConfigurationSetsResponse, m.ListConfigurationSetsItem]:
+```
+
+## `email.list_dmarc_reports`
+
+List DMARC report records
+
+`GET /v1/identities/{identity_id}/dmarc-reports`
+
+```python
+def list_dmarc_reports(self, identity_id: str, *, query: m.ListDMARCReportsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListDMARCReportsResponse, m.ListDMARCReportsItem]:
+```
+
+## `email.list_dedicated_i_ps`
+
+List dedicated IPs
+
+`GET /v1/dedicated-ips`
+
+```python
+def list_dedicated_i_ps(self, *, query: m.ListDedicatedIPsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListDedicatedIPsResponse, m.ListDedicatedIPsItem]:
+```
+
+## `email.list_ip_pools`
+
+List IP pools
+
+`GET /v1/ip-pools`
+
+```python
+def list_ip_pools(self, *, query: m.ListIPPoolsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListIPPoolsResponse, m.ListIPPoolsItem]:
+```
+
+## `email.list_identities`
+
+List sender identities
+
+`GET /v1/identities`
+
+```python
+def list_identities(self, *, query: m.ListIdentitiesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListIdentitiesResponse, m.ListIdentitiesItem]:
+```
+
+## `email.list_received_messages`
+
+List received messages
+
+`GET /v1/received-messages`
+
+```python
+def list_received_messages(self, *, query: m.ListReceivedMessagesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListReceivedMessagesResponse, m.ListReceivedMessagesItem]:
+```
+
+## `email.list_recipient_rules`
+
+List recipient rules
+
+`GET /v1/identities/{identity_id}/recipient-rules`
+
+```python
+def list_recipient_rules(self, identity_id: str, *, query: m.ListRecipientRulesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListRecipientRulesResponse, m.ListRecipientRulesItem]:
+```
+
+## `email.list_rejections`
+
+List API-side send rejections
+
+`GET /v1/rejections`
+
+```python
+def list_rejections(self, *, query: m.ListRejectionsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListRejectionsResponse, m.ListRejectionsItem]:
+```
+
+## `email.list_sent_messages`
+
+List sent messages
+
+`GET /v1/sent-messages`
+
+```python
+def list_sent_messages(self, *, query: m.ListSentMessagesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListSentMessagesResponse, m.ListSentMessagesItem]:
+```
+
+## `email.list_suppressions`
+
+List suppression entries
+
+`GET /v1/suppressions`
+
+```python
+def list_suppressions(self, *, query: m.ListSuppressionsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListSuppressionsResponse, m.ListSuppressionsItem]:
+```
+
+## `email.list_templates`
+
+List templates
+
+`GET /v1/templates`
+
+```python
+def list_templates(self, *, query: m.ListTemplatesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListTemplatesResponse, m.ListTemplatesItem]:
+```
+
+## `email.release_dedicated_ip`
+
+Release a dedicated IP
+
+`DELETE /v1/dedicated-ips/{dedicated_ip_id}`
+
+```python
+def release_dedicated_ip(self, dedicated_ip_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `email.remove_suppression_override`
+
+Remove a suppression override address
+
+`DELETE /v1/configuration-sets/{configuration_set_id}/suppression-overrides/{address}`
+
+```python
+def remove_suppression_override(self, configuration_set_id: str, address: str, *, options: RequestOptions | None = None) -> ApiResponse[m.RemoveSuppressionOverrideResponse]:
+```
+
+## `email.request_dedicated_ip`
+
+Request a dedicated IP
+
+`POST /v1/dedicated-ips`
+
+```python
+def request_dedicated_ip(self, body: m.RequestDedicatedIPBody | Unset = UNSET, *, options: RequestOptions | None = None) -> ApiResponse[m.RequestDedicatedIPResponse]:
+```
+
+## `email.send_message`
+
+Send a message
+
+`POST /v1/sent-messages`
+
+```python
+def send_message(self, body: m.SendMessageBody, *, options: RequestOptions | None = None) -> ApiResponse[m.SendMessageResponse]:
+```
+
+## `email.send_message_batch`
+
+Send message batch
+
+`POST /v1/sent-messages/batch`
+
+```python
+def send_message_batch(self, body: m.SendMessageBatchBody, *, options: RequestOptions | None = None) -> ApiResponse[m.SendMessageBatchResponse]:
+```
+
+## `email.set_bimi`
+
+Set BIMI logo / VMC URLs
+
+`PATCH /v1/identities/{identity_id}/bimi`
+
+```python
+def set_bimi(self, identity_id: str, body: m.SetBIMIBody, *, options: RequestOptions | None = None) -> ApiResponse[m.SetBIMIResponse]:
+```
+
+## `email.set_mail_from_domain`
+
+Set custom MAIL FROM domain
+
+`PATCH /v1/identities/{identity_id}/mail-from-domain`
+
+```python
+def set_mail_from_domain(self, identity_id: str, body: m.SetMailFromDomainBody, *, options: RequestOptions | None = None) -> ApiResponse[m.SetMailFromDomainResponse]:
+```
+
+## `email.update_configuration_set`
+
+Update a configuration set
+
+`PATCH /v1/configuration-sets/{configuration_set_id}`
+
+```python
+def update_configuration_set(self, configuration_set_id: str, body: m.UpdateConfigurationSetBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateConfigurationSetResponse]:
+```
+
+## `email.update_dedicated_ip`
+
+Update a dedicated IP
+
+`PATCH /v1/dedicated-ips/{dedicated_ip_id}`
+
+```python
+def update_dedicated_ip(self, dedicated_ip_id: str, body: m.UpdateDedicatedIPBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateDedicatedIPResponse]:
+```
+
+## `email.update_ip_pool`
+
+Update an IP pool
+
+`PATCH /v1/ip-pools/{ip_pool_id}`
+
+```python
+def update_ip_pool(self, ip_pool_id: str, body: m.UpdateIPPoolBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateIPPoolResponse]:
+```
+
+## `email.update_identity`
+
+Update identity
+
+`PATCH /v1/identities/{identity_id}`
+
+```python
+def update_identity(self, identity_id: str, body: m.UpdateIdentityBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateIdentityResponse]:
+```
+
+## `email.update_receiving_configuration`
+
+Update receiving configuration
+
+`PATCH /v1/identities/{identity_id}/receiving`
+
+```python
+def update_receiving_configuration(self, identity_id: str, body: m.UpdateReceivingConfigurationBody, *, options: RequestOptions | None = None) -> None:
+```
+
+## `email.update_recipient_rule`
+
+Update recipient rule
+
+`PATCH /v1/identities/{identity_id}/recipient-rules/{rule_id}`
+
+```python
+def update_recipient_rule(self, identity_id: str, rule_id: str, body: m.UpdateRecipientRuleBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateRecipientRuleResponse]:
+```
+
+## `email.update_suppression`
+
+Update suppression
+
+`PATCH /v1/suppressions/{suppression_id}`
+
+```python
+def update_suppression(self, suppression_id: str, body: m.UpdateSuppressionBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateSuppressionResponse]:
+```
+
+## `email.update_template`
+
+Update a template
+
+`PATCH /v1/templates/{template_id}`
+
+```python
+def update_template(self, template_id: str, body: m.UpdateTemplateBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateTemplateResponse]:
+```
+
+## `email.verify_bimi`
+
+Verify BIMI logo (+ optional VMC)
+
+`POST /v1/identities/{identity_id}/bimi/verify`
+
+```python
+def verify_bimi(self, identity_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.VerifyBIMIResponse]:
+```
+
+## `email.verify_identity`
+
+Trigger DNS verification
+
+`POST /v1/identities/{identity_id}/verify`
+
+```python
+def verify_identity(self, identity_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.VerifyIdentityResponse]:
+```
+
+## `email.verify_mail_from_domain`
+
+Verify custom MAIL FROM domain MX
+
+`POST /v1/identities/{identity_id}/mail-from-domain/verify`
+
+```python
+def verify_mail_from_domain(self, identity_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.VerifyMailFromDomainResponse]:
+```
+
 ## `iam.assume_role`
 
 Assume role
@@ -833,16 +1453,6 @@ Attach policy to service account
 
 ```python
 def attach_service_account_policy(self, service_account_id: str, body: m.AttachServiceAccountPolicyBody, *, options: RequestOptions | None = None) -> None:
-```
-
-## `iam.authorize_oauth_client`
-
-Approve a CLI login and issue an authorization code
-
-`POST /v1/oauth/authorize`
-
-```python
-def authorize_oauth_client(self, body: m.AuthorizeOAuthClientBody, *, options: RequestOptions | None = None) -> ApiResponse[m.AuthorizeOAuthClientResponse]:
 ```
 
 ## `iam.create_oidc_provider`
@@ -2645,6 +3255,356 @@ Update VPC
 def update_vpc(self, vpc_id: str, body: m.UpdateVpcBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateVpcResponse]:
 ```
 
+## `notifications.create_topic`
+
+Create a topic
+
+`POST /v1/topics`
+
+```python
+def create_topic(self, body: m.CreateTopicBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateTopicResponse]:
+```
+
+## `notifications.delete_topic`
+
+Delete a topic
+
+`DELETE /v1/topics/{topic_id}`
+
+```python
+def delete_topic(self, topic_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `notifications.delete_topic_policy`
+
+Delete the topic's resource policy
+
+`DELETE /v1/topics/{topic_id}/policy`
+
+```python
+def delete_topic_policy(self, topic_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `notifications.describe_message`
+
+Describe a published notification
+
+`GET /v1/topics/{topic_id}/messages/{message_id}`
+
+```python
+def describe_message(self, topic_id: str, message_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeMessageResponse]:
+```
+
+## `notifications.describe_subscription`
+
+Describe a subscription
+
+`GET /v1/topics/{topic_id}/subscriptions/{subscription_id}`
+
+```python
+def describe_subscription(self, topic_id: str, subscription_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeSubscriptionResponse]:
+```
+
+## `notifications.describe_topic`
+
+Describe a topic
+
+`GET /v1/topics/{topic_id}`
+
+```python
+def describe_topic(self, topic_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeTopicResponse]:
+```
+
+## `notifications.get_subscription_signing_secret`
+
+Read the webhook signing secret
+
+`GET /v1/topics/{topic_id}/subscriptions/{subscription_id}/signing-secret`
+
+```python
+def get_subscription_signing_secret(self, topic_id: str, subscription_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetSubscriptionSigningSecretResponse]:
+```
+
+## `notifications.get_topic_policy`
+
+Read the topic's resource policy
+
+`GET /v1/topics/{topic_id}/policy`
+
+```python
+def get_topic_policy(self, topic_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetTopicPolicyResponse]:
+```
+
+## `notifications.list_deliveries`
+
+List delivery records
+
+`GET /v1/topics/{topic_id}/deliveries`
+
+```python
+def list_deliveries(self, topic_id: str, *, query: m.ListDeliveriesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListDeliveriesResponse, m.ListDeliveriesItem]:
+```
+
+## `notifications.list_messages`
+
+List messages
+
+`GET /v1/topics/{topic_id}/messages`
+
+```python
+def list_messages(self, topic_id: str, *, query: m.ListMessagesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListMessagesResponse, m.ListMessagesItem]:
+```
+
+## `notifications.list_subscriptions`
+
+List subscriptions
+
+`GET /v1/topics/{topic_id}/subscriptions`
+
+```python
+def list_subscriptions(self, topic_id: str, *, query: m.ListSubscriptionsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListSubscriptionsResponse, m.ListSubscriptionsItem]:
+```
+
+## `notifications.list_topics`
+
+List topics
+
+`GET /v1/topics`
+
+```python
+def list_topics(self, *, query: m.ListTopicsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListTopicsResponse, m.ListTopicsItem]:
+```
+
+## `notifications.publish`
+
+Publish a notification
+
+`POST /v1/topics/{topic_id}/publish`
+
+```python
+def publish(self, topic_id: str, body: m.PublishBody, *, options: RequestOptions | None = None) -> ApiResponse[m.PublishResponse]:
+```
+
+## `notifications.publish_batch`
+
+Publish up to 10 notifications
+
+`POST /v1/topics/{topic_id}/publish-batch`
+
+```python
+def publish_batch(self, topic_id: str, body: m.PublishBatchBody, *, options: RequestOptions | None = None) -> ApiResponse[m.PublishBatchResponse]:
+```
+
+## `notifications.put_topic_policy`
+
+Set the topic's resource policy
+
+`PUT /v1/topics/{topic_id}/policy`
+
+```python
+def put_topic_policy(self, topic_id: str, body: m.PutTopicPolicyBody, *, options: RequestOptions | None = None) -> ApiResponse[m.PutTopicPolicyResponse]:
+```
+
+## `notifications.resend_confirmation`
+
+Re-send the confirmation handshake
+
+`POST /v1/topics/{topic_id}/subscriptions/{subscription_id}/resend-confirmation`
+
+```python
+def resend_confirmation(self, topic_id: str, subscription_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.ResendConfirmationResponse]:
+```
+
+## `notifications.rotate_subscription_signing_secret`
+
+Rotate the webhook signing secret
+
+`POST /v1/topics/{topic_id}/subscriptions/{subscription_id}/signing-secret/rotate`
+
+```python
+def rotate_subscription_signing_secret(self, topic_id: str, subscription_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.RotateSubscriptionSigningSecretResponse]:
+```
+
+## `notifications.subscribe`
+
+Subscribe an endpoint to a topic
+
+`POST /v1/topics/{topic_id}/subscriptions`
+
+```python
+def subscribe(self, topic_id: str, body: m.SubscribeBody, *, options: RequestOptions | None = None) -> ApiResponse[m.SubscribeResponse]:
+```
+
+## `notifications.unsubscribe`
+
+Unsubscribe
+
+`DELETE /v1/topics/{topic_id}/subscriptions/{subscription_id}`
+
+```python
+def unsubscribe(self, topic_id: str, subscription_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `notifications.update_subscription`
+
+Update mutable subscription settings
+
+`PATCH /v1/topics/{topic_id}/subscriptions/{subscription_id}`
+
+```python
+def update_subscription(self, topic_id: str, subscription_id: str, body: m.UpdateSubscriptionBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateSubscriptionResponse]:
+```
+
+## `notifications.update_topic`
+
+Update mutable topic metadata
+
+`PATCH /v1/topics/{topic_id}`
+
+```python
+def update_topic(self, topic_id: str, body: m.UpdateTopicBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateTopicResponse]:
+```
+
+## `queue.change_message_visibility`
+
+Extend or shorten a lease
+
+`POST /v1/queues/{queue_id}/messages/visibility`
+
+```python
+def change_message_visibility(self, queue_id: str, body: m.ChangeMessageVisibilityBody, *, options: RequestOptions | None = None) -> None:
+```
+
+## `queue.change_message_visibility_batch`
+
+Extend or shorten up to ten leases
+
+`POST /v1/queues/{queue_id}/messages/visibility-batch`
+
+```python
+def change_message_visibility_batch(self, queue_id: str, body: m.ChangeMessageVisibilityBatchBody, *, options: RequestOptions | None = None) -> ApiResponse[m.ChangeMessageVisibilityBatchResponse]:
+```
+
+## `queue.create_queue`
+
+Create a queue
+
+`POST /v1/queues`
+
+```python
+def create_queue(self, body: m.CreateQueueBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateQueueResponse]:
+```
+
+## `queue.delete_message`
+
+Delete a leased message
+
+`DELETE /v1/queues/{queue_id}/messages`
+
+```python
+def delete_message(self, queue_id: str, *, query: m.DeleteMessageQuery, options: RequestOptions | None = None) -> None:
+```
+
+## `queue.delete_message_batch`
+
+Delete up to ten leased messages
+
+`POST /v1/queues/{queue_id}/messages/delete-batch`
+
+```python
+def delete_message_batch(self, queue_id: str, body: m.DeleteMessageBatchBody, *, options: RequestOptions | None = None) -> ApiResponse[m.DeleteMessageBatchResponse]:
+```
+
+## `queue.delete_queue`
+
+Delete a queue
+
+`DELETE /v1/queues/{queue_id}`
+
+```python
+def delete_queue(self, queue_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `queue.describe_queue`
+
+Describe a queue
+
+`GET /v1/queues/{queue_id}`
+
+```python
+def describe_queue(self, queue_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeQueueResponse]:
+```
+
+## `queue.list_queues`
+
+List queues
+
+`GET /v1/queues`
+
+```python
+def list_queues(self, *, query: m.ListQueuesQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListQueuesResponse, m.ListQueuesItem]:
+```
+
+## `queue.peek_messages`
+
+Peek at a queue's messages
+
+`GET /v1/queues/{queue_id}/messages`
+
+```python
+def peek_messages(self, queue_id: str, *, query: m.PeekMessagesQuery | None = None, options: RequestOptions | None = None) -> ApiResponse[m.PeekMessagesResponse]:
+```
+
+## `queue.purge_queue`
+
+Delete every message on a queue
+
+`POST /v1/queues/{queue_id}/purge`
+
+```python
+def purge_queue(self, queue_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.PurgeQueueResponse]:
+```
+
+## `queue.receive_messages`
+
+Lease messages
+
+`POST /v1/queues/{queue_id}/messages/receive`
+
+```python
+def receive_messages(self, queue_id: str, body: m.ReceiveMessagesBody | Unset = UNSET, *, options: RequestOptions | None = None) -> ApiResponse[m.ReceiveMessagesResponse]:
+```
+
+## `queue.send_message`
+
+Send a message
+
+`POST /v1/queues/{queue_id}/messages`
+
+```python
+def send_message(self, queue_id: str, body: m.SendMessageBody, *, options: RequestOptions | None = None) -> ApiResponse[m.SendMessageResponse]:
+```
+
+## `queue.send_message_batch`
+
+Send up to ten messages
+
+`POST /v1/queues/{queue_id}/messages/batch`
+
+```python
+def send_message_batch(self, queue_id: str, body: m.SendMessageBatchBody, *, options: RequestOptions | None = None) -> ApiResponse[m.SendMessageBatchResponse]:
+```
+
+## `queue.update_queue`
+
+Update queue attributes
+
+`PATCH /v1/queues/{queue_id}`
+
+```python
+def update_queue(self, queue_id: str, body: m.UpdateQueueBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateQueueResponse]:
+```
+
 ## `quota.list_quotas`
 
 List quotas
@@ -2653,6 +3613,266 @@ List quotas
 
 ```python
 def list_quotas(self, *, query: m.ListQuotasQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListQuotasResponse, m.ListQuotasItem]:
+```
+
+## `registry.batch_delete_image`
+
+Delete images
+
+`POST /v1/repositories/{repository_id}/images/batch-delete`
+
+```python
+def batch_delete_image(self, repository_id: str, body: m.BatchDeleteImageBody, *, options: RequestOptions | None = None) -> ApiResponse[m.BatchDeleteImageResponse]:
+```
+
+## `registry.create_pull_through_cache_rule`
+
+Create a pull-through cache rule
+
+`POST /v1/pull-through-cache-rules`
+
+```python
+def create_pull_through_cache_rule(self, body: m.CreatePullThroughCacheRuleBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreatePullThroughCacheRuleResponse]:
+```
+
+## `registry.create_repository`
+
+Create a repository
+
+`POST /v1/repositories`
+
+```python
+def create_repository(self, body: m.CreateRepositoryBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateRepositoryResponse]:
+```
+
+## `registry.delete_encryption_configuration`
+
+Delete encryption configuration
+
+`DELETE /v1/encryption-configuration`
+
+```python
+def delete_encryption_configuration(self, *, options: RequestOptions | None = None) -> None:
+```
+
+## `registry.delete_lifecycle_policy`
+
+Delete the lifecycle policy
+
+`DELETE /v1/repositories/{repository_id}/lifecycle-policy`
+
+```python
+def delete_lifecycle_policy(self, repository_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `registry.delete_pull_through_cache_rule`
+
+Delete a pull-through cache rule
+
+`DELETE /v1/pull-through-cache-rules/{prefix}`
+
+```python
+def delete_pull_through_cache_rule(self, prefix: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `registry.delete_repository`
+
+Delete a repository
+
+`DELETE /v1/repositories/{repository_id}`
+
+```python
+def delete_repository(self, repository_id: str, *, query: m.DeleteRepositoryQuery | None = None, options: RequestOptions | None = None) -> None:
+```
+
+## `registry.delete_repository_policy`
+
+Delete the repository policy
+
+`DELETE /v1/repositories/{repository_id}/policy`
+
+```python
+def delete_repository_policy(self, repository_id: str, *, options: RequestOptions | None = None) -> None:
+```
+
+## `registry.describe_image`
+
+Describe an image
+
+`GET /v1/repositories/{repository_id}/images/{image_reference}`
+
+```python
+def describe_image(self, repository_id: str, image_reference: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeImageResponse]:
+```
+
+## `registry.describe_images`
+
+List images
+
+`GET /v1/repositories/{repository_id}/images`
+
+```python
+def describe_images(self, repository_id: str, *, query: m.DescribeImagesQuery | None = None, options: RequestOptions | None = None) -> ApiResponse[m.DescribeImagesResponse]:
+```
+
+## `registry.describe_pull_through_cache_rule`
+
+Get a pull-through cache rule
+
+`GET /v1/pull-through-cache-rules/{prefix}`
+
+```python
+def describe_pull_through_cache_rule(self, prefix: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribePullThroughCacheRuleResponse]:
+```
+
+## `registry.describe_pull_through_cache_rules`
+
+List pull-through cache rules
+
+`GET /v1/pull-through-cache-rules`
+
+```python
+def describe_pull_through_cache_rules(self, *, query: m.DescribePullThroughCacheRulesQuery | None = None, options: RequestOptions | None = None) -> ApiResponse[m.DescribePullThroughCacheRulesResponse]:
+```
+
+## `registry.describe_repositories`
+
+List repositories
+
+`GET /v1/repositories`
+
+```python
+def describe_repositories(self, *, query: m.DescribeRepositoriesQuery | None = None, options: RequestOptions | None = None) -> ApiResponse[m.DescribeRepositoriesResponse]:
+```
+
+## `registry.describe_repository`
+
+Describe a repository
+
+`GET /v1/repositories/{repository_id}`
+
+```python
+def describe_repository(self, repository_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.DescribeRepositoryResponse]:
+```
+
+## `registry.get_authorization_token`
+
+Get a docker login credential
+
+`POST /v1/authorization-token`
+
+```python
+def get_authorization_token(self, *, options: RequestOptions | None = None) -> ApiResponse[m.GetAuthorizationTokenResponse]:
+```
+
+## `registry.get_encryption_configuration`
+
+Get the encryption configuration
+
+`GET /v1/encryption-configuration`
+
+```python
+def get_encryption_configuration(self, *, options: RequestOptions | None = None) -> ApiResponse[m.GetEncryptionConfigurationResponse]:
+```
+
+## `registry.get_lifecycle_policy`
+
+Get the lifecycle policy
+
+`GET /v1/repositories/{repository_id}/lifecycle-policy`
+
+```python
+def get_lifecycle_policy(self, repository_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetLifecyclePolicyResponse]:
+```
+
+## `registry.get_repository_policy`
+
+Get the repository policy
+
+`GET /v1/repositories/{repository_id}/policy`
+
+```python
+def get_repository_policy(self, repository_id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetRepositoryPolicyResponse]:
+```
+
+## `registry.get_retained_registry_presence`
+
+Check retained registry data presence
+
+`GET /v1/encryption-configuration/retained-data`
+
+```python
+def get_retained_registry_presence(self, *, options: RequestOptions | None = None) -> ApiResponse[m.GetRetainedRegistryPresenceResponse]:
+```
+
+## `registry.list_tags`
+
+List tags
+
+`GET /v1/repositories/{repository_id}/tags`
+
+```python
+def list_tags(self, repository_id: str, *, query: m.ListTagsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListTagsResponse, m.ListTagsItem]:
+```
+
+## `registry.put_encryption_configuration`
+
+Set the encryption configuration
+
+`PUT /v1/encryption-configuration`
+
+```python
+def put_encryption_configuration(self, body: m.PutEncryptionConfigurationBody, *, options: RequestOptions | None = None) -> ApiResponse[m.PutEncryptionConfigurationResponse]:
+```
+
+## `registry.put_lifecycle_policy`
+
+Set the lifecycle policy
+
+`PUT /v1/repositories/{repository_id}/lifecycle-policy`
+
+```python
+def put_lifecycle_policy(self, repository_id: str, body: m.PutLifecyclePolicyBody, *, options: RequestOptions | None = None) -> ApiResponse[m.PutLifecyclePolicyResponse]:
+```
+
+## `registry.set_repository_policy`
+
+Set the repository policy
+
+`PUT /v1/repositories/{repository_id}/policy`
+
+```python
+def set_repository_policy(self, repository_id: str, body: m.SetRepositoryPolicyBody, *, options: RequestOptions | None = None) -> ApiResponse[m.SetRepositoryPolicyResponse]:
+```
+
+## `registry.start_lifecycle_policy_preview`
+
+Preview a lifecycle policy
+
+`POST /v1/repositories/{repository_id}/lifecycle-policy/preview`
+
+```python
+def start_lifecycle_policy_preview(self, repository_id: str, body: m.StartLifecyclePolicyPreviewBody | Unset = UNSET, *, options: RequestOptions | None = None) -> ApiResponse[m.StartLifecyclePolicyPreviewResponse]:
+```
+
+## `registry.update_pull_through_cache_rule`
+
+Update a pull-through cache rule
+
+`PATCH /v1/pull-through-cache-rules/{prefix}`
+
+```python
+def update_pull_through_cache_rule(self, prefix: str, body: m.UpdatePullThroughCacheRuleBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdatePullThroughCacheRuleResponse]:
+```
+
+## `registry.update_repository`
+
+Update repository settings
+
+`PATCH /v1/repositories/{repository_id}`
+
+```python
+def update_repository(self, repository_id: str, body: m.UpdateRepositoryBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateRepositoryResponse]:
 ```
 
 ## `secrets.create_secret`
@@ -3305,6 +4525,16 @@ Upload a part
 def upload_part(self, bucket: str, upload_id: str, part_number: str, body: BinaryBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UploadPartResponse]:
 ```
 
+## `telemetry.create_alert`
+
+Create a metric alert
+
+`POST /v1/alerts`
+
+```python
+def create_alert(self, body: m.CreateAlertBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateAlertResponse]:
+```
+
 ## `telemetry.create_log_group`
 
 Create a log group
@@ -3313,6 +4543,16 @@ Create a log group
 
 ```python
 def create_log_group(self, body: m.CreateLogGroupBody, *, options: RequestOptions | None = None) -> ApiResponse[m.CreateLogGroupResponse]:
+```
+
+## `telemetry.delete_alert`
+
+Delete a metric alert
+
+`DELETE /v1/alerts/{id}`
+
+```python
+def delete_alert(self, id: str, *, options: RequestOptions | None = None) -> None:
 ```
 
 ## `telemetry.delete_log_group`
@@ -3333,6 +4573,16 @@ Delete trace settings
 
 ```python
 def delete_trace_settings(self, *, options: RequestOptions | None = None) -> None:
+```
+
+## `telemetry.get_alert`
+
+Get a metric alert
+
+`GET /v1/alerts/{id}`
+
+```python
+def get_alert(self, id: str, *, options: RequestOptions | None = None) -> ApiResponse[m.GetAlertResponse]:
 ```
 
 ## `telemetry.get_log`
@@ -3403,6 +4653,16 @@ Ingest a batch of trace spans
 
 ```python
 def ingest_spans(self, body: m.IngestSpansBody, *, options: RequestOptions | None = None) -> ApiResponse[m.IngestSpansResponse]:
+```
+
+## `telemetry.list_alerts`
+
+List metric alerts
+
+`GET /v1/alerts`
+
+```python
+def list_alerts(self, *, query: m.ListAlertsQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListAlertsResponse, m.ListAlertsItem]:
 ```
 
 ## `telemetry.list_log_groups`
@@ -3523,6 +4783,16 @@ List traces
 
 ```python
 def search_traces(self, *, query: m.SearchTracesQuery, options: RequestOptions | None = None) -> ApiResponse[m.SearchTracesResponse]:
+```
+
+## `telemetry.update_alert`
+
+Update a metric alert
+
+`PATCH /v1/alerts/{id}`
+
+```python
+def update_alert(self, id: str, body: m.UpdateAlertBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateAlertResponse]:
 ```
 
 ## `telemetry.update_log_group`

@@ -9,11 +9,15 @@ from .services.catalog import AsyncCatalogService, CatalogService
 from .services.certificate import AsyncCertificateService, CertificateService
 from .services.compute import AsyncComputeService, ComputeService
 from .services.dns import AsyncDnsService, DnsService
+from .services.email import AsyncEmailService, EmailService
 from .services.iam import AsyncIamService, IamService
 from .services.kms import AsyncKmsService, KmsService
 from .services.loadbalancer import AsyncLoadbalancerService, LoadbalancerService
 from .services.network import AsyncNetworkService, NetworkService
+from .services.notifications import AsyncNotificationsService, NotificationsService
+from .services.queue import AsyncQueueService, QueueService
 from .services.quota import AsyncQuotaService, QuotaService
+from .services.registry import AsyncRegistryService, RegistryService
 from .services.secrets import AsyncSecretsService, SecretsService
 from .services.storage import AsyncStorageService, StorageService
 from .services.telemetry import AsyncTelemetryService, TelemetryService
@@ -46,6 +50,10 @@ class Client(SyncClientBase):
         return DnsService(self._transport)
 
     @cached_property
+    def email(self) -> EmailService:
+        return EmailService(self._transport)
+
+    @cached_property
     def iam(self) -> IamService:
         return IamService(self._transport)
 
@@ -62,8 +70,20 @@ class Client(SyncClientBase):
         return NetworkService(self._transport)
 
     @cached_property
+    def notifications(self) -> NotificationsService:
+        return NotificationsService(self._transport)
+
+    @cached_property
+    def queue(self) -> QueueService:
+        return QueueService(self._transport)
+
+    @cached_property
     def quota(self) -> QuotaService:
         return QuotaService(self._transport)
+
+    @cached_property
+    def registry(self) -> RegistryService:
+        return RegistryService(self._transport)
 
     @cached_property
     def secrets(self) -> SecretsService:
@@ -108,6 +128,10 @@ class AsyncClient(AsyncClientBase):
         return AsyncDnsService(self._transport)
 
     @cached_property
+    def email(self) -> AsyncEmailService:
+        return AsyncEmailService(self._transport)
+
+    @cached_property
     def iam(self) -> AsyncIamService:
         return AsyncIamService(self._transport)
 
@@ -124,8 +148,20 @@ class AsyncClient(AsyncClientBase):
         return AsyncNetworkService(self._transport)
 
     @cached_property
+    def notifications(self) -> AsyncNotificationsService:
+        return AsyncNotificationsService(self._transport)
+
+    @cached_property
+    def queue(self) -> AsyncQueueService:
+        return AsyncQueueService(self._transport)
+
+    @cached_property
     def quota(self) -> AsyncQuotaService:
         return AsyncQuotaService(self._transport)
+
+    @cached_property
+    def registry(self) -> AsyncRegistryService:
+        return AsyncRegistryService(self._transport)
 
     @cached_property
     def secrets(self) -> AsyncSecretsService:

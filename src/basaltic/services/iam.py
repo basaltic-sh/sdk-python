@@ -68,18 +68,6 @@ _OPS = {
         contentType="application/json",
         accept="application/json",
     ),
-    "authorizeOAuthClient": Operation(
-        id="authorizeOAuthClient",
-        method="POST",
-        path="/v1/oauth/authorize",
-        authenticated=True,
-        requiredQuery=[],
-        requiredHeaders=[],
-        queryEncoding={},
-        bodyRequired=True,
-        contentType="application/json",
-        accept="application/json",
-    ),
     "createOIDCProvider": Operation(
         id="createOIDCProvider",
         method="POST",
@@ -897,24 +885,6 @@ class IamService:
                 _OPS["attachServiceAccountPolicy"],
                 "discard",
                 {"service_account_id": service_account_id},
-                body,
-                None,
-                options,
-            ),
-        )
-
-    def authorize_oauth_client(
-        self, body: m.AuthorizeOAuthClientBody, *, options: RequestOptions | None = None
-    ) -> ApiResponse[m.AuthorizeOAuthClientResponse]:
-        "Approve a CLI login and issue an authorization code"
-        return cast(
-            ApiResponse[m.AuthorizeOAuthClientResponse],
-            self._transport.request(
-                "iam",
-                "https://iam.basaltic.sh",
-                _OPS["authorizeOAuthClient"],
-                "json",
-                {},
                 body,
                 None,
                 options,
@@ -2329,24 +2299,6 @@ class AsyncIamService:
                 _OPS["attachServiceAccountPolicy"],
                 "discard",
                 {"service_account_id": service_account_id},
-                body,
-                None,
-                options,
-            ),
-        )
-
-    async def authorize_oauth_client(
-        self, body: m.AuthorizeOAuthClientBody, *, options: RequestOptions | None = None
-    ) -> ApiResponse[m.AuthorizeOAuthClientResponse]:
-        "Approve a CLI login and issue an authorization code"
-        return cast(
-            ApiResponse[m.AuthorizeOAuthClientResponse],
-            await self._transport.request(
-                "iam",
-                "https://iam.basaltic.sh",
-                _OPS["authorizeOAuthClient"],
-                "json",
-                {},
                 body,
                 None,
                 options,

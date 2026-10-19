@@ -73,26 +73,6 @@ PolicyAttachRequestInput = TypedDict(
     "PolicyAttachRequestInput", {"policy": "Required[PolicyReferenceInput]"}, total=False
 )
 AttachServiceAccountPolicyBody: TypeAlias = "PolicyAttachRequestInput"
-OAuthAuthorizeRequestInput = TypedDict(
-    "OAuthAuthorizeRequestInput",
-    {
-        "client_id": "Required[str]",
-        "redirect_uri": "Required[str]",
-        "code_challenge": "Required[str]",
-        "code_challenge_method": "Required[Literal['S256']]",
-        "state": "NotRequired[str]",
-        "organization": "Required[OrganizationReferenceInput]",
-    },
-    total=False,
-)
-OrganizationReferenceInput: TypeAlias = "str"
-AuthorizeOAuthClientBody: TypeAlias = "OAuthAuthorizeRequestInput"
-OAuthAuthorizeResponse = TypedDict(
-    "OAuthAuthorizeResponse",
-    {"code": "NotRequired[str]", "redirect_to": "NotRequired[str]", "expires_in": "Required[int]"},
-    total=False,
-)
-AuthorizeOAuthClientResponse: TypeAlias = "OAuthAuthorizeResponse"
 OIDCProviderCreateRequestInput = TypedDict(
     "OIDCProviderCreateRequestInput",
     {

@@ -1,7 +1,7 @@
 # Basaltic Python SDK
 
 Typed synchronous and asynchronous clients for the Basaltic Cloud API. Python 3.11+
-with HTTPX; covers 401 operations across 15 services. Includes typed request and
+with HTTPX; covers 547 operations across 19 services. Includes typed request and
 response dictionaries, access-key authentication, pagination, resource references,
 and streamed uploads/downloads.
 
@@ -103,7 +103,7 @@ return `None`. Methods whose successful response can be binary, including HEAD,
 return an unread `httpx.Response` which the caller must close.
 
 See [all API methods](https://github.com/basaltic-sh/sdk-python/blob/main/docs/api.md). Services: audit, billing, catalog, certificate,
-compute, dns, iam, kms, loadbalancer, network, quota, secrets, storage, telemetry,
+compute, dns, email, iam, kms, loadbalancer, network, notifications, queue, quota, registry, secrets, storage, telemetry,
 and workspace.
 
 ## Pagination and references

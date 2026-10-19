@@ -4,6 +4,101 @@ from __future__ import annotations
 
 from typing import Literal, NotRequired, Required, TypeAlias, TypedDict
 
+CreateAlertRequestInput = TypedDict(
+    "CreateAlertRequestInput",
+    {
+        "name": "Required[str]",
+        "topic": "Required[str]",
+        "expression": "Required[AlertExpressionInput]",
+        "operator": "Required[Literal['gt', 'gte', 'lt', 'lte']]",
+        "threshold": "Required[float]",
+        "window_seconds": "Required[int]",
+        "for_seconds": "Required[int]",
+        "enabled": "NotRequired[bool]",
+        "silenced_until": "NotRequired[str | None]",
+    },
+    total=False,
+)
+AlertExpressionInput = TypedDict(
+    "AlertExpressionInput",
+    {
+        "metric": "Required[str]",
+        "agg": "Required[Literal['avg', 'min', 'max', 'sum', 'last', 'count', 'rate', 'increase']]",
+        "match": "NotRequired[list[str]]",
+        "by": "NotRequired[list[str]]",
+        "denominator": "NotRequired[AlertQueryInput]",
+        "scale": "Required[float]",
+        "unit": "NotRequired[str]",
+    },
+    total=False,
+)
+AlertQueryInput = TypedDict(
+    "AlertQueryInput",
+    {
+        "metric": "Required[str]",
+        "agg": "Required[Literal['avg', 'min', 'max', 'sum', 'last', 'count', 'rate', 'increase']]",
+        "match": "NotRequired[list[str]]",
+        "by": "NotRequired[list[str]]",
+    },
+    total=False,
+)
+CreateAlertBody: TypeAlias = "CreateAlertRequestInput"
+AlertResponse = TypedDict("AlertResponse", {"alert": "Required[Alert]"}, total=False)
+Alert = TypedDict(
+    "Alert",
+    {
+        "expression": "Required[AlertExpression]",
+        "operator": "Required[Literal['gt', 'gte', 'lt', 'lte']]",
+        "threshold": "Required[float]",
+        "window_seconds": "Required[int]",
+        "for_seconds": "Required[int]",
+        "enabled": "Required[bool]",
+        "silenced_until": "Required[str | None]",
+        "id": "Required[str]",
+        "crn": "Required[str]",
+        "name": "Required[str]",
+        "topic": "Required[ResourceRef]",
+        "state": "Required[Literal['ok', 'pending', 'firing', 'no_data', 'error']]",
+        "last_value": "Required[float | None]",
+        "evaluated_at": "NotRequired[str]",
+        "state_changed_at": "NotRequired[str]",
+        "pending_since": "NotRequired[str]",
+        "evaluation_error": "NotRequired[str]",
+        "delivery_error": "NotRequired[str]",
+        "created_at": "Required[str]",
+        "updated_at": "Required[str]",
+    },
+    total=False,
+)
+AlertExpression = TypedDict(
+    "AlertExpression",
+    {
+        "metric": "Required[str]",
+        "agg": "Required[Literal['avg', 'min', 'max', 'sum', 'last', 'count', 'rate', 'increase']]",
+        "match": "NotRequired[list[str]]",
+        "by": "NotRequired[list[str]]",
+        "denominator": "NotRequired[AlertQuery]",
+        "scale": "Required[float]",
+        "unit": "NotRequired[str]",
+    },
+    total=False,
+)
+AlertQuery = TypedDict(
+    "AlertQuery",
+    {
+        "metric": "Required[str]",
+        "agg": "Required[Literal['avg', 'min', 'max', 'sum', 'last', 'count', 'rate', 'increase']]",
+        "match": "NotRequired[list[str]]",
+        "by": "NotRequired[list[str]]",
+    },
+    total=False,
+)
+ResourceRef = TypedDict(
+    "ResourceRef",
+    {"id": "Required[str]", "crn": "Required[str]", "name": "NotRequired[str]"},
+    total=False,
+)
+CreateAlertResponse: TypeAlias = "AlertResponse"
 CreateLogGroupRequestInput = TypedDict(
     "CreateLogGroupRequestInput",
     {
@@ -32,12 +127,17 @@ LogGroup = TypedDict(
     },
     total=False,
 )
-ResourceRef = TypedDict(
-    "ResourceRef",
-    {"id": "Required[str]", "crn": "Required[str]", "name": "NotRequired[str]"},
+CreateLogGroupResponse: TypeAlias = "LogGroupResponse"
+GetAlertResponse: TypeAlias = "AlertResponse"
+GetAlertResource: TypeAlias = "Alert"
+GetAlertScope = TypedDict(
+    "GetAlertScope",
+    {
+        "state": "NotRequired[Literal['ok', 'pending', 'firing', 'no_data', 'error', 'silenced', 'disabled']]",
+        "limit": "NotRequired[int]",
+    },
     total=False,
 )
-CreateLogGroupResponse: TypeAlias = "LogGroupResponse"
 LogResponse = TypedDict("LogResponse", {"log": "Required[LogRecord]"}, total=False)
 LogRecord = TypedDict(
     "LogRecord",
@@ -66,7 +166,9 @@ RetainedDataResponse = TypedDict(
     total=False,
 )
 RetainedDataResponseRetainedData = TypedDict(
-    "RetainedDataResponseRetainedData", {"has_data": "Required[bool]"}, total=False
+    "RetainedDataResponseRetainedData",
+    {"has_data": "Required[bool]", "blocks_deletion": "NotRequired[bool]"},
+    total=False,
 )
 GetRetainedTelemetryPresenceResponse: TypeAlias = "RetainedDataResponse"
 TraceResponse = TypedDict("TraceResponse", {"trace": "Required[TraceSummary]"}, total=False)
@@ -172,6 +274,35 @@ SpanLinkInput = TypedDict(
 )
 IngestSpansBody: TypeAlias = "IngestSpansRequestInput"
 IngestSpansResponse: TypeAlias = "IngestResponse"
+ListAlertsParameters = TypedDict(
+    "ListAlertsParameters",
+    {
+        "name": "NotRequired[str]",
+        "crn": "NotRequired[str]",
+        "state": "NotRequired[Literal['ok', 'pending', 'firing', 'no_data', 'error', 'silenced', 'disabled']]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+    },
+    total=False,
+)
+ListAlertsQuery: TypeAlias = "ListAlertsParameters"
+AlertListResponse = TypedDict(
+    "AlertListResponse",
+    {"alerts": "Required[list[Alert]]", "meta": "Required[PaginationMeta]"},
+    total=False,
+)
+PaginationMeta = TypedDict(
+    "PaginationMeta",
+    {
+        "total": "NotRequired[int]",
+        "limit": "NotRequired[int]",
+        "marker": "NotRequired[str]",
+        "has_more": "NotRequired[bool]",
+    },
+    total=False,
+)
+ListAlertsResponse: TypeAlias = "AlertListResponse"
+ListAlertsItem: TypeAlias = "Alert"
 ListLogGroupsParameters = TypedDict(
     "ListLogGroupsParameters",
     {
@@ -186,16 +317,6 @@ ListLogGroupsQuery: TypeAlias = "ListLogGroupsParameters"
 LogGroupListResponse = TypedDict(
     "LogGroupListResponse",
     {"log_groups": "Required[list[LogGroup]]", "meta": "Required[PaginationMeta]"},
-    total=False,
-)
-PaginationMeta = TypedDict(
-    "PaginationMeta",
-    {
-        "total": "NotRequired[int]",
-        "limit": "NotRequired[int]",
-        "marker": "NotRequired[str]",
-        "has_more": "NotRequired[bool]",
-    },
     total=False,
 )
 ListLogGroupsResponse: TypeAlias = "LogGroupListResponse"
@@ -426,6 +547,22 @@ TraceListResponse = TypedDict(
     total=False,
 )
 SearchTracesResponse: TypeAlias = "TraceListResponse"
+UpdateAlertRequestInput = TypedDict(
+    "UpdateAlertRequestInput",
+    {
+        "topic": "NotRequired[str]",
+        "expression": "NotRequired[AlertExpressionInput]",
+        "operator": "NotRequired[Literal['gt', 'gte', 'lt', 'lte']]",
+        "threshold": "NotRequired[float]",
+        "window_seconds": "NotRequired[int]",
+        "for_seconds": "NotRequired[int]",
+        "enabled": "NotRequired[bool]",
+        "silenced_until": "NotRequired[str | None]",
+    },
+    total=False,
+)
+UpdateAlertBody: TypeAlias = "UpdateAlertRequestInput"
+UpdateAlertResponse: TypeAlias = "AlertResponse"
 UpdateLogGroupRequestInput = TypedDict(
     "UpdateLogGroupRequestInput",
     {
