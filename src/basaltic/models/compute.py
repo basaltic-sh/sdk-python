@@ -432,6 +432,8 @@ InstancePool = TypedDict(
         "autoscaling": "NotRequired[AutoscalingPolicy]",
         "autoscaling_status": "NotRequired[AutoscalingStatus]",
         "rollout_surge": "NotRequired[bool]",
+        "scale_in_protected_instances": "NotRequired[list[str]]",
+        "scale_in_blocked_reason": "NotRequired[str]",
         "retiring_instances": "NotRequired[list[RetiringPoolMember]]",
         "id": "NotRequired[str]",
         "crn": "NotRequired[str]",
@@ -866,6 +868,7 @@ UpdateInstanceResponse: TypeAlias = "UpdateInstanceResult"
 InstancePoolUpdateRequestInput = TypedDict(
     "InstancePoolUpdateRequestInput",
     {
+        "scale_in_instances": "NotRequired[list[str]]",
         "subnets": "NotRequired[list[str]]",
         "autoscaling": "NotRequired[AutoscalingPolicyInput]",
         "description": "NotRequired[str]",
@@ -879,6 +882,13 @@ InstancePoolUpdateRequestInput = TypedDict(
 )
 UpdateInstancePoolBody: TypeAlias = "InstancePoolUpdateRequestInput"
 UpdateInstancePoolResponse: TypeAlias = "InstancePoolResponse"
+InstancePoolMemberProtectionRequestInput = TypedDict(
+    "InstancePoolMemberProtectionRequestInput",
+    {"scale_in_protected": "Required[bool]"},
+    total=False,
+)
+UpdateInstancePoolMemberProtectionBody: TypeAlias = "InstancePoolMemberProtectionRequestInput"
+UpdateInstancePoolMemberProtectionResponse: TypeAlias = "InstancePoolResponse"
 UpdateInstanceVolumeAttachmentRequest = TypedDict(
     "UpdateInstanceVolumeAttachmentRequest",
     {"delete_on_termination": "Required[bool]"},

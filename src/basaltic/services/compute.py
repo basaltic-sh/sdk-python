@@ -538,6 +538,18 @@ _OPS = {
         contentType="application/json",
         accept="application/json",
     ),
+    "updateInstancePoolMemberProtection": Operation(
+        id="updateInstancePoolMemberProtection",
+        method="PATCH",
+        path="/v1/instance-pools/{pool_id}/instances/{instance_id}",
+        authenticated=True,
+        requiredQuery=[],
+        requiredHeaders=[],
+        queryEncoding={},
+        bodyRequired=True,
+        contentType="application/json",
+        accept="application/json",
+    ),
     "updateInstanceVolumeAttachment": Operation(
         id="updateInstanceVolumeAttachment",
         method="PATCH",
@@ -1440,6 +1452,29 @@ class ComputeService:
                 _OPS["updateInstancePool"],
                 "json",
                 {"pool_id": pool_id},
+                body,
+                None,
+                options,
+            ),
+        )
+
+    def update_instance_pool_member_protection(
+        self,
+        pool_id: str,
+        instance_id: str,
+        body: m.UpdateInstancePoolMemberProtectionBody,
+        *,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.UpdateInstancePoolMemberProtectionResponse]:
+        "Update member scale-in protection"
+        return cast(
+            ApiResponse[m.UpdateInstancePoolMemberProtectionResponse],
+            self._transport.request(
+                "compute",
+                "https://compute.{region}.basaltic.sh",
+                _OPS["updateInstancePoolMemberProtection"],
+                "json",
+                {"pool_id": pool_id, "instance_id": instance_id},
                 body,
                 None,
                 options,
@@ -2365,6 +2400,29 @@ class AsyncComputeService:
                 _OPS["updateInstancePool"],
                 "json",
                 {"pool_id": pool_id},
+                body,
+                None,
+                options,
+            ),
+        )
+
+    async def update_instance_pool_member_protection(
+        self,
+        pool_id: str,
+        instance_id: str,
+        body: m.UpdateInstancePoolMemberProtectionBody,
+        *,
+        options: RequestOptions | None = None,
+    ) -> ApiResponse[m.UpdateInstancePoolMemberProtectionResponse]:
+        "Update member scale-in protection"
+        return cast(
+            ApiResponse[m.UpdateInstancePoolMemberProtectionResponse],
+            await self._transport.request(
+                "compute",
+                "https://compute.{region}.basaltic.sh",
+                _OPS["updateInstancePoolMemberProtection"],
+                "json",
+                {"pool_id": pool_id, "instance_id": instance_id},
                 body,
                 None,
                 options,

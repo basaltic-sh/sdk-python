@@ -9,7 +9,9 @@ ListQuotasParameters = TypedDict(
 )
 ListQuotasQuery: TypeAlias = "ListQuotasParameters"
 QuotaListResponse = TypedDict(
-    "QuotaListResponse", {"quotas": "Required[list[QuotaItem]]"}, total=False
+    "QuotaListResponse",
+    {"quotas": "Required[list[QuotaItem]]", "policies": "NotRequired[list[QuotaPolicy]]"},
+    total=False,
 )
 QuotaItem = TypedDict(
     "QuotaItem",
@@ -26,5 +28,19 @@ QuotaItem = TypedDict(
     },
     total=False,
 )
+QuotaPolicy = TypedDict(
+    "QuotaPolicy",
+    {
+        "service": "Required[Literal['email']]",
+        "resource_type": "Required[Literal['message_size_bytes', 'sent_recipients_per_second', 'sent_recipients_per_day', 'received_recipients_per_second']]",
+        "scope": "Required[Literal['regional']]",
+        "region": "Required[str]",
+        "limit": "Required[int]",
+        "unit": "Required[Literal['bytes', 'recipients']]",
+        "window_seconds": "NotRequired[Literal[1, 86400]]",
+        "limit_source": "Required[Literal['default', 'organization', 'region']]",
+        "description": "Required[str]",
+    },
+    total=False,
+)
 ListQuotasResponse: TypeAlias = "QuotaListResponse"
-ListQuotasItem: TypeAlias = "QuotaItem"

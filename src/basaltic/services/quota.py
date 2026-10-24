@@ -9,7 +9,7 @@ from .._transport import AsyncTransport, SyncTransport
 from ..config import RequestOptions
 from ..models import quota as m
 from ..response import (
-    Page,
+    ApiResponse,
 )
 
 _OPS = {
@@ -24,7 +24,6 @@ _OPS = {
         bodyRequired=False,
         contentType="",
         accept="application/json",
-        itemsKey="quotas",
     ),
 }
 
@@ -35,15 +34,15 @@ class QuotaService:
 
     def list_quotas(
         self, *, query: m.ListQuotasQuery | None = None, options: RequestOptions | None = None
-    ) -> Page[m.ListQuotasResponse, m.ListQuotasItem]:
+    ) -> ApiResponse[m.ListQuotasResponse]:
         "List quotas"
         return cast(
-            Page[m.ListQuotasResponse, m.ListQuotasItem],
+            ApiResponse[m.ListQuotasResponse],
             self._transport.request(
                 "quota",
                 "https://quota.basaltic.sh",
                 _OPS["listQuotas"],
-                "page",
+                "json",
                 {},
                 UNSET,
                 query,
@@ -58,15 +57,15 @@ class AsyncQuotaService:
 
     async def list_quotas(
         self, *, query: m.ListQuotasQuery | None = None, options: RequestOptions | None = None
-    ) -> Page[m.ListQuotasResponse, m.ListQuotasItem]:
+    ) -> ApiResponse[m.ListQuotasResponse]:
         "List quotas"
         return cast(
-            Page[m.ListQuotasResponse, m.ListQuotasItem],
+            ApiResponse[m.ListQuotasResponse],
             await self._transport.request(
                 "quota",
                 "https://quota.basaltic.sh",
                 _OPS["listQuotas"],
-                "page",
+                "json",
                 {},
                 UNSET,
                 query,

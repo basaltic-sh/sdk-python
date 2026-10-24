@@ -605,6 +605,16 @@ Update an instance pool's description, size, tags or launch template
 def update_instance_pool(self, pool_id: str, body: m.UpdateInstancePoolBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateInstancePoolResponse]:
 ```
 
+## `compute.update_instance_pool_member_protection`
+
+Update member scale-in protection
+
+`PATCH /v1/instance-pools/{pool_id}/instances/{instance_id}`
+
+```python
+def update_instance_pool_member_protection(self, pool_id: str, instance_id: str, body: m.UpdateInstancePoolMemberProtectionBody, *, options: RequestOptions | None = None) -> ApiResponse[m.UpdateInstancePoolMemberProtectionResponse]:
+```
+
 ## `compute.update_instance_volume_attachment`
 
 Update a volume attachment's settings
@@ -3612,7 +3622,7 @@ List quotas
 `GET /v1/quotas`
 
 ```python
-def list_quotas(self, *, query: m.ListQuotasQuery | None = None, options: RequestOptions | None = None) -> Page[m.ListQuotasResponse, m.ListQuotasItem]:
+def list_quotas(self, *, query: m.ListQuotasQuery | None = None, options: RequestOptions | None = None) -> ApiResponse[m.ListQuotasResponse]:
 ```
 
 ## `registry.batch_delete_image`
