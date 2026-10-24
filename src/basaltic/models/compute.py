@@ -487,7 +487,7 @@ ScalingMetric = TypedDict(
 AutoscalingStatus = TypedDict(
     "AutoscalingStatus",
     {
-        "status": "Required[Literal['pending', 'disabled', 'stable', 'scaling', 'waiting', 'warming_up', 'metrics_unavailable', 'stabilizing', 'cooldown', 'draining']]",
+        "status": "Required[Literal['pending', 'disabled', 'stable', 'scaling', 'waiting', 'warming_up', 'metrics_unavailable', 'stabilizing', 'cooldown', 'draining', 'scale_in_blocked']]",
         "reason": "Required[str]",
         "evaluated_at": "NotRequired[str]",
         "last_scaled_at": "NotRequired[str]",
